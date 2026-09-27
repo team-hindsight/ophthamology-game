@@ -1,0 +1,325 @@
+name: PDF previews for pull requests
+
+# Compiles the documents a pull request affects and builds a latexdiff of each one
+# against the base branch, then hands the result to pdf-preview-deploy.yml as an
+# artifact.
+#
+# This half runs with NO secrets and a read-only token, which is what lets it work
+# for pull requests from forks - the team works through personal forks, and GitHub
+# withholds secrets from fork-originated pull_request runs. Publishing happens in
+# pdf-preview-deploy.yml, which workflow_run starts in this repository's own
+# context afterwards. Keep it that way: the moment this workflow can see the
+# Cloudflare token, a pull request that edits the Makefile can steal it, because
+# the compile step below runs `make` from the pull request.
+#
+# Deliberately independent of latex-pages.yml: that workflow owns main and the
+# published site, this one owns pull requests, and neither reads the other's
+# state. The cost is that a pull request compiles the affected documents twice.
+#
+# The trigger is narrower than latex-pages.yml's on purpose. A preview exists to
+# review changed content, so Makefile and .github/scripts changes are out of
+# scope: select_docs.py rightly treats those as a reason to rebuild all 29
+# documents, which here would mean 58 PDFs nobody is going to page through. Those
+# changes are still verified by latex-pages.yml on the same pull request.
+on:
+  pull_request:
+    paths: [docs/**, refs/**, .github/workflows/pdf-preview.yml]
+
+# Nothing here needs more than read access. A fork's pull_request run gets a
+# read-only token regardless; stating it keeps that explicit rather than accidental.
+permissions:
+  contents: read
+
+# A new push should supersede the build still running for the previous one.
+concurrency:
+  group: pdf-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    env:
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      PREVIEW_DIR: ${{ github.workspace }}/.github/preview/public
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+        with:
+          # select_docs.py diffs against the base branch, and latexdiff needs the
+          # base revision as a worktree, so a shallow clone will not do.
+          fetch-depth: 0
+
+      # Byte-for-byte the install step from latex-pages.yml: same pinned action,
+      # same package list, same version input. That is deliberate. Matching the key
+      # means this workflow restores the cache entry latex-pages.yml has been using
+      # successfully for months, instead of creating a second entry of its own -
+      # which is what came back missing mktexlsr and broke this step twice.
+      #
+      # latexdiff is installed separately below, NOT added here. Adding packages to
+      # this action is what produced the incomplete fileset.
+      - name: Install TeX Live and pandoc
+        uses: awalsh128/cache-apt-pkgs-action@553a35bb8ebd9fcabcb1c9451aa4c98e1b4ca8a9 # v1.6.3
+        with:
+          packages: texlive-latex-extra texlive-science texlive-fonts-extra texlive-fonts-recommended texlive-latex-recommended lmodern pandoc
+          version: 1.1
+
+      - name: Rebuild the TeX file databases
+        run: |
+          # Exactly what latex-pages.yml does, for the reason it documents:
+          # restoring cached package files skips texlive's postinst, and that
+          # postinst is what builds the ls-R filename database and the font maps.
+          # Without these, kpsewhich cannot see the restored packages and pdflatex
+          # fails on missing fonts.
+          #
+          # The guard is the one addition. If the tools are absent the restored
+          # fileset was incomplete, so install them properly and carry on: that
+          # costs a minute, where failing costs the reviewer their preview.
+          if ! command -v mktexlsr >/dev/null || ! command -v updmap-sys >/dev/null; then
+            echo "TeX binaries are missing from the restored cache; installing with apt"
+            sudo apt-get update -qq
+            sudo apt-get install -y texlive-base texlive-binaries
+          fi
+
+          sudo mktexlsr
+          sudo updmap-sys >/dev/null
+
+      - name: Install latexdiff
+        run: |
+          # latexdiff is its own package on Debian and Ubuntu. It is NOT part of
+          # texlive-extra-utils - that ships git-latexdiff, the git wrapper, which
+          # is why asking for it pulled 165 MB and still left no latexdiff binary.
+          #
+          # The package itself is a handful of Perl scripts. libalgorithm-diff-perl
+          # supplies the Algorithm::Diff module the script needs at startup, and is
+          # only a Recommends, so it is named explicitly.
+          #
+          # --no-install-recommends matters: latexdiff recommends texlive-latex-base,
+          # and letting apt install that re-installs the whole TeX stack the cache
+          # step already provided, which is what made this step take 1m20s.
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            latexdiff libalgorithm-diff-perl
+
+          # Fail here rather than three steps later, where the error is just
+          # "latexdiff: command not found" with no hint about the package.
+          command -v latexdiff >/dev/null || {
+            echo "::error::latexdiff did not install"
+            exit 1
+          }
+
+      - name: Verify the toolchain is usable
+        run: |
+          pdflatex --version | head -1
+          pandoc --version | head -1
+          kpsewhich article.cls
+          kpsewhich amsmath.sty
+
+          # Smoke test the real latexdiff path rather than trusting --version: the
+          # way it fails is at startup on a missing Perl module, which --version
+          # would also survive on some builds. Mirrors how latex-pages.yml smoke
+          # tests pandoc instead of guessing at its package list.
+          smoke=$(mktemp -d)
+          printf '%s\n' '\documentclass{article}' '\begin{document}' \
+            'One two three.' '\end{document}' > "$smoke/a.tex"
+          printf '%s\n' '\documentclass{article}' '\begin{document}' \
+            'One two four.' '\end{document}' > "$smoke/b.tex"
+          latexdiff "$smoke/a.tex" "$smoke/b.tex" > "$smoke/d.tex"
+          grep -q DIFadd "$smoke/d.tex" && echo "latexdiff smoke test OK"
+          rm -rf "$smoke"
+
+      - name: Select the documents this pull request affects
+        run: |
+          # Every file under docs/ and refs/ is a candidate, not just .tex and .md:
+          # a change to a shared \input, a figure or the bibliography changes the
+          # content of the documents that read it, and those deserve a preview.
+          # select_docs.py works that out from the recorded dependency graph, so
+          # nothing is filtered by extension here.
+          #
+          # Unlike latex-pages.yml, the toolchain paths are deliberately NOT in
+          # scope - see the note on the trigger above.
+          SCOPE=(':(glob)docs/**' ':(glob)refs/**')
+
+          CHANGED_FILES=$(git diff --name-only --diff-filter=d "$BASE_SHA" "$HEAD_SHA" -- "${SCOPE[@]}" | xargs)
+          DELETED_FILES=$(git diff --name-only --diff-filter=D "$BASE_SHA" "$HEAD_SHA" -- "${SCOPE[@]}" | xargs)
+
+          echo "Changed files: $CHANGED_FILES"
+          echo "Deleted files: $DELETED_FILES"
+
+          if [ -z "$CHANGED_FILES$DELETED_FILES" ]; then
+            # Reachable when the pull request only touches this workflow, or only
+            # files select_docs.py ignores anyway.
+            echo "No document content changed; nothing to preview."
+            echo "BUILD_DOCS=" >> $GITHUB_ENV
+            exit 0
+          fi
+
+          # select_docs.py is deliberately fail-safe: a changed file it cannot
+          # attribute to any document - a brand new figure, which nothing has
+          # recorded as a dependency yet - makes it ask for a full rebuild of all
+          # 29. That is the right call for the published site and the wrong one
+          # here, and left alone it would cancel the preview for an ordinary pull
+          # request that adds a figure and edits one document. So hand it only the
+          # paths it can reason about: documents, and files the manifest already
+          # knows are read by one.
+          #
+          # is_document is imported from select_docs.py rather than reimplemented,
+          # so the two cannot drift on which files count as documents.
+          ATTRIBUTABLE=$(python3 - $CHANGED_FILES $DELETED_FILES <<'PY'
+          import importlib.util, json, sys
+          spec = importlib.util.spec_from_file_location("sd", ".github/scripts/select_docs.py")
+          sd = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(sd)
+
+          manifest = json.load(open(".pdf-deps.json"))
+          known = set(manifest) | {dep for deps in manifest.values() for dep in deps}
+
+          keep, drop = [], []
+          for path in sys.argv[1:]:
+              (keep if (path in known or sd.is_document(path)) else drop).append(path)
+          if drop:
+              print("preview: ignoring unattributable %s" % " ".join(drop), file=sys.stderr)
+          print(" ".join(keep))
+          PY
+          )
+          echo "Attributable changes: $ATTRIBUTABLE"
+
+          if [ -z "$ATTRIBUTABLE" ]; then
+            echo "Nothing that maps to a document changed; nothing to preview."
+            echo "BUILD_DOCS=" >> $GITHUB_ENV
+            exit 0
+          fi
+
+          BUILD_DOCS=$(python3 .github/scripts/select_docs.py \
+                         --changed $ATTRIBUTABLE \
+                         --manifest .pdf-deps.json --root . 2>/tmp/select.log | xargs)
+          cat /tmp/select.log
+
+          # Belt and braces. With the toolchain paths out of scope and the input
+          # filtered above there should be no way left to reach the full-rebuild
+          # fallback, but previewing 58 PDFs is bad enough to be worth a guard.
+          if grep -q 'full rebuild' /tmp/select.log; then
+            echo "::warning::select_docs.py asked for a full rebuild, so this pull request affects every document; skipping the preview. Download the artifact from the Build LaTeX workflow instead."
+            BUILD_DOCS=""
+          fi
+
+          echo "Documents to build: $BUILD_DOCS"
+          echo "BUILD_DOCS=$BUILD_DOCS" >> $GITHUB_ENV
+
+      - name: Materialise the base branch for latexdiff
+        if: env.BUILD_DOCS != ''
+        run: |
+          # A worktree rather than `git show`, so that latexdiff --flatten can
+          # resolve each document's relative \input paths - docs/Reflection.text is
+          # pulled into the body of four documents - against a real tree.
+          git worktree add /tmp/base "$BASE_SHA"
+
+      - name: Compile the affected documents and their diffs
+        if: env.BUILD_DOCS != ''
+        run: |
+          mkdir -p "$PREVIEW_DIR"
+          : > /tmp/previews.tsv
+
+          for src in $BUILD_DOCS; do
+            pdf="${src%.*}.pdf"
+
+            # A document that will not compile is already failing latex-pages.yml
+            # on this same pull request, so warn and carry on rather than denying
+            # the reviewer previews of everything else.
+            if ! make -B "$pdf"; then
+              echo "::warning file=$src::failed to compile; omitted from the preview"
+              continue
+            fi
+
+            # Preserve the structure below docs/, as latex-pages.yml does when it
+            # builds the published site.
+            rel=$(dirname "$pdf"); rel="${rel#docs}"; rel="${rel#/}"
+            mkdir -p "$PREVIEW_DIR/$rel"
+            cp "$pdf" "$PREVIEW_DIR/$rel/"
+
+            full_href="${rel:+$rel/}$(basename "$pdf")"
+            diff_href=""
+
+            # latexdiff reads LaTeX only, so a Markdown document (the Makefile has
+            # a pandoc rule) gets a full PDF and no diff. So does a document that
+            # is new in this pull request and has no base revision to compare to.
+            case "$src" in
+              *.tex)
+                if [ -f "/tmp/base/$src" ]; then
+                  diff_pdf="${src%.tex}.diff.pdf"
+
+                  # --flatten inlines \input files so the diff covers shared
+                  # content. --append-safecmd lists the comment macros from
+                  # docs/Comments.text, so latexdiff marks up the text inside
+                  # \wss{...} instead of treating the whole call as one token.
+                  if latexdiff --flatten \
+                       --append-safecmd="wss,plt,an,authornote" \
+                       "/tmp/base/$src" "$src" > "${src%.tex}.diff.tex" \
+                     && make -B "$diff_pdf"; then
+                    cp "$diff_pdf" "$PREVIEW_DIR/$rel/"
+                    diff_href="${rel:+$rel/}$(basename "$diff_pdf")"
+                  else
+                    # latexdiff output does not always compile; complex tables and
+                    # floats are the usual culprits. Losing the diff is acceptable,
+                    # failing the run over it is not.
+                    echo "::warning file=$src::latexdiff failed; linking the full PDF only"
+                  fi
+                fi
+                ;;
+            esac
+
+            printf '%s\t%s\t%s\n' "$src" "$full_href" "$diff_href" >> /tmp/previews.tsv
+          done
+
+          # Gates the publish and comment steps. Distinct from BUILD_DOCS: every
+          # selected document can still fail to compile, and publishing an empty
+          # preview with a comment pointing at nothing is worse than staying quiet.
+          # tr strips any padding wc adds, because the step gates below compare
+          # this as a string and " 0" would slip past a test for "0".
+          echo "PREVIEW_COUNT=$(wc -l < /tmp/previews.tsv | tr -d '[:space:]')" >> $GITHUB_ENV
+
+      - name: Build the preview index page
+        if: env.PREVIEW_COUNT != '' && env.PREVIEW_COUNT != '0'
+        run: |
+          # Reuses the template and index builder that latex-pages.yml uses for the
+          # published site. build_index.py already handles PDFs that are not
+          # committed: git knows nothing about them, so it falls back to file
+          # mtime, a case its docstring calls out for pull request runs.
+          cp site/style.css "$PREVIEW_DIR/"
+          python3 .github/scripts/build_index.py \
+            --public "$PREVIEW_DIR" \
+            --template site/index.html \
+            --output "$PREVIEW_DIR/index.html" \
+            --tracked-dir pdfs
+
+      - name: Package the preview for the deploy workflow
+        if: env.PREVIEW_COUNT != '' && env.PREVIEW_COUNT != '0'
+        run: |
+          # Everything the deploy half needs, and nothing it has to trust as code.
+          # The site is static files; the metadata is three short text values that
+          # pdf-preview-deploy.yml validates before it uses them.
+          #
+          # The pull request number has to travel in the artifact because
+          # github.event.workflow_run.pull_requests is empty for a fork's pull
+          # request, which is exactly the case this split exists to serve.
+          stage="$RUNNER_TEMP/artifact"
+          mkdir -p "$stage/site" "$stage/meta"
+
+          cp -r "$PREVIEW_DIR/." "$stage/site/"
+          echo "${{ github.event.pull_request.number }}" > "$stage/meta/pr.txt"
+          echo "$HEAD_SHA"                              > "$stage/meta/sha.txt"
+          cp /tmp/previews.tsv "$stage/meta/previews.tsv"
+
+          echo "Packaged $PREVIEW_COUNT document(s):"
+          find "$stage/site" -name '*.pdf' -printf '  %P\n'
+
+      - name: Upload the preview artifact
+        if: env.PREVIEW_COUNT != '' && env.PREVIEW_COUNT != '0'
+        uses: actions/upload-artifact@v5
+        with:
+          # pdf-preview-deploy.yml looks the artifact up by this exact name, and
+          # treats its absence as "this pull request changed no documents".
+          name: pdf-preview
+          path: ${{ runner.temp }}/artifact
+          retention-days: 7
+          if-no-files-found: error
