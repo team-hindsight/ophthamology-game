@@ -1104,38 +1104,317 @@ journey map status.
 \subsubsection{Instructions and Feedback}
 \label{sec:InstructionsFeedbackFRTests}
 
-These tests verify that the game provides the instructions and
-feedback required by the SRS. They cover how information is
-presented to the player and how the game responds to user
-interactions.
+These tests verify \srsfrref{FR_SpokenInstructions}{12}-\srsfrref{FR_IgnoreRepeatedTouches}{19}.
+Extend the content inventory from Section~\ref{sec:AMLevelContentFRTests}
+with child-facing instructions, exercises, questions and reviewed answers,
+animations, and screen states and transitions. Include instructions outside
+levels and check all levels' default content and each distinct
+age-group variant.
+
+Use walkthroughs and the Unity test tools in the Development Plan, with
+temporary input, playback, and storage logs where needed. Record the screen
+or content ID with supporting recordings or logs.
 
 \begin{frtestlist}
 
 \item[\frtestdef{ST_InstructionsFeedback_01}]
-\textbf{[Test Case Name]}
+\textbf{Narrated Instructions with Demonstrations}
 
 \textit{Type:} Functional, Dynamic, manual.
 
-\textit{Requirements Covered:}
-[Insert SRS functional requirement reference(s).]
+\textit{Requirements Covered:} \srsfrref{FR_SpokenInstructions}{12}.
 
-\textit{Initial State:}
-[Describe the required game state before testing.]
+\textit{Initial State:} Setup is complete and narration is audible.
 
-\textit{Input/Condition:}
-[Describe the user action or condition being tested.]
+\textit{Input/Condition:} Follow every listed child-facing instruction
+using only narration and demonstrations. Include hints, answer feedback,
+and instructions outside levels.
 
-\textit{Output/Result:}
-[Describe the expected behaviour and pass criteria.]
+\textit{Output/Result:} Every instruction has matching narration and a
+visual demonstration. No required action depends on reading.
 
-\textit{Test Case Derivation:}
-[Explain how this test is derived from the SRS requirement.]
+\textit{Test Case Derivation:} FR12 requires both forms of guidance and
+prohibits levels from requiring reading.
 
-\textit{How test will be performed:}
-[Describe the steps to execute the test and record results.]
+\textit{How test will be performed:} Record the walkthrough with audio.
+Match each instruction ID to its narration, demonstration, and action;
+note missing or conflicting guidance and any reliance on written text.
 
-% Duplicate the test case above for additional requirements.
-% Give every new test a unique identifier.
+\item[\frtestdef{ST_InstructionsFeedback_02}]
+\textbf{Hints after Incorrect Actions}
+
+\textit{Type:} Functional, Dynamic, manual.
+
+\textit{Requirements Covered:} \srsfrref{FR_HintOnMiss}{13}.
+
+\textit{Initial State:} An exercise awaits an action identified in the
+inventory. Wrong answers to questions are covered by
+\frtestref{ST_InstructionsFeedback_05}.
+
+\textit{Input/Condition:} Make an incorrect action, repeat it, then perform
+the requested action. Cover each distinct incorrect response path, such as
+placing or releasing an object outside its target. Unrelated touches are
+checked in \frtestref{ST_ExitingInterruptions_06}.
+
+\textit{Output/Result:} Each incorrect action gives an encouraging hint
+and allows another attempt. The correct action is accepted and play continues.
+
+\textit{Test Case Derivation:} FR13 requires hints and retries for incorrect
+actions, including repeated mistakes.
+
+\textit{How test will be performed:} Record each action, the hint's wording
+and visual guidance, and the successful retry. Check that the hint guides
+without blame or discouragement.
+
+\item[\frtestdef{ST_InstructionsFeedback_03}]
+\textbf{Visual Cues Remain Available}
+
+\textit{Type:} Functional, Dynamic, manual.
+
+\textit{Requirements Covered:} \srsfrref{FR_VisualCues}{14}.
+
+\textit{Initial State:} Setup is complete. Visual-cue size and reduced-motion
+settings are available under \srsfrref{FR_Preferences}{41}.
+
+\textit{Input/Condition:} Inspect every listed level state and transition,
+including after skips and restarts. Try changing or disabling cues through
+child-facing controls, and accessing cue settings before and after the
+parental gate. Check minimum and maximum cue sizes and reduced motion on
+and off, varying one setting at a time, then combining minimum size with
+reduced motion.
+
+\textit{Output/Result:} Cues remain visible and provide guidance in every
+state. The child cannot disable them; settings that change them require
+the parental gate. Size and motion changes do not remove needed guidance.
+
+\textit{Test Case Derivation:} FR14 requires persistent cues and restricts
+changes to caregiver settings under \srsfrref{FR_ParentGate}{38}.
+
+\textit{How test will be performed:} Mark each state and setting combination
+in the inventory. Record missing cues and whether each route to cue settings
+requires the gate.
+
+\item[\frtestdef{ST_InstructionsFeedback_04}]
+\textbf{Instructions without Sound}
+
+\textit{Type:} Functional, Dynamic, manual.
+
+\textit{Requirements Covered:} \srsfrref{FR_NarrationFallback}{15}.
+
+\textit{Initial State:} Setup is complete. Confirm audible narration before
+each sound condition and identify device mute modes that silence media,
+not just calls or alerts.
+
+\textit{Input/Condition:} Follow every listed instruction in a silent
+walkthrough, including hints, reveals, and sensation descriptions. Exercise
+each mute-detection and prompt path using device mute, zero media volume,
+and zero caregiver narration volume. Cover silence at entry and loss of
+sound during playback. Leave the prompt unanswered and finish the level
+visually, then restore sound using the indicated control and play the next
+instruction.
+
+\textit{Output/Result:} Pictures, icons, and demonstrations convey every
+instruction. The caregiver prompt explains how to restore sound without
+blocking play. Muting does not pause play or prevent completion; restoring
+sound permits subsequent narration while visual guidance remains available.
+
+\textit{Test Case Derivation:} FR15 requires visual guidance and a
+non-blocking prompt. SR-18 of the Hazard Analysis \cite{HazardAnalysis}
+also covers narration disabled through settings.
+
+\textit{How test will be performed:} Verify silence at the device output.
+Record the guidance, prompt, completion, and sound restoration. Record
+unavailable mute modes as unverified.
+
+\item[\frtestdef{ST_InstructionsFeedback_05}]
+\textbf{Correct Answers after a Wrong Answer}
+
+\textit{Type:} Functional, Dynamic, manual with timing logs.
+
+\textit{Requirements Covered:} \srsfrref{FR_RevealAnswer}{16},
+\srsfrref{FR_NoPenalty}{18}; reveal cues and timing from
+\srsnfrref{NFR_Colour}{10} and \srsnfrref{NFR_Responsiveness}{12}.
+
+\textit{Initial State:} A question is displayed with audible narration
+and a reviewed answer key.
+
+\textit{Input/Condition:} Select a wrong answer. Wait until the reveal
+finishes and any configured timeout passes; with no timeout, wait
+\constref{ANSWER_RETRY_OBSERVATION_S} seconds after the reveal. Then select
+a correct answer. Across attempts, cover every wrong and revealed correct
+option at least once, pairing selections to avoid redundant combinations.
+Also test a wrong answer followed by holding skip without a correct selection.
+
+\textit{Output/Result:} All correct answers, and no incorrect ones, are
+marked within \constref{ANSWER_REVEAL_MAX_S} second, using narration and
+at least two non-colour cues. The reveal remains available for retry.
+Selecting a correct answer gives encouraging feedback before continuation;
+skip permits continuation without a correct answer or penalty.
+
+\textit{Test Case Derivation:} FR16 requires reveal and retry; FR18 permits
+skipping. NFR10 and NFR12 specify cues and timing, also required by SR-16
+of the Hazard Analysis \cite{HazardAnalysis}.
+
+\textit{How test will be performed:} Compare reveals with the answer key.
+Record selection, reveal, retry or skip, feedback, and continuation, reusing
+\testref{ST_Responsiveness} timing logs. Confirm both cues remain with
+reduced motion enabled. Full colour-vision checks belong to
+Section~\ref{sec:UsabilityHumanityNFRTests}; questions without wrong options
+are checked in \frtestref{ST_InstructionsFeedback_06}.
+
+\item[\frtestdef{ST_InstructionsFeedback_06}]
+\textbf{Valid Questions and Build-Time Validation}
+
+\textit{Type:} Functional, Static and Dynamic, automated validation with
+manual inspection.
+
+\textit{Requirements Covered:} \srsfrref{FR_ValidQuestions}{17}.
+
+\textit{Initial State:} Reviewed answer keys and the build validator are
+available. Prepare separate test content with one, several, or all options
+correct; no correct answer; and keys naming missing options, both alone
+and alongside a valid correct option.
+
+\textit{Input/Condition:} Build with the test content, including a level
+whose questions are all excluded as invalid. Then build with release content
+and select each expected correct answer on a separate attempt.
+
+\textit{Output/Result:} Every build validates its questions. Valid questions
+remain playable; invalid questions are excluded and logged. Exclusion leaves
+no empty question screen or blocked level. Each displayed question has at
+least one correct answer, and every expected correct option is accepted.
+
+\textit{Test Case Derivation:} FR17 requires valid answers. Build-time
+validation satisfies SR-17 of the Hazard Analysis \cite{HazardAnalysis}
+and the SRS \srstableref{tab:DevelopmentPhaseThree}{Phase 3 plan}.
+
+\textit{How test will be performed:} Check that validation runs on every
+build. Compare its results and packaged question IDs with the reviewed keys;
+record accepted answers and continuation after exclusions. Reuse validation
+results for unchanged content, but check the installed build. Clinical
+approval is covered by \testref{ST_ClinicalAccuracy}.
+
+\item[\frtestdef{ST_InstructionsFeedback_07}]
+\textbf{Skipping and Incorrect Responses without Penalties}
+
+\textit{Type:} Functional, Dynamic, manual.
+
+\textit{Requirements Covered:} \srsfrref{FR_NoPenalty}{18}; related
+skip, completion, and reward checks under
+\srsfrref{FR_DescribeSensations}{8}, \srsfrref{FR_LevelEnd}{11},
+\srsfrref{FR_FirstReward}{28}, \srsfrref{FR_NoDuplicateReward}{29}.
+
+\textit{Initial State:} For each path below, prepare an unfinished target
+level with rewards from other levels where available. Record statuses,
+points, coins, owned accessories, and the target's defined completion reward.
+
+\textit{Input/Condition:} Run two paths from separate baselines: skip every
+exercise and animation using the required hold; and make repeated incorrect
+responses in every applicable exercise and question, then retry or skip.
+Attempt to skip sensation descriptions, but let them finish. Reach the
+ending, then repeat each path as a completed-level replay.
+
+\textit{Output/Result:} All exercises and animations can be skipped except
+sensation descriptions, which play in full. Skips and mistakes produce no
+negative text, audio, or visual feedback and remove no points, coins, or
+accessories. Both paths reach \textit{Completed} with the full defined
+first-completion reward. Replay preserves completion and gives no duplicate reward.
+
+\textit{Test Case Derivation:} FR18 prohibits penalties and blocked
+completion; FR8 protects sensation descriptions. FR11, FR28, and FR29
+define completion and rewards.
+
+\textit{How test will be performed:} Compare rewards immediately before
+and after each skip or incorrect response, then check the completion reward.
+Add these checks to
+runs from \frtestref{ST_InstructionsFeedback_02},
+\frtestref{ST_InstructionsFeedback_05}, and
+\frtestref{ST_AM_SkippedActivitiesStillComplete}. Record feedback, each
+activity's skip availability, final status, and reward totals. Reuse the
+sensation, clinic-variation, and speak-up message checks from
+\frtestref{ST_AM_SensationBeforeSkip}, \frtestref{ST_AM_ProcedureVariation},
+and \frtestref{ST_AM_ExpressConcern} on those recordings.
+
+\item[\frtestdef{ST_InstructionsFeedback_09}]
+\textbf{Repeated Touches during Transitions}
+
+\textit{Type:} Functional, Dynamic, automated input with manual device checks.
+
+\textit{Requirements Covered:} \srsfrref{FR_IgnoreRepeatedTouches}{19}.
+
+\textit{Initial State:} An application screen is ready for navigation.
+Logging records touch times, accepted actions, and destination display times.
+
+\textit{Input/Condition:} Trigger each listed transition and send extra touches
+on the original control, other navigation controls, and a destination
+control's position. Once the destination appears, send a fresh valid input.
+
+\textit{Output/Result:} The requested screen appears after at most one
+navigation action. Extra touches neither skip screens nor execute later
+on the destination. Fresh input works after the transition.
+
+\textit{Test Case Derivation:} FR19 requires additional touches to be
+ignored until the next screen appears, including transitions outside levels.
+
+\textit{How test will be performed:} Use Unity Play Mode tests through the
+normal input handler. Confirm touch timing, accepted actions, and screen
+order in the logs; repeat on devices with rapid taps.
+
+\item[\frtestdef{ST_InstructionsFeedback_10}]
+\textbf{Narration Protection}
+
+\textit{Type:} Functional, Dynamic, manual.
+
+\textit{Requirements Covered:} \srsfrref{FR_IgnoreRepeatedTouches}{19}.
+
+\textit{Initial State:} Procedure narration is audible. An uninterrupted
+recording provides its full content and ending.
+
+\textit{Input/Condition:} Tap, hold, and repeatedly tap outside skip,
+home, and restart, including other interactive elements. Repeat during
+mandatory sensation descriptions.
+
+\textit{Output/Result:} These touches neither skip nor shorten narration.
+
+\textit{Test Case Derivation:} FR19 protects procedure narration from
+touches outside the three named controls.
+
+\textit{How test will be performed:} Record touch locations and audio;
+compare the content and ending with the uninterrupted recording. Home and
+restart during narration are checked in
+\frtestref{ST_ExitingInterruptions_01} and
+\frtestref{ST_ExitingInterruptions_05}.
+
+\item[\frtestdef{ST_InstructionsFeedback_11}]
+\textbf{Skip Hold Threshold and Protected Descriptions}
+
+\textit{Type:} Functional, Dynamic, automated input with manual device checks.
+
+\textit{Requirements Covered:} \srsfrref{FR_IgnoreRepeatedTouches}{19},
+\srsfrref{FR_DescribeSensations}{8}.
+
+\textit{Initial State:} A skippable activity will remain active throughout
+the test input, with procedure narration where present. Log touch-down,
+release, and skip times. Let $T$ be \constref{SKIP_HOLD_MIN_S}.
+
+\textit{Input/Condition:} On separate attempts, hold skip for $T-0.1$,
+$T$, and $T+0.1$ seconds. Also make short presses totalling more than $T$.
+Repeat during each sensation description. For each input handler, background
+the app during a short press, release while away, then return and press
+briefly again with the process retained.
+
+\textit{Output/Result:} A continuous hold reaching $T$ skips a skippable
+activity on the next input-processing frame. Shorter holds never skip,
+and separate presses do not accumulate, including across interruptions.
+Sensation descriptions cannot be skipped, even with a hold of $T$ or longer.
+
+\textit{Test Case Derivation:} FR19 defines the hold threshold and preserves
+FR8's exception for sensation descriptions.
+
+\textit{How test will be performed:} Use timed Unity Play Mode input through
+the normal handler. Measure actual hold durations from logs; allow the next
+input-processing frame at $T$, but no early skip. Confirm short-tap and
+hold behaviour on devices, and record protected descriptions finishing.
 
 \end{frtestlist}
 
@@ -1147,37 +1426,248 @@ interactions.
 \subsubsection{Exiting and Interruptions}
 \label{sec:ExitingInterruptionsFRTests}
 
-These tests verify how the game handles exiting activities
-and interruptions during gameplay. They check that the
-application responds appropriately to these actions
-according to the SRS.
+These tests verify \srsfrref{FR_ExitLevel}{20}--\srsfrref{FR_Suspend}{25}.
+Use the inventory from Section~\ref{sec:InstructionsFeedbackFRTests} to
+check home and restart on every screen in all three levels, including
+default content and each distinct age-group variant. For FR25, include
+other application screens with active audio or animation.
+
+Build an interruption matrix covering each available event type on each
+distinct media or input handler, and each media sequence with at least one
+applicable event. Reuse runs when the conditions match, and record untested
+device events as unverified.
 
 \begin{frtestlist}
 
 \item[\frtestdef{ST_ExitingInterruptions_01}]
-\textbf{[Test Case Name]}
+\textbf{Return to the Journey Map from Every Screen}
 
 \textit{Type:} Functional, Dynamic, manual.
 
-\textit{Requirements Covered:}
-[Insert SRS functional requirement reference(s).]
+\textit{Requirements Covered:} \srsfrref{FR_ExitLevel}{20},
+\srsfrref{FR_RestartLevel}{24}; one-touch exit from
+\srsnfrref{NFR_Exit}{4}.
 
-\textit{Initial State:}
-[Describe the application state before the interruption.]
+\textit{Initial State:} Setup is complete and the target level is open.
+The inventory includes every screen from introduction to ending.
 
-\textit{Input/Condition:}
-[Describe the exit action or interruption being tested.]
+\textit{Input/Condition:} Select home once on each screen, including during
+narration, sensation descriptions, and unfinished exercises. Re-enter the
+level to reach each remaining screen.
 
-\textit{Output/Result:}
-[Describe the expected application behaviour.]
+\textit{Output/Result:} Home ends the level and returns to a usable journey
+map with one touch, without confirmation or waiting for an exercise or
+narration to finish.
 
-\textit{Test Case Derivation:}
-[Explain which requirement defines this behaviour.]
+\textit{Test Case Derivation:} FR20 defines the destination, FR24 requires
+exit from every screen, and NFR4 sets the one-touch limit.
 
-\textit{How test will be performed:}
-[Describe the actions, observations, and evidence recorded.]
+\textit{How test will be performed:} Record the starting screen, touch
+count, and destination for each exit. Reuse these results for NFR4 in
+Section~\ref{sec:UsabilityHumanityNFRTests}.
 
-% Add additional test cases as needed.
+\item[\frtestdef{ST_ExitingInterruptions_02}]
+\textbf{Level Audio and Visuals Stop on Exit}
+
+\textit{Type:} Functional, Dynamic, manual with playback logs.
+
+\textit{Requirements Covered:} \srsfrref{FR_StopOnExit}{21}.
+
+\textit{Initial State:} Audio is enabled. The inventory identifies level
+narration, music, sound effects, animations, and delayed or looping effects.
+
+\textit{Input/Condition:} Exit before the ending while each media type is
+active, including overlapping media. Also exit before delayed effects start
+and wait on the map past their scheduled start or completion.
+
+\textit{Output/Result:} All level media stop before the map appears and
+none starts later. The map's own media may play.
+
+\textit{Test Case Derivation:} FR21 and SR-13 of the Hazard Analysis
+\cite{HazardAnalysis} require level media to stop on exit.
+
+\textit{How test will be performed:} Reuse exits from
+\frtestref{ST_ExitingInterruptions_01}. Record screen and device audio;
+compare media-stop events with the first map frame in Unity logs. Check
+for delayed playback and remaining active looping effects.
+
+\item[\frtestdef{ST_ExitingInterruptions_03}]
+\textbf{Early Exit Preserves Progress and Rewards}
+
+\textit{Type:} Functional, Dynamic, manual with state inspection.
+
+\textit{Requirements Covered:} \srsfrref{FR_ExitKeepsData}{22}.
+
+\textit{Initial State:} Prepare a new journey and one with completed levels
+and earned rewards. After starting the target level, record all level
+statuses, journey points, coins, and owned accessories, including nonzero
+rewards where available.
+
+\textit{Input/Condition:} Exit an unfinished level and a completed-level
+replay. Include exits after a hint, after a skip, and just before completion.
+
+\textit{Output/Result:} All recorded values remain unchanged, with no
+reward issued. The target remains \textit{In Progress} or \textit{Completed}
+as appropriate; other levels are unaffected.
+
+\textit{Test Case Derivation:} FR22 leaves player state unchanged on exit.
+The baseline is taken after starting because \srsfrref{FR_StartLevel}{4}
+can first change the target to \textit{In Progress}.
+
+\textit{How test will be performed:} Add before-and-after state snapshots
+to matching exits from \frtestref{ST_ExitingInterruptions_01}. Compare
+recorded values and confirm that exit occurred before the completion event.
+
+\item[\frtestdef{ST_ExitingInterruptions_04}]
+\textbf{Start from the Beginning after Exit or Closure}
+
+\textit{Type:} Functional, Dynamic, manual with process logs.
+
+\textit{Requirements Covered:} \srsfrref{FR_RestartAfterExit}{23}.
+
+\textit{Initial State:} A level is partway through play, with pending saves
+complete. Record its opening screen and current step.
+
+\textit{Input/Condition:} On separate runs, leave through home, close the
+app during play, and terminate it while backgrounded. Reopen the app where
+needed and start the same level. Cover unfinished levels and completed-level
+replays.
+
+\textit{Output/Result:} Each run starts at the level's beginning, without
+resuming the abandoned step or resetting the journey.
+
+\textit{Test Case Derivation:} FR23 requires a fresh start after exit or
+closure; \srsfrref{FR_Suspend}{25} covers resuming a retained process.
+
+\textit{How test will be performed:} Reuse exits from
+\frtestref{ST_ExitingInterruptions_03}. Confirm process termination for
+closure cases and compare each start with the recorded opening. Share
+relaunches with \frtestref{ST_SavingRestoring_02} to check saved data.
+
+\item[\frtestdef{ST_ExitingInterruptions_05}]
+\textbf{Restart from Every Screen without Losing Progress}
+
+\textit{Type:} Functional, Dynamic, manual with state inspection.
+
+\textit{Requirements Covered:} \srsfrref{FR_RestartLevel}{24};
+restart during narration under \srsfrref{FR_IgnoreRepeatedTouches}{19}.
+
+\textit{Initial State:} Prepare an unfinished attempt and a completed-level
+replay with earned rewards. Record saved statuses and rewards; for ending
+screens, take the baseline after completion is applied.
+
+\textit{Input/Condition:} Restart from every listed screen, including
+narration, sensation descriptions, unfinished actions, hints, reveals, and
+the ending. Try the first interaction and home after each restart.
+
+\textit{Output/Result:} Restart returns to the beginning without waiting
+for narration to finish, with play and home available. Statuses and rewards
+are unchanged: unfinished levels remain
+\textit{In Progress}, completed levels remain \textit{Completed}, and
+restarting gives no reward.
+
+\textit{Test Case Derivation:} FR24 requires restart from every screen
+without losing progress; FR19 keeps it available during narration.
+
+\textit{How test will be performed:} Record the starting and returned
+screens, successful interaction and exit, and before-and-after saved values.
+
+\item[\frtestdef{ST_ExitingInterruptions_06}]
+\textbf{Unexpected Inputs Do Not Block Play}
+
+\textit{Type:} Functional, Dynamic, manual.
+
+\textit{Requirements Covered:} \srsfrref{FR_RestartLevel}{24}.
+
+\textit{Initial State:} For each level state, identify inputs with no defined
+action. Incorrect task responses requiring hints or answer reveals are
+covered by \frtestref{ST_InstructionsFeedback_02} and
+\frtestref{ST_InstructionsFeedback_05}.
+
+\textit{Input/Condition:} Apply unexpected touches and gestures once and
+repeatedly, including extra simultaneous touches and cancelled drags where
+undefined. Include unfinished actions. Release the inputs, then try a valid
+response or permitted skip. On separate attempts, use home and restart
+before completing the task.
+
+\textit{Output/Result:} Unexpected inputs are ignored without navigation
+or changes to saved progress or rewards. Valid input, home, and restart
+remain usable; mandatory sensation descriptions remain unskippable.
+
+\textit{Test Case Derivation:} FR24 requires unexpected inputs to be ignored
+without blocking play; SR-4 of the Hazard Analysis \cite{HazardAnalysis}
+also covers recovery from unfinished actions.
+
+\textit{How test will be performed:} Record the state, gesture, response,
+state comparison, and successful continuation or recovery. Reuse
+\frtestref{ST_InstructionsFeedback_09} for transitions and
+\frtestref{ST_InstructionsFeedback_10} for narration.
+
+\item[\frtestdef{ST_ExitingInterruptions_07}]
+\textbf{Pause and Resume after Backgrounding or Locking}
+
+\textit{Type:} Functional, Dynamic, manual with playback logs.
+
+\textit{Requirements Covered:} \srsfrref{FR_Suspend}{25}.
+
+\textit{Initial State:} Audio is enabled and the process is retained.
+Record the screen, exercise state, active media positions, level statuses,
+and rewards.
+Include narration, music, sound effects, and matching animations.
+
+\textit{Input/Condition:} Background the app, then return; separately lock
+and unlock the device. Wait beyond the remaining media or timer duration,
+or one loop; use the same interval for input-only states. Follow the
+interruption matrix, including sensation descriptions, unfinished exercises,
+pending feedback/completion callbacks, and non-level media. Repeat the
+pause/resume cycle on each distinct handler.
+
+\textit{Output/Result:} All audio and animation pause without advancing.
+The same screen and media positions resume with narration and visuals aligned.
+Timers and callbacks do not consume paused time, skip content on return,
+or complete the level during the pause. Exercises remain usable, and statuses
+and rewards are unchanged.
+
+\textit{Test Case Derivation:} FR25 requires continuation from the paused
+point; SR-25 of the Hazard Analysis \cite{HazardAnalysis} requires media
+to resume together. Start-offset timing is checked in \testref{ST_AVSync}.
+
+\textit{How test will be performed:} Record device audio and compare media
+positions at pause with those immediately before playback resumes, within
+the logging precision. Compare exercise state and rewards, review resumed
+content, and try valid input, plus home and restart within levels. A crash
+fails the test; confirmed OS termination is checked under
+\frtestref{ST_ExitingInterruptions_04}, followed by another retained-process run.
+
+\item[\frtestdef{ST_ExitingInterruptions_08}]
+\textbf{Pause and Resume after Audio or Screen Interruptions}
+
+\textit{Type:} Functional, Dynamic, manual with playback logs.
+
+\textit{Requirements Covered:} \srsfrref{FR_Suspend}{25}.
+
+\textit{Initial State:} Use the states from
+\frtestref{ST_ExitingInterruptions_07}, with the process retained.
+
+\textit{Input/Condition:} Trigger available calls, alarms, or notifications
+that take over audio while the game remains visible, or take over the
+screen. Dismiss them and return to the game. Include sensation descriptions
+and exercises awaiting input. Also test a notification that takes over
+neither audio nor screen, where available.
+
+\textit{Output/Result:} Actual takeovers meet the pause/resume criteria in
+\frtestref{ST_ExitingInterruptions_07}. Notifications that take over neither
+audio nor screen do not pause play.
+
+\textit{Test Case Derivation:} FR25 and SR-18/SR-25 of the Hazard Analysis
+\cite{HazardAnalysis} cover interruptions beyond backgrounding. Muting is
+checked in \frtestref{ST_InstructionsFeedback_04}.
+
+\textit{How test will be performed:} Confirm takeover independently of game
+callbacks, then compare callback and playback logs as in
+\frtestref{ST_ExitingInterruptions_07}. Use local alarms or notifications
+for offline runs; record call-based and simulated checks separately from
+offline device evidence.
 
 \end{frtestlist}
 
@@ -1189,37 +1679,246 @@ according to the SRS.
 \subsubsection{Saving and Restoring Progress}
 \label{sec:SavingRestoringFRTests}
 
-These tests verify that the game saves and restores player
-progress according to the SRS. They cover the persistence
-and recovery of relevant game information across
-application sessions.
+These tests verify \srsfrref{FR_PersistState}{26} and
+\srsfrref{FR_CorruptData}{27} using an offline test installation.
+Compare the saved level statuses and coins
+(\srstableref{def_Player}{player state}), owned and equipped accessories,
+and selected character. Journey points and completed-level counts are
+calculated from that state, as defined by the
+\srstableref{def_Scoreboard}{SRS scoreboard values}.
+
+Keep before-and-after snapshots of the complete save data, including any
+recovery copies. For FR27 cases, ensure no valid fallback save can be loaded.
+Keep fault-injection hooks out of release builds and repeat normal save and
+restore checks on release builds. Exclude deliberately delayed or terminated
+runs from normal performance and reliability measurements.
 
 \begin{frtestlist}
 
 \item[\frtestdef{ST_SavingRestoring_01}]
-\textbf{[Test Case Name]}
+\textbf{Save Each Change before Processing the Next Input}
 
-\textit{Type:} Functional, Dynamic, manual.
+\textit{Type:} Functional, Dynamic, automated event checks with manual device checks.
 
-\textit{Requirements Covered:}
-[Insert SRS functional requirement reference(s).]
+\textit{Requirements Covered:} \srsfrref{FR_PersistState}{26}.
 
-\textit{Initial State:}
-[Describe the initial saved progress and application state.]
+\textit{Initial State:} Prepare valid saves for each change: unstarted
+levels for start checks, unfinished levels for completion, and sufficient
+coins and an unowned item for purchases. Use the build's reward and
+accessory definitions.
 
-\textit{Input/Condition:}
-[Describe the actions used to save or restore progress.]
+\textit{Input/Condition:} Separately start and first-complete each level;
+purchase an accessory; equip, replace, and unequip owned items; confirm
+initial and changed character selections; and confirm a journey reset
+under \srsfrref{FR_ResetJourney}{42}. Include accessory rewards where defined.
+Delay each save and send another valid input through the normal handler.
+Use an input accepted without the delay, and hold the delay beyond other
+input locks. Do not navigate away or background the app to trigger saving.
 
-\textit{Output/Result:}
-[Describe the expected saved or restored game state.]
+\textit{Output/Result:} Each complete change is saved before the next input
+is processed. Purchases save both coin deduction and ownership; completion
+saves status and rewards. Unaffected values remain unchanged, and unequipping
+or resetting saves the resulting empty/default values.
 
-\textit{Test Case Derivation:}
-[Explain how the SRS defines the expected behaviour.]
+\textit{Test Case Derivation:} FR26 requires saving each change before the
+next input; checking only a later launch cannot establish this ordering.
 
-\textit{How test will be performed:}
-[Describe the testing steps and how saved data will be checked.]
+\textit{How test will be performed:} Log the change, storage commit, and
+next processed input. Delay only storage, without imposing input ordering.
+Inspect saved values at commit, not when a write is merely queued. Release
+the delay and try fresh input; ignored transition touches need not be queued
+(\frtestref{ST_InstructionsFeedback_09}). Repeat without delays on devices,
+reusing starts and completions from \frtestref{ST_AM_LevelCompletion}.
 
-% Add additional test cases as needed.
+\item[\frtestdef{ST_SavingRestoring_02}]
+\textbf{Restore Saved Progress and Customization across Launches}
+
+\textit{Type:} Functional, Dynamic, manual with process and state logs.
+
+\textit{Requirements Covered:} \srsfrref{FR_PersistState}{26}; replay and
+deletion persistence under \srsfrref{FR_NoDuplicateReward}{29},
+\srsfrref{FR_ResetJourney}{42}, and \srsfrref{FR_ClearAllData}{43}.
+
+\textit{Initial State:} Prepare the mixed statuses from
+\frtestref{ST_AM_JourneyMixedStatuses}, coins, owned and equipped accessories,
+and a selected character. Use separate valid saves if needed, including
+nonzero balances. Record all values and expected scoreboard totals.
+
+\textit{Input/Condition:} After each save change in
+\frtestref{ST_SavingRestoring_01} commits, terminate and relaunch the app.
+Repeat the launch for the mixed-status save and reset state. Replay a restored
+completed level to its ending. Also confirm clear-all-data and relaunch twice,
+acknowledging the notice on the first launch.
+
+\textit{Output/Result:} The latest saved values are restored and agree
+with the map, scoreboard, shop, and character display. Neither launch nor
+replay awards duplicate rewards. Reset and clear-all remain effective across
+launches; reset keeps acknowledgement, while clear-all requires it again.
+
+\textit{Test Case Derivation:} FR26 requires restoration; the SRS
+\srstableref{UC_OfflineUse}{offline-use case} also covers customization.
+FR29 prohibits repeat rewards, and FR42/FR43 define deletion and acknowledgement.
+
+\textit{How test will be performed:} Verify process termination and compare
+loaded and displayed values with the baseline. Include foreground and
+background closure from \frtestref{ST_ExitingInterruptions_04}. Add these
+checks to existing save runs. Apply \frtestref{ST_AM_ReplayCompleted} to
+the restored level and the setup tests to the clear-all notice.
+
+\item[\frtestdef{ST_SavingRestoring_03}]
+\textbf{Preserve Saved Player State after a Write Failure}
+
+\textit{Type:} Functional, Dynamic, controlled fault injection with state inspection.
+
+\textit{Requirements Covered:} \srsfrref{FR_PersistState}{26}.
+
+\textit{Initial State:} Copy a valid save as the baseline for each distinct
+save/error-handling path in \frtestref{ST_SavingRestoring_01}. Group actions
+only when both paths match, and restore the baseline before each run.
+
+\textit{Input/Condition:} Inject storage-full or write-access failures
+before writing and failures after writing begins but before commit. Cover
+each path, including completion, purchase, and reset, with an accessory
+reward where defined. Keep the fault active until termination to prevent
+a retry or shutdown save from hiding it; remove the fault before relaunch.
+
+\textit{Output/Result:} The error causes no crash. Saved statuses and coins
+remain readable and unchanged, and relaunch restores them without partial
+changes or a reset. Saving and restoration work once storage is available.
+
+\textit{Test Case Derivation:} FR26 preserves previously saved player state;
+SR-20 of the Hazard Analysis \cite{HazardAnalysis} requires failure handling
+without crashes.
+
+\textit{How test will be performed:} Inject errors through a storage hook
+rather than filling the device. Log the failure point and compare stored
+and restored values with the baseline. Record customization separately:
+FR26 does not specify its rollback. Flag inconsistent coin/ownership results
+for SRS review. After removing the fault, save a new change and relaunch.
+On a separate run per error path, clear the fault without terminating;
+verify usable input, including home/restart within levels, then save a new
+change and relaunch to check restoration.
+
+\item[\frtestdef{ST_SavingRestoring_04}]
+\textbf{Preserve Saved Player State when a Write Is Interrupted}
+
+\textit{Type:} Functional, Dynamic, controlled process termination with storage logs.
+
+\textit{Requirements Covered:} \srsfrref{FR_PersistState}{26}.
+
+\textit{Initial State:} Use the baselines and save paths from
+\frtestref{ST_SavingRestoring_03}. Identify write and commit stages.
+
+\textit{Input/Condition:} Terminate without a shutdown save before writing,
+after a partial write where applicable, and immediately before commit.
+Relaunch after each termination, restoring the baseline between runs.
+Include a control terminated after successful commit.
+
+\textit{Output/Result:} Interrupted writes restore the previous player
+state without mixed, damaged, or reset statuses and coins. The completed-write
+control restores the full new save. Relaunch does not crash.
+
+\textit{Test Case Derivation:} FR26 covers interrupted writes as well as
+reported failures; termination after commit must retain the new save.
+
+\textit{How test will be performed:} Use debugger or test hooks to pause
+at each storage stage, then confirm termination. Compare stored and restored
+values with the baseline, or the new save for the control. Record customization
+as in \frtestref{ST_SavingRestoring_03}. Unconfirmed interruption points
+remain unverified.
+
+\item[\frtestdef{ST_SavingRestoring_05}]
+\textbf{Recover when Saved Data Is Missing}
+
+\textit{Type:} Functional, Dynamic, manual with storage inspection.
+
+\textit{Requirements Covered:} \srsfrref{FR_CorruptData}{27}.
+
+\textit{Initial State:} Prepare a fresh installation without restored
+backups, and a previously used installation with its progress and
+customization data removed while closed.
+
+\textit{Input/Condition:} Launch each installation. Capture recovery in
+the load log before setup can save data, then acknowledge any required
+notice without selecting a character or starting a level.
+
+\textit{Output/Result:} Missing data is replaced without failure. Every
+level is \textit{Not Started}; coins, journey points, and completed-level
+count are zero. No accessories are owned/equipped and no character is selected.
+All levels remain available using the default character.
+
+\textit{Test Case Derivation:} FR27 specifies new-installation progress
+and customization; \srsfrref{FR_ChooseCharacter}{31} provides a default character.
+
+\textit{How test will be performed:} Confirm missing data before launch
+and inspect the replacement. Reuse \frtestref{ST_AM_JourneyFresh} for map
+checks, then start a level, wait for saving, and relaunch to confirm new
+progress persists. Retain snapshots and load logs.
+
+\item[\frtestdef{ST_SavingRestoring_06}]
+\textbf{Recover when Saved Data Cannot Be Read}
+
+\textit{Type:} Functional, Dynamic, controlled fault injection with state inspection.
+
+\textit{Requirements Covered:} \srsfrref{FR_CorruptData}{27}.
+
+\textit{Initial State:} Valid saved progress and customization exist and
+have been copied. The app is closed; storage remains writable.
+
+\textit{Input/Condition:} Launch with a hook causing an access or I/O error
+when reading the existing save, while allowing replacement data to be written.
+
+\textit{Output/Result:} The app replaces unreadable data with the defaults
+in \frtestref{ST_SavingRestoring_05} without failure or partial recovery.
+Later launches use the replacement rather than restoring the old data.
+
+\textit{Test Case Derivation:} FR27 separately requires recovery from
+existing data that cannot be read.
+
+\textit{How test will be performed:} Confirm the save exists and the read
+error reaches the load path. Inspect replacement data, remove the fault,
+and relaunch. Repeat the continued-play/save check in
+\frtestref{ST_SavingRestoring_05}, distinguishing injected errors from
+reproduced device failures.
+
+\item[\frtestdef{ST_SavingRestoring_07}]
+\textbf{Recover when Saved Data Is Invalid}
+
+\textit{Type:} Functional, Dynamic, prepared invalid data with device checks.
+
+\textit{Requirements Covered:} \srsfrref{FR_CorruptData}{27}.
+
+\textit{Initial State:} Copy a valid save with progress and customization.
+Identify required fields and allowed empty values in the storage format.
+Change one condition per invalid copy, leaving other fields valid.
+
+\textit{Input/Condition:} Launch separately with empty, malformed, or
+truncated data; missing required fields; wrong types; negative coins;
+unknown statuses or character/accessory IDs; missing, unknown, or duplicate
+level records where representable; unowned equipped items; two equipped
+items in one category; and a reward-claimed flag inconsistent with completion
+status if stored.
+Include an earlier-format save only if current validation and any supported
+migration reject it.
+
+\textit{Output/Result:} Validation rejects invalid data before gameplay or
+progress display. The whole progress/customization state is replaced with
+the defaults in \frtestref{ST_SavingRestoring_05}, without failure or
+retained old values. Replacement data remains usable across launches.
+
+\textit{Test Case Derivation:} FR27 requires replacement; SR-20 of the
+Hazard Analysis \cite{HazardAnalysis} requires validation before use.
+Valid values follow the \srstableref{def_Player}{player-state model},
+\srstableref{tab:JourneyDataDictionary}{data dictionary}, and
+\srsfrref{FR_Equip}{36}.
+
+\textit{How test will be performed:} Restore the baseline for each case.
+Record the mutation and rejection in load logs; compare replacement data
+and displays with the defaults, then repeat the continued-play/save check
+in \frtestref{ST_SavingRestoring_05}. Use valid populated and new-player saves
+as controls, including unset optional fields, empty inventories, and completed
+levels with zero coins after spending where reachable. Valid controls must
+load without recovery.
 
 \end{frtestlist}
 
@@ -2064,6 +2763,7 @@ table defines the few additional values used to run the tests.
 
 \bottomrule
 \endlastfoot
+\constdef{ANSWER_RETRY_OBSERVATION_S} & 10 & Observation after a reveal with no configured timeout; not an allowed timeout (s)\\
 \constdef{TOUCH_TRIALS_MIN} & 40 & Valid touch samples per device\\
 \constdef{FREEZE_OBSERVATION_S} & 10 & Time allowed before recording a freeze (s)\\
 \end{longtable}
