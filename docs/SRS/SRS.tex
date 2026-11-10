@@ -857,7 +857,7 @@ each entity are listed below in terms of its inputs and outputs.
     (\rref{FR_CorruptData}).
   \item Stops all audio and animation of a level when the child exits it.
   \item Keeps the child's progress when the application is interrupted
-    (\rref{FR_Suspend}, \rref{FR_PersistState}).
+    (\rref{FR_Suspend}, \rref{FR_PersistState}, \rref{FR_RestoreState}).
   \item Never transmits data off the device (\nfrref{NFR_Privacy}).
   \end{itemize}
 \end{itemize}
@@ -1547,7 +1547,7 @@ Child
 
 \textbf{Functional Requirements}
 
-\rref{FR_ChooseCharacter}, \rref{FR_DiverseCharacters}.
+\rref{FR_PersistState}, \rref{FR_ChooseCharacter}, \rref{FR_DiverseCharacters}.
 
 % ------------------------------------------------------------
 \refstepcounter{ucnum}\label{UC_SelectGame}
@@ -1718,7 +1718,7 @@ Child
 
 \textbf{Functional Requirements}
 
-\rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches}.
+\rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches}, \rref{FR_HoldSkip}.
 
 % ------------------------------------------------------------
 \refstepcounter{ucnum}\label{UC_EyeDropGame}
@@ -1781,7 +1781,7 @@ Child
 
 \textbf{Functional Requirements}
 
-\rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_SpeakUp}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches}.
+\rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_SpeakUp}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches}, \rref{FR_HoldSkip}.
 
 % ------------------------------------------------------------
 \refstepcounter{ucnum}\label{UC_SlitLampGame}
@@ -1843,7 +1843,7 @@ Child
 
 \textbf{Functional Requirements}
 
-\rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches}.
+\rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches}, \rref{FR_HoldSkip}.
 
 % ------------------------------------------------------------
 \refstepcounter{ucnum}\label{UC_ExitGame}
@@ -1973,7 +1973,7 @@ Child
 
 \textbf{Functional Requirements}
 
-\rref{FR_Replay}, \rref{FR_FirstReward}, \rref{FR_NoDuplicateReward}.
+\rref{FR_Replay}, \rref{FR_PersistState}, \rref{FR_FirstReward}, \rref{FR_NoDuplicateReward}.
 
 % ------------------------------------------------------------
 \refstepcounter{ucnum}\label{UC_ViewProgress}
@@ -2095,7 +2095,7 @@ Child
 
 \textbf{Functional Requirements}
 
-\rref{FR_DiverseCharacters}, \rref{FR_Shop}, \rref{FR_Purchase}, \rref{FR_PurchaseRefused}, \rref{FR_NoRealMoney}.
+\rref{FR_PersistState}, \rref{FR_DiverseCharacters}, \rref{FR_Shop}, \rref{FR_Purchase}, \rref{FR_PurchaseRefused}, \rref{FR_NoRealMoney}.
 
 % ------------------------------------------------------------
 \refstepcounter{ucnum}\label{UC_EquipAccessory}
@@ -2156,7 +2156,7 @@ Child
 
 \textbf{Functional Requirements}
 
-\rref{FR_DiverseCharacters}, \rref{FR_Equip}.
+\rref{FR_PersistState}, \rref{FR_DiverseCharacters}, \rref{FR_Equip}.
 
 % ------------------------------------------------------------
 \refstepcounter{ucnum}\label{UC_AdjustPreferences}
@@ -2337,7 +2337,7 @@ Child
 
 \textbf{Functional Requirements}
 
-\rref{FR_PersistState}, \rref{FR_CorruptData}.
+\rref{FR_PersistState}, \rref{FR_RestoreState}, \rref{FR_CorruptData}.
 
 % ==============================================================
 \newpage
@@ -2880,16 +2880,29 @@ for finishing a level does not depend on the answers
 \item[\frdef{FR_IgnoreRepeatedTouches}]
 During a screen transition, the system shall act on at most one
 navigation input. Further touches before the next screen is shown shall be
-ignored. While the narration of procedure information is playing, touches
+ignored.
+
+\textit{Rationale:} Young children often tap the screen many times. Without this rule, extra
+taps could unintentionally skip the explanation of a procedure that the child needs to hear.
+
+\textit{Traces:} \ucref{UC_VisionGame}, \ucref{UC_EyeDropGame},
+\ucref{UC_SlitLampGame}.
+
+\textit{Related NFRs:} \nfrref{NFR_Responsiveness}.
+
+\textit{Hazard Analysis:} \hazsr{PreventAccidentalInput}{3}{AccidentalInputSkipping}{2-1}.
+
+\item[\frdef{FR_HoldSkip}]
+While the narration of procedure information is playing, touches
 outside the skip control, the home control, and the restart control shall not
 skip or shorten it. The home and restart controls shall keep working during
 narration (\rref{FR_ExitLevel}, \rref{FR_RestartLevel}). The skip control shall
 act only after it has been held for \constref{SKIP_HOLD_MIN_S} second, and it
 shall not skip a sensation description (\rref{FR_DescribeSensations}).
 
-\textit{Rationale:} Young children often tap the screen many times. Without this rule, extra
-taps could skip the explanation of a procedure that the child needs to
-hear. A hold separates a deliberate skip from a repeated tap, which a rule
+\textit{Rationale:} Allowing ordinary touches to interrupt procedure narration 
+could cause the child to miss important information. A hold separates a deliberate 
+skip from a repeated tap, which a rule
 about ``accidental'' touches alone could not. The home and restart controls
 are exempt so that a child who is upset can still leave the level with one
 touch (\nfrref{NFR_Exit}).
@@ -3004,16 +3017,29 @@ The system shall save the player state (\defref{def_Player}), the owned and
 equipped accessories, and the selected character on the device each time
 one of them changes, before
 processing the next input. A save that fails or is interrupted shall leave the
-previously saved player state unchanged. When the application is launched
-again, the system shall restore the saved player state.
+previously saved player state unchanged.
 
 \textit{Rationale:} The child's progress and rewards must survive the
 application closing. Saving after every change means at most the current input
 can be lost. Keeping the previous save when a save fails means a failure never
 replaces valid progress with damaged data.
 
-\textit{Traces:} \ucref{UC_ExitGame}, \ucref{UC_OfflineUse},
+\textit{Traces:} \ucref{UC_ChooseCharacter}, \ucref{UC_ExitGame}, \ucref{UC_CompleteGame}, 
+\ucref{UC_PurchaseAccessory}, \ucref{UC_EquipAccessory}, \ucref{UC_OfflineUse},
 \defref{def_Player}.
+
+\textit{Related NFRs:} \nfrref{NFR_Reliability}, \nfrref{NFR_Offline}, \nfrref{NFR_DataProtection}.
+
+\textit{Hazard Analysis:} \hazsr{ReliableSaveData}{20}{SaveDataCorruption}{2-18}.
+
+\item[\frdef{FR_RestoreState}]
+When the application is launched again, the system shall restore the saved player state.
+
+\textit{Rationale:} The child's progress and rewards must survive the
+application closing. Restoring the saved data allows the child to continue 
+using the game with the same progress and choices previously made.
+
+\textit{Traces:} \ucref{UC_OfflineUse}, \defref{def_Player}.
 
 \textit{Related NFRs:} \nfrref{NFR_Reliability}, \nfrref{NFR_Offline}, \nfrref{NFR_DataProtection}.
 
@@ -3123,7 +3149,7 @@ the clinic it prepares them for, is a place where they belong.
 
 \textit{Related NFRs:} \nfrref{NFR_Inclusivity}.
 
-\textit{Hazard Analysis:} \hazsr{CharacterDiversityInclusivity}{15}{DiverseCharacterLibrary}{2-9}.
+\textit{Hazard Analysis:} \hazsr{CharacterDiversityInclusivity}{15}{DiverseCharacterCatalogue}{2-9}.
 
 \item[\frdef{FR_Shop}]
 The system shall display a shop of every accessory that has a price. Each accessory shall show a preview on the
@@ -3953,7 +3979,7 @@ The system shall respond visibly to a touch on an interactive element within \co
 
 \textit{Fit Criterion:} At least \constref{RESPONSE_RATE_MIN}\% of measured touches on each low-spec device receive a visible response within \constref{RESPONSE_MAX_MS} milliseconds, and every measured answer reveal on each low-spec device appears within \constref{ANSWER_REVEAL_MAX_S} second.
 
-\textit{Traces:} \rref{FR_RevealAnswer}, \rref{FR_IgnoreRepeatedTouches}.
+\textit{Traces:} \rref{FR_RevealAnswer}, \rref{FR_IgnoreRepeatedTouches}, \rref{FR_HoldSkip}.
 
 \textit{Hazard Analysis:} \hazsr{DevicePerformance}{2}{PoorPerformance}{1-2}, \hazsr{PreventAccidentalInput}{3}{AccidentalInputSkipping}{2-1}, \hazsr{CorrectAnswerReveal}{16}{CorrectAnswerReveal}{2-10}.
 
@@ -4014,7 +4040,7 @@ At least \constref{CRASH_FREE_RATE_MIN}\% of sessions shall end without a crash 
 
 \textit{Fit Criterion:} At least \constref{CRASH_FREE_RATE_MIN}\% of at least \constref{TEST_SESSIONS_MIN} test sessions end without a crash or freeze.
 
-\textit{Traces:} \rref{FR_RestartLevel}, \rref{FR_Suspend}, \rref{FR_PersistState}, \rref{FR_CorruptData}.
+\textit{Traces:} \rref{FR_RestartLevel}, \rref{FR_Suspend}, \rref{FR_PersistState}, \rref{FR_RestoreState}, \rref{FR_CorruptData}.
 
 \textit{Hazard Analysis:} \hazsr{GameplayRecovery}{4}{GameplayStuck}{2-2}, \hazsr{ReliableSaveData}{20}{SaveDataCorruption}{2-18}, \hazsr{ThirdPartyValidation}{22}{ThirdPartyFailure}{2-20}.
 
@@ -4044,7 +4070,7 @@ After installation, every function shall work with no network connection.
 
 \textit{Fit Criterion:} The full functional test suite passes with the device in airplane mode.
 
-\textit{Traces:} \rref{FR_PersistState}, \rref{FR_FirstReward}, \rref{FR_Purchase}.
+\textit{Traces:} \rref{FR_PersistState}, \rref{FR_RestoreState}, \rref{FR_FirstReward}, \rref{FR_Purchase}.
 
 \textit{Hazard Analysis:} \hazsr{OfflinePreparation}{26}{OfflineContentUnavailable}{2-4}.
 
@@ -4131,7 +4157,7 @@ Stored settings and progress shall be readable only by the application, using th
 
 \textit{Fit Criterion:} On an unmodified test device, no other application and no file-sharing function can read the stored data.
 
-\textit{Traces:} \rref{FR_PersistState}, \rref{FR_Nickname}.
+\textit{Traces:} \rref{FR_PersistState}, \rref{FR_RestoreState}, \rref{FR_Nickname}.
 
 \textit{Hazard Analysis:} \hazsr{MinimalSaveData}{21}{SaveDataPrivacy}{2-19}.
 
@@ -4198,7 +4224,7 @@ Content shall not assume a child's family structure, culture, religion, gender, 
 
 \textit{Traces:} \rref{FR_DiverseCharacters}.
 
-\textit{Hazard Analysis:} \hazsr{CharacterDiversityInclusivity}{15}{DiverseCharacterLibrary}{2-9}.
+\textit{Hazard Analysis:} \hazsr{CharacterDiversityInclusivity}{15}{DiverseCharacterCatalogue}{2-9}.
 
 \textit{Stakeholder Requirements:} \strref{STR_12}.
 
@@ -4278,7 +4304,7 @@ functional requirements that refine it.
 \endlastfoot
 
 \strref{STR_4}, \strref{STR_10}, \strref{STR_13}, \strref{STR_14}
-& \ucref{UC_FirstUse} & \rref{FR_MedicalNotice}, \rref{FR_RecordAck} \\
+& \ucref{UC_FirstUse} & \rref{FR_PersistState}, \rref{FR_MedicalNotice}, \rref{FR_RecordAck} \\
 
 \strref{STR_4}, \strref{STR_12}, \strref{STR_18} 
 & \ucref{UC_ChooseCharacter} & \rref{FR_ChooseCharacter}, \rref{FR_DiverseCharacters} \\
@@ -4293,30 +4319,30 @@ functional requirements that refine it.
 
 \strref{STR_1}, \strref{STR_2}, \strref{STR_3}, \strref{STR_4}, \strref{STR_5}, 
 \strref{STR_6}, \strref{STR_7}, \strref{STR_15}, \strref{STR_17}, \strref{STR_18} 
-& \ucref{UC_VisionGame} & \rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches} \\
+& \ucref{UC_VisionGame} & \rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches}, \rref{FR_HoldSkip} \\
 
 \strref{STR_1}, \strref{STR_2}, \strref{STR_3}, \strref{STR_4}, \strref{STR_5}, 
 \strref{STR_6}, \strref{STR_7}, \strref{STR_15}, \strref{STR_17}, \strref{STR_18} 
-& \ucref{UC_EyeDropGame} & \rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_SpeakUp}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches} \\
+& \ucref{UC_EyeDropGame} & \rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_SpeakUp}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches}, \rref{FR_HoldSkip} \\
 
 \strref{STR_1}, \strref{STR_2}, \strref{STR_3}, \strref{STR_4}, \strref{STR_5}, 
 \strref{STR_6}, \strref{STR_7}, \strref{STR_15}, \strref{STR_17}, \strref{STR_18} 
-& \ucref{UC_SlitLampGame} & \rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches} \\
+& \ucref{UC_SlitLampGame} & \rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches}, \rref{FR_HoldSkip} \\
 
 \strref{STR_2}, \strref{STR_7}, \strref{STR_9} 
 & \ucref{UC_ExitGame} & \rref{FR_ExitLevel}, \rref{FR_StopOnExit}, \rref{FR_ExitKeepsData}, \rref{FR_RestartAfterExit}, \rref{FR_RestartLevel}, \rref{FR_Suspend}, \rref{FR_PersistState} \\
 
 \strref{STR_3}, \strref{STR_8}, \strref{STR_9}, \strref{STR_16} 
-& \ucref{UC_CompleteGame} & \rref{FR_Replay}, \rref{FR_FirstReward}, \rref{FR_NoDuplicateReward} \\
+& \ucref{UC_CompleteGame} & \rref{FR_Replay}, \rref{FR_PersistState}, \rref{FR_FirstReward}, \rref{FR_NoDuplicateReward} \\
 
 \strref{STR_3}, \strref{STR_8}, \strref{STR_9}, \strref{STR_16} 
 & \ucref{UC_ViewProgress} & \rref{FR_Scoreboard} \\
 
 \strref{STR_3}, \strref{STR_8}, \strref{STR_12}, \strref{STR_15}, \strref{STR_16} 
-& \ucref{UC_PurchaseAccessory} & \rref{FR_DiverseCharacters}, \rref{FR_Shop}, \rref{FR_Purchase}, \rref{FR_PurchaseRefused}, \rref{FR_NoRealMoney} \\
+& \ucref{UC_PurchaseAccessory} & \rref{FR_PersistState}, \rref{FR_DiverseCharacters}, \rref{FR_Shop}, \rref{FR_Purchase}, \rref{FR_PurchaseRefused}, \rref{FR_NoRealMoney} \\
 
 \strref{STR_3}, \strref{STR_8}, \strref{STR_12} 
-& \ucref{UC_EquipAccessory} & \rref{FR_DiverseCharacters}, \rref{FR_Equip} \\
+& \ucref{UC_EquipAccessory} & \rref{FR_PersistState}, \rref{FR_DiverseCharacters}, \rref{FR_Equip} \\
 
 \strref{STR_3}, \strref{STR_13}, \strref{STR_16}, \strref{STR_17} 
 & \ucref{UC_AdjustPreferences} & \rref{FR_AgeGroup}, \rref{FR_VisualCues}, \rref{FR_ParentGate}, \rref{FR_Nickname}, \rref{FR_Preferences} \\
@@ -4324,7 +4350,7 @@ functional requirements that refine it.
 \strref{STR_13}, \strref{STR_16} & \ucref{UC_DeleteData} & \rref{FR_ParentGate}, \rref{FR_ResetJourney}, \rref{FR_ClearAllData} \\
 
 \strref{STR_4}, \strref{STR_10}, \strref{STR_13}, \strref{STR_15} & \ucref{UC_OfflineUse} 
-& \rref{FR_PersistState}, \rref{FR_CorruptData} \\
+& \rref{FR_PersistState}, \rref{FR_RestoreState}, \rref{FR_CorruptData} \\
 \end{longtable}
 
 Table~\ref{tab:SR2NFRtm} traces each stakeholder requirement to the
@@ -4413,11 +4439,13 @@ non-functional requirement are omitted.
 \rref{FR_NarrationFallback} & \nfrref{NFR_Accessibility}, \nfrref{NFR_AudioSafety} \\
 \rref{FR_RevealAnswer} & \nfrref{NFR_Accessibility}, \nfrref{NFR_Colour}, \nfrref{NFR_Responsiveness} \\
 \rref{FR_IgnoreRepeatedTouches} & \nfrref{NFR_Responsiveness} \\
+\rref{FR_HoldSkip} & \nfrref{NFR_Responsiveness} \\
 \rref{FR_ExitLevel} & \nfrref{NFR_Exit} \\
 \rref{FR_StopOnExit} & \nfrref{NFR_Exit} \\
 \rref{FR_RestartLevel} & \nfrref{NFR_Exit}, \nfrref{NFR_Reliability} \\
 \rref{FR_Suspend} & \nfrref{NFR_Reliability} \\
 \rref{FR_PersistState} & \nfrref{NFR_Reliability}, \nfrref{NFR_Offline}, \nfrref{NFR_DataProtection} \\
+\rref{FR_RestoreState} & \nfrref{NFR_Reliability}, \nfrref{NFR_Offline}, \nfrref{NFR_DataProtection} \\
 \rref{FR_CorruptData} & \nfrref{NFR_Reliability} \\
 \rref{FR_FirstReward} & \nfrref{NFR_NoPressure}, \nfrref{NFR_Offline} \\
 \rref{FR_NoDuplicateReward} & \nfrref{NFR_NoPressure} \\
@@ -4462,7 +4490,7 @@ of the Hazard Analysis.
 
 \hasrref{DeviceResourceUse}{1} & \hahazref{DeviceOverheating}{1-1} & Device heat limit & -- & \nfrref{NFR_DeviceHeat} \\
 \hasrref{DevicePerformance}{2} & \hahazref{PoorPerformance}{1-2} & Device performance & -- & \nfrref{NFR_Responsiveness}, \nfrref{NFR_Smoothness} \\
-\hasrref{PreventAccidentalInput}{3} & \hahazref{AccidentalInputSkipping}{2-1} & Prevention of unintentional gameplay actions & \rref{FR_IgnoreRepeatedTouches} & \nfrref{NFR_Responsiveness} \\
+\hasrref{PreventAccidentalInput}{3} & \hahazref{AccidentalInputSkipping}{2-1} & Prevention of unintentional gameplay actions & \rref{FR_IgnoreRepeatedTouches}, \rref{FR_HoldSkip} & \nfrref{NFR_Responsiveness} \\
 \hasrref{GameplayRecovery}{4} & \hahazref{GameplayStuck}{2-2} & Gameplay recovery & \rref{FR_ExitLevel}, \rref{FR_ExitKeepsData}, \rref{FR_RestartAfterExit}, \rref{FR_RestartLevel} & \nfrref{NFR_Exit}, \nfrref{NFR_Reliability} \\
 \hasrref{ClinicianApproval}{5} & \hahazref{InaccurateProcedure}{2-5} & Clinical approval of procedure content & -- & \nfrref{NFR_ClinicalAccuracy}, \nfrref{NFR_Integrity} \\
 \hasrref{ClinicsDiffer}{6} & \hahazref{InaccurateProcedure}{2-5} & Variation between clinics & \rref{FR_ClinicsDiffer} & -- \\
@@ -4474,12 +4502,12 @@ of the Hazard Analysis.
 \hasrref{NonPunitiveFeedback}{12} & \hahazref{PunitiveFeedback}{2-12} & Encouraging feedback without penalties & \rref{FR_HintOnMiss}, \rref{FR_NoPenalty}, \rref{FR_FirstReward} & -- \\
 \hasrref{StopAudioVisualsOnExit}{13} & \hahazref{AudioVisualsContinueOnExit}{2-13} & Termination of audio and visual effects on exit & \rref{FR_StopOnExit} & \nfrref{NFR_Exit} \\
 \hasrref{SafeAudioVisuals}{14} & \hahazref{UnsafeAudioVisuals}{2-16} & Safe audio and visual effects & \rref{FR_NarrationFallback}, \rref{FR_Preferences} & \nfrref{NFR_AudioSafety}, \nfrref{NFR_Flashing} \\
-\hasrref{CharacterDiversityInclusivity}{15} & \hahazref{DiverseCharacterLibrary}{2-9} & Diverse and inclusive characters and rewards & \rref{FR_DiverseCharacters} & \nfrref{NFR_Inclusivity} \\
+\hasrref{CharacterDiversityInclusivity}{15} & \hahazref{DiverseCharacterCatalogue}{2-9} & Diverse and inclusive characters and rewards & \rref{FR_DiverseCharacters} & \nfrref{NFR_Inclusivity} \\
 \hasrref{CorrectAnswerReveal}{16} & \hahazref{CorrectAnswerReveal}{2-10} & Revealing correct answers & \rref{FR_RevealAnswer} & \nfrref{NFR_Accessibility}, \nfrref{NFR_Colour}, \nfrref{NFR_Responsiveness} \\
 \hasrref{AtLeastOneCorrectAnswer}{17} & \hahazref{CorrectAnswerReveal}{2-10} & At least one correct answer & \rref{FR_ValidQuestions} & -- \\
 \hasrref{NarrationMuted}{18} & \hahazref{NarrationDisabledSetting}{2-14} & Guidance for muted narration & \rref{FR_NarrationFallback}, \rref{FR_Suspend} & \nfrref{NFR_Accessibility} \\
 \hasrref{VisualCuesSetting}{19} & \hahazref{VisualCuesDisabledSetting}{2-15} & Visual cues during gameplay & \rref{FR_VisualCues}, \rref{FR_ParentGate}, \rref{FR_Preferences} & \nfrref{NFR_Accessibility} \\
-\hasrref{ReliableSaveData}{20} & \hahazref{SaveDataCorruption}{2-18} & Reliable save data handling & \rref{FR_PersistState}, \rref{FR_CorruptData} & \nfrref{NFR_Reliability} \\
+\hasrref{ReliableSaveData}{20} & \hahazref{SaveDataCorruption}{2-18} & Reliable save data handling & \rref{FR_PersistState}, \rref{FR_RestoreState}, \rref{FR_CorruptData} & \nfrref{NFR_Reliability} \\
 \hasrref{MinimalSaveData}{21} & \hahazref{SaveDataPrivacy}{2-19}, \hahazref{UnexpectedDataTransmission}{2-22} & Minimization and protection of game data & -- & \nfrref{NFR_DataProtection}, \nfrref{NFR_Privacy}, \nfrref{NFR_Minimization} \\
 \hasrref{ThirdPartyValidation}{22} & \hahazref{ThirdPartyFailure}{2-20}, \hahazref{UnexpectedDataTransmission}{2-22} & Third-party software validation & -- & \nfrref{NFR_Reliability}, \nfrref{NFR_DependencyTesting}, \nfrref{NFR_Privacy}, \nfrref{NFR_Immunity} \\
 \hasrref{ThirdPartyAssetReview}{23} & \hahazref{ThirdPartyAssetContent}{2-21} & Third-party asset review & -- & \nfrref{NFR_ChildSafe}, \nfrref{NFR_Licensing} \\
@@ -4973,6 +5001,7 @@ P1: Core &
 \rref{FR_RecordAck},
 \rref{FR_LevelContent},
 \rref{FR_DescribeSensations},
+\rref{FR_TruthfulSensations},
 \rref{FR_ClinicsDiffer},
 \rref{FR_SpeakUp},
 \rref{FR_NoRealMoney},
@@ -4999,6 +5028,7 @@ P1: Core &
 \rref{FR_ValidQuestions},
 \rref{FR_NoPenalty},
 \rref{FR_IgnoreRepeatedTouches},
+\rref{FR_HoldSkip},
 \rref{FR_ExitLevel},
 \rref{FR_StopOnExit},
 \rref{FR_ExitKeepsData},
@@ -5026,6 +5056,7 @@ P1: Core &
 \rref{FR_Replay},
 \rref{FR_LevelEnd},
 \rref{FR_PersistState},
+\rref{FR_RestoreState},
 \rref{FR_CorruptData},
 \rref{FR_ParentGate},
 \rref{FR_ProcedureGuide},
@@ -5290,6 +5321,7 @@ core journey with its supporting quality controls, refined to the course scope.
 \rref{FR_LevelContent} & Develop the planned vision-testing, eye-drop, and slit-lamp preparation content. \\
 \rref{FR_AgeGroup} & Select age-specific content where the level provides it. \\
 \rref{FR_DescribeSensations} & Explain possible sensations honestly before showing them. \\
+\rref{FR_TruthfulSensations} & Ensure each sensation description does not state/imply there will not be pain or discomfort. \\
 \rref{FR_ClinicsDiffer} & Explain through narration and pictures that real procedures may differ. \\
 \rref{FR_SpeakUp} & Tell children they can express worry or discomfort to the doctor. \\
 \rref{FR_LevelEnd} & Display a clear ending and record the completed level. \\
@@ -5301,13 +5333,15 @@ core journey with its supporting quality controls, refined to the course scope.
 \rref{FR_ValidQuestions} & Validate questions at build time and exclude those without a correct answer. \\
 \rref{FR_NoPenalty} & Allow exercises to be skipped without penalties or blocked completion. \\
 \rref{FR_IgnoreRepeatedTouches} & Accept one navigation input per transition and protect procedure narration. \\
+\rref{FR_HoldSkip} & Keep home and restart available and require the skip control to be held. \\
 \rref{FR_ExitLevel} & Return to the journey map when the child selects the home control. \\
 \rref{FR_StopOnExit} & Stop the exited level's audio, animation, and visual effects. \\
 \rref{FR_ExitKeepsData} & Keep progress and rewards unchanged when a level ends early. \\
 \rref{FR_RestartAfterExit} & Start unfinished levels from the beginning after exit or closure. \\
 \rref{FR_RestartLevel} & Provide restart and exit controls while preserving saved progress. \\
 \rref{FR_Suspend} & Pause media during interruptions and resume when the interruption ends. \\
-\rref{FR_PersistState} & Save state changes locally and retain valid data if a save fails. \\
+\rref{FR_PersistState} & Exercise the implemented use cases and save state changes locally. \\
+\rref{FR_RestoreState} & Exercise the implemented use cases and retain valid data if a save fails.\\
 \rref{FR_CorruptData} & Recover from missing or invalid saves using new-installation data. \\
 \rref{FR_FirstReward} & Record first-completion rewards and show what was earned. \\
 \rref{FR_NoDuplicateReward} & Congratulate replays without issuing the same reward again. \\
@@ -5390,7 +5424,7 @@ reset behaviour, and inclusivity as the new features are integrated.
 \rref{FR_Purchase} & Exchange earned coins for an unowned, affordable accessory. \\
 \rref{FR_PurchaseRefused} & Explain refused purchases without changing coins or ownership. \\
 \rref{FR_Equip} & Support owned accessories with one equipped item per category. \\
-\rref{FR_PersistState}, \rref{FR_ResetJourney}, \rref{FR_ClearAllData}, \nfrref{NFR_Inclusivity} & Extend saving, reset, deletion, and inclusive review to the added customization data. \\
+\rref{FR_PersistState}, \rref{FR_RestoreState}, \rref{FR_ResetJourney}, \rref{FR_ClearAllData}, \nfrref{NFR_Inclusivity} & Extend saving, reset, deletion, and inclusive review to the added customization data. \\
 \end{longtable}
 \endgroup
 
