@@ -276,10 +276,10 @@ laws, and regulations that apply to the project and the requirements that addres
 The purpose of \progname{} is to reduce anxiety and uncertainty in children before paediatric
 ophthalmology appointments by providing \termmark{accessibility}accessible, age-appropriate preparation for common eye
 examination procedures. \progname{} aims to improve children's preparedness and willingness to participate while helping
-parents and healthcare professionals prepare them for appointments. Intended outcomes include
-reduced anxiety, improved cooperation, sustained engagement across the target age range,
-more effective preparation at home, and greater clinical efficiency. The application complements,
-rather than replaces, professional guidance and medical examinations.
+parents and healthcare professionals prepare them for appointments. Intended short-term outcomes include
+reduced anxiety and improved cooperation with long-term goals to be pursued after the Capstone including 
+sustained engagement across the target age range, more effective preparation at home, and greater clinical 
+efficiency. The application complements, rather than replaces, professional guidance and medical examinations.
 
 \subsection{Scope}
 \label{sec_Scope}
@@ -289,8 +289,8 @@ with common paediatric ophthalmology procedures before attending an appointment.
 will present preparation activities as age-appropriate interactive games that allow children to
 practice actions and learn what they may experience during an \termmark{eyeexamination}eye examination.
 
-The primary users are children preparing for ophthalmology appointments, with parents or guardians
-supporting their use of the application. \termmark{ophthalmologist}Ophthalmologists and \termmark{childlifespecialist}child-life specialists are secondary
+The primary users are ophthalmologists, children preparing for ophthalmology appointments, with parents or guardians
+supporting their use of the application. \termmark{childlifespecialist}Child-life specialists are secondary
 \termmark{stakeholder}stakeholders who may provide clinical and developmental guidance during development and may use
 the application as part of a broader preparation process.
 
@@ -320,10 +320,10 @@ development team are not listed because team members are not stakeholders of the
 \begin{itemize}
 \item \textbf{Customer \& Project Sponsor}
 
-A paediatric ophthalmology researcher and clinician who proposed 
-the project, and the paediatric eye clinic that will pilot the product. At the clinic, the customer
-and project supervisor need children who are prepared for their examinations and evidence of whether 
-the product works in reducing anxiety amongst their patients.
+A paediatric ophthalmology researcher/clinician who proposed 
+the project. They need children who are prepared for their examinations with evidence of whether 
+the product works in reducing anxiety amongst their patients (via a potential future clinical 
+review/research study to be optionally pursued after the capstone project).
 
 \item \textbf{End Users}
 \begin{itemize}
@@ -1196,7 +1196,7 @@ different levels for children to earn and see their rewards for practicing.
 
 \textit{Refined by:} \ucref{UC_SelectGame}, \ucref{UC_CompleteGame}, \ucref{UC_ViewProgress}, \ucref{UC_PurchaseAccessory}, \ucref{UC_EquipAccessory}, \nfrref{NFR_NoPressure}.
 
-\item[\strdef{STR_9}] Caregivers, clinicians and the evaluation study shall 
+\item[\strdef{STR_9}] Caregivers and clinicians shall 
 be able to see which preparation activities a child has completed.
 
 \textit{Rationale:} \hyperref[ER3]{ER3}
@@ -4056,7 +4056,7 @@ The installed size of the application shall be at most \constref{INSTALL_SIZE_MA
 \textit{Stakeholder Requirements:} \strref{STR_4}, \strref{STR_10}.
 
 \item[\nfrdef{NFR_ClinicalAccuracy}]
-Every level and every entry of the procedure guide shall be approved by a paediatric ophthalmologist, as matching the procedure at the clinic, before it is released. Content that changes after approval shall be approved again.
+Every level and every entry of the procedure guide shall be approved by a paediatric ophthalmologist during the development phase as a process of iterative development to match the procedure at the clinic, before it is released. Content that changes after approval shall be approved again.
 
 \textit{Rationale:} Children and caregivers rely on the game to show what will really happen (\strref{STR_5}), and the team has no clinical training. A record of approval for each version shows that the released content is the content that was approved. \nfrref{NFR_Integrity} then makes sure it is not changed on the way to the device.
 
@@ -4831,9 +4831,10 @@ An interactive mobile application should prepare children for
 appointments through age-appropriate games, letting children practice 
 at home and earn rewards, introducing common procedures, including 
 vision testing, eye drops, and slit-lamp examinations. Designed alongside 
-clinicians, child-life specialists, parents, and children, we will pilot 
-and evaluate the app's usability, feasibility, anxiety reduction, 
-cooperation, and clinic efficiency.
+clinicians and child-life specialists, we will test and evaluate the 
+short-term progress of the app's usability, feasibility, anxiety reduction, 
+cooperation, and clinic efficiency, with the opportunity for these goals to
+be evaluated as long-term goals after the capstone project.
 & \strref{STR_1}, \strref{STR_2}, \strref{STR_3},
 \strref{STR_4}, \strref{STR_5}, \strref{STR_6},
 \strref{STR_7}, \strref{STR_8} \\
@@ -5385,11 +5386,14 @@ focusing on the areas outlined in
 Table~\ref{tab:DevelopmentPhaseFive}.
 Use Table~\ref{tab:SR2UC2FRtm} to link the testing
 results to the stakeholder requirements.
-Testing with children will require appropriate
-consent and ethics approval. Testing with adults
-alone will not be sufficient to demonstrate that
-the application is usable by children or that
-it reduces their anxiety.
+Testing with adults alone will not be sufficient to 
+demonstrate that the application is usable by children
+or that it reduces their anxiety but is the only viable 
+option given the constraints of the capstone project 
+timeline. However, paediatric patient testing can be a 
+potential future activity, contingent on appropriate 
+ethics and institutional approvals, resources, 
+and separate arrangements for research supervision.
 
 \begingroup
 \small
@@ -5418,7 +5422,7 @@ it reduces their anxiety.
 \nfrref{NFR_Startup}, \nfrref{NFR_Responsiveness}, \nfrref{NFR_Smoothness}, \nfrref{NFR_AVSync}, \nfrref{NFR_Reliability}, \nfrref{NFR_DeviceHeat} & Measure performance and reliability on accessible devices, recording any unavailable measurements. \\
 \nfrref{NFR_Offline}, \nfrref{NFR_Installability}, \nfrref{NFR_InstallSize}, \nfrref{NFR_Portability} & Test offline use, local installation, and size on the available test set; mark store-dependent or unavailable-device evidence separately. \\
 \nfrref{NFR_Maintainability}, \nfrref{NFR_DependencyTesting}, \nfrref{NFR_DataProtection}, \nfrref{NFR_Privacy}, \nfrref{NFR_Minimization}, \nfrref{NFR_Immunity} & Review change effort, private storage, retained data, network behaviour, and dependency checks. \\
-\nfrref{NFR_Integrity}, \nfrref{NFR_Licensing}, \nfrref{NFR_StoreCompliance} & Review signing, licence records, and policy checks; identify simulated or outstanding publication evidence. \\
+\nfrref{NFR_Integrity}, \nfrref{NFR_Licensing}, \nfrref{NFR_StoreCompliance} & Review software signing, licence records, and software policy checks; identify simulated or outstanding research publication evidence. \\
 \end{longtable}
 \endgroup
 
