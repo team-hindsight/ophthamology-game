@@ -1718,7 +1718,7 @@ Child
 
 \textbf{Functional Requirements}
 
-\rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches}.
+\rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches}.
 
 % ------------------------------------------------------------
 \refstepcounter{ucnum}\label{UC_EyeDropGame}
@@ -1781,7 +1781,7 @@ Child
 
 \textbf{Functional Requirements}
 
-\rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_SpeakUp}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches}.
+\rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_SpeakUp}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches}.
 
 % ------------------------------------------------------------
 \refstepcounter{ucnum}\label{UC_SlitLampGame}
@@ -1843,7 +1843,7 @@ Child
 
 \textbf{Functional Requirements}
 
-\rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches}.
+\rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches}.
 
 % ------------------------------------------------------------
 \refstepcounter{ucnum}\label{UC_ExitGame}
@@ -2598,11 +2598,9 @@ dismiss it without reading.
 \begin{reqlist}{FR}
 
 \item[\frdef{FR_JourneyMap}]
-The system shall display a \termmark{journeymap}journey map that shows every level, one for each
-procedure, in order of level number. Each level
-shall show its name, an illustration, and its status (\defref{def_Status}:
-\val{NotStarted},
-\val{InProgress}, or \val{Completed}).
+The system shall display a \termmark{journeymap}journey map that shows every level with a status 
+(\defref{def_Status}: \val{NotStarted}, \val{InProgress}, or \val{Completed}), one for each
+procedure, in order of level number.
 
 \textit{Rationale:} The journey map is how the child chooses what to play. The
 status of each level shows the child and caregiver what has been done so far.
@@ -2651,9 +2649,9 @@ procedure. A replay must not undo the progress the child has already made.
 \begin{reqlist}{FR}
 
 \item[\frdef{FR_LevelContent}]
-Each level shall prepare the child for one ophthalmology procedure. It shall
-present at least one part of that procedure, such as a step of the procedure,
-a piece of equipment, or an instruction the child may be given.
+Each level shall prepare the child for one ophthalmology procedure by
+presenting either a step of the procedure, a piece of equipment, 
+or an instruction the child may be given.
 
 \textit{Rationale:} The purpose of the journey is preparation. A level that
 does not relate to a procedure adds play time without preparing the child. The
@@ -2688,11 +2686,22 @@ as cold, stinging, a bright light, pressure, or blurry vision, the system shall
 describe that sensation to the child. The description shall not be skippable,
 even when the child skips the exercise or animation that shows that part
 (\rref{FR_NoPenalty}).
-The system shall not state or imply that a procedure will not hurt or will not
-be uncomfortable.
 
 \textit{Rationale:} A child who has been told about a sensation is not surprised by it at the
-appointment. A promise that nothing will be felt would be broken at the
+appointment.
+
+\textit{Traces:} \ucref{UC_VisionGame}, \ucref{UC_EyeDropGame},
+\ucref{UC_SlitLampGame}.
+
+\textit{Related NFRs:} \nfrref{NFR_ChildSafe}, \nfrref{NFR_ClinicalAccuracy}.
+
+\textit{Hazard Analysis:} \hazsr{HonestSensations}{8}{SensationsHidden}{2-6}.
+
+\item[\frdef{FR_TruthfulSensations}]
+The system shall not state or imply that a procedure will not hurt or will not
+be uncomfortable within a sensation description.
+
+\textit{Rationale:} A promise that nothing will be felt would be broken at the
 clinic, and the child would learn to distrust the people who prepared them.
 
 \textit{Traces:} \ucref{UC_VisionGame}, \ucref{UC_EyeDropGame},
@@ -2769,7 +2778,10 @@ a question is handled by \rref{FR_RevealAnswer} instead.
 
 \textit{Rationale:} A hint lets the child continue without help from an adult.
 Letting the child try again keeps the focus on learning rather than on getting
-it right the first time.
+it right the first time. The specification for a wrong answer is delegated to 
+its own requirement because involves its own defined functionality within the 
+game serving as justification to decompose into a separate requirement, 
+\rref{FR_RevealAnswer}.
 
 \textit{Traces:} \ucref{UC_VisionGame}, \ucref{UC_EyeDropGame},
 \ucref{UC_SlitLampGame}.
@@ -3061,16 +3073,18 @@ on the scoreboard meaningless.
 \textit{Related NFRs:} \nfrref{NFR_NoPressure}.
 
 \item[\frdef{FR_Scoreboard}]
-The system shall display a personal scoreboard. For each level, it shall show
-the name, the status, and the points earned. It shall also show the values of
-\defref{def_Scoreboard}: the total journey points, the number of completed
-levels out of the total, and the coin balance. It shall show the selected
-character and the nickname if they are set. It shall not compare the child
-with other users.
+The system shall display a personal scoreboard containing information of the 
+level, the values of \defref{def_Scoreboard}, and character identification 
+information.
 
 \textit{Rationale:} The scoreboard shows the child what they have achieved.
 Comparing children would add pressure, which works against the goal of
-reducing anxiety.
+reducing anxiety. The goal is to represent the following information for each level:
+the name, the status, and the points earned for level information, the values of
+\defref{def_Scoreboard}: the total journey points, the number of completed
+levels out of the total, and the coin balance and the selected
+character and the nickname if they are set. It shall not compare the child
+with other users.
 
 \textit{Traces:} \ucref{UC_ViewProgress}, \defref{def_Scoreboard}.
 
@@ -3808,7 +3822,7 @@ No image, animation, narration, or sound shall be frightening, or show pain or d
 
 \textit{Fit Criterion:} A child-life specialist reviews all content against a checklist, and no finding is unresolved at release.
 
-\textit{Traces:} \rref{FR_DescribeSensations}.
+\textit{Traces:} \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}.
 
 \textit{Hazard Analysis:} \hazsr{HonestSensations}{8}{SensationsHidden}{2-6}, \hazsr{ChildLifeReview}{9}{Frightening}{2-7}, \hazsr{ThirdPartyAssetReview}{23}{ThirdPartyAssetContent}{2-21}.
 
@@ -4063,7 +4077,7 @@ Every level and every entry of the procedure guide shall be approved by a paedia
 
 \textit{Fit Criterion:} For each release, an approval record signed by a paediatric ophthalmologist lists every level and guide entry at its released version, with no finding unresolved.
 
-\textit{Traces:} \rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_ProcedureGuide}.
+\textit{Traces:} \rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_ProcedureGuide}.
 
 \textit{Hazard Analysis:} \hazsr{ClinicianApproval}{5}{InaccurateProcedure}{2-5}, \hazsr{ApprovedContent}{7}{InaccurateProcedure}{2-5}.
 
@@ -4279,15 +4293,15 @@ functional requirements that refine it.
 
 \strref{STR_1}, \strref{STR_2}, \strref{STR_3}, \strref{STR_4}, \strref{STR_5}, 
 \strref{STR_6}, \strref{STR_7}, \strref{STR_15}, \strref{STR_17}, \strref{STR_18} 
-& \ucref{UC_VisionGame} & \rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches} \\
+& \ucref{UC_VisionGame} & \rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches} \\
 
 \strref{STR_1}, \strref{STR_2}, \strref{STR_3}, \strref{STR_4}, \strref{STR_5}, 
 \strref{STR_6}, \strref{STR_7}, \strref{STR_15}, \strref{STR_17}, \strref{STR_18} 
-& \ucref{UC_EyeDropGame} & \rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_SpeakUp}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches} \\
+& \ucref{UC_EyeDropGame} & \rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_SpeakUp}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches} \\
 
 \strref{STR_1}, \strref{STR_2}, \strref{STR_3}, \strref{STR_4}, \strref{STR_5}, 
 \strref{STR_6}, \strref{STR_7}, \strref{STR_15}, \strref{STR_17}, \strref{STR_18} 
-& \ucref{UC_SlitLampGame} & \rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches} \\
+& \ucref{UC_SlitLampGame} & \rref{FR_LevelContent}, \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations}, \rref{FR_ClinicsDiffer}, \rref{FR_LevelEnd}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}, \rref{FR_VisualCues}, \rref{FR_NarrationFallback}, \rref{FR_RevealAnswer}, \rref{FR_ValidQuestions}, \rref{FR_NoPenalty}, \rref{FR_IgnoreRepeatedTouches} \\
 
 \strref{STR_2}, \strref{STR_7}, \strref{STR_9} 
 & \ucref{UC_ExitGame} & \rref{FR_ExitLevel}, \rref{FR_StopOnExit}, \rref{FR_ExitKeepsData}, \rref{FR_RestartAfterExit}, \rref{FR_RestartLevel}, \rref{FR_Suspend}, \rref{FR_PersistState} \\
@@ -4391,6 +4405,7 @@ non-functional requirement are omitted.
 \rref{FR_StartLevel} & \nfrref{NFR_ClinicianUse} \\
 \rref{FR_LevelContent} & \nfrref{NFR_ClinicalAccuracy} \\
 \rref{FR_DescribeSensations} & \nfrref{NFR_ChildSafe}, \nfrref{NFR_ClinicalAccuracy} \\
+\rref{FR_TruthfulSensations} & \nfrref{NFR_ChildSafe}, \nfrref{NFR_ClinicalAccuracy} \\
 \rref{FR_ClinicsDiffer} & \nfrref{NFR_ClinicalAccuracy} \\
 \rref{FR_SpokenInstructions} & \nfrref{NFR_Usability}, \nfrref{NFR_Language}, \nfrref{NFR_Accessibility}, \nfrref{NFR_AVSync} \\
 \rref{FR_HintOnMiss} & \nfrref{NFR_Usability} \\
@@ -4452,7 +4467,7 @@ of the Hazard Analysis.
 \hasrref{ClinicianApproval}{5} & \hahazref{InaccurateProcedure}{2-5} & Clinical approval of procedure content & -- & \nfrref{NFR_ClinicalAccuracy}, \nfrref{NFR_Integrity} \\
 \hasrref{ClinicsDiffer}{6} & \hahazref{InaccurateProcedure}{2-5} & Variation between clinics & \rref{FR_ClinicsDiffer} & -- \\
 \hasrref{ApprovedContent}{7} & \hahazref{InaccurateProcedure}{2-5} & Release of approved content only & -- & \nfrref{NFR_ClinicalAccuracy}, \nfrref{NFR_Integrity} \\
-\hasrref{HonestSensations}{8} & \hahazref{SensationsHidden}{2-6} & Honest description of sensations & \rref{FR_DescribeSensations} & \nfrref{NFR_ChildSafe} \\
+\hasrref{HonestSensations}{8} & \hahazref{SensationsHidden}{2-6} & Honest description of sensations & \rref{FR_DescribeSensations}, \rref{FR_TruthfulSensations} & \nfrref{NFR_ChildSafe}, \nfrref{NFR_ClinicalAccuracy} \\
 \hasrref{ChildLifeReview}{9} & \hahazref{SensationsHidden}{2-6}, \hahazref{Frightening}{2-7} & Child-life review of content & -- & \nfrref{NFR_ChildSafe}, \nfrref{NFR_Language} \\
 \hasrref{MedicalDisclaimer}{10} & \hahazref{MisinterpretedMedicalPurpose}{2-8} & Medical disclaimer and caregiver acknowledgment & \rref{FR_MedicalNotice}, \rref{FR_RecordAck} & \nfrref{NFR_NoClaims} \\
 \hasrref{AllLevelsAccessible}{11} & \hahazref{RestrictedLevelAccess}{2-11} & All preparation levels remain accessible & \rref{FR_StartLevel} & -- \\
