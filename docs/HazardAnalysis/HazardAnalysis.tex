@@ -822,17 +822,19 @@ maintain traceability between the two documents.
 
 The game shall not cause the device's temperature to exceed
 a defined safe temperature threshold during normal or extended
-gameplay. The game shall avoid unnecessary continuous
-processing and shall stop resource-intensive activities when
-they are no longer required, so that heat generation stays
-below this threshold.
+gameplay. While there is not a standardized method to achive this, 
+the game shall avoid unnecessary continuous processing and shall 
+stop resource-intensive activities when they are no longer required, 
+so that heat generation stays below this threshold.
 
 \textit{Rationale:}
 Excessive processing can raise device temperature. Young
 children may hold a device for extended periods, so a device
 that becomes too hot could cause discomfort or minor injury.
 Keeping device temperature below a defined threshold reduces
-this risk.
+this risk. Device hardware overheating fixes is also beyond 
+the scope of the project in the given timeline, so the mitigation 
+strategy primarily focuses on software processing.
 
 \textit{Associated hazards:}
 \hazref{DeviceOverheating}
@@ -920,7 +922,7 @@ the anxiety the game aims to prevent.
 
 \item[\srdef{ClinicsDiffer}] \textbf{Variation Between Clinics}
 
-The game shall tell the child, in words and pictures suited to their age,
+The game shall tell the child, through narration and pictures suited to their age,
 that their doctor may do things a little differently from the game.
 
 \textit{Rationale:} Procedures vary between patients, clinicians and clinics
@@ -1099,12 +1101,15 @@ preserving the educational purpose of the game.
 The player character catalogue shall offer multiple dimensions of 
 diversity (e.g. skin tones, hair textures and styles, varied body types, 
 accessibility and medical-device options, gender expressions etc.) and 
-cosmetic rewards shall include items from a range of cultures and religions.
+cosmetic rewards shall include items from a range of cultures and religions 
+(with a maximum of 50 different cosmetics in the catalogue).
 
 \textit{Rationale:}
 Diverse and inclusive representation lets the child see themselves and their 
 world understanding to support their sense of belonging that carries into the 
-clinic making it a more comfortable environment.
+clinic making it a more comfortable environment. The limit is applied to the 
+cosmetics catalogue to reduce the massive scope of cosmetics to avoid 
+exhaustion while still providing a diverse catalogue.
 
 \textit{Associated hazards:}
 \hazref{DiverseCharacterCatalogue}
@@ -1114,10 +1119,9 @@ clinic making it a more comfortable environment.
 \item[\srdef{CorrectAnswerReveal}]
 \textbf{Revealing Correct Answers for Learning Benefit}
 
-After an incorrect selection, the game shall indicate all the correct answers
-within 1 second by at least two non-color cues (e.g., outline, icon, motion) 
-and narration, for the child to select any or all before proceeding with encouraging 
-feedback.
+After an incorrect selection, the game shall indicate all the correct answers 
+by at least two non-color cues (e.g., outline, icon, motion) and narration, for 
+the child to select any or all before proceeding with encouraging feedback.
 
 \textit{Rationale:}
 Prevents the child from leaving a question unsure of the answer, 
@@ -1308,7 +1312,11 @@ resume from the same point.
 An accurate script and an accurate animation can still
 teach the wrong thing if they are played together at the
 wrong time. The child needs to hear the explanation that
-matches what they are seeing, including after an interruption.
+matches what they are seeing, including after an interruption. 
+This requirement differs from SR-13 and SR-14 because it specifies 
+the relationship connectivity and consistency between visual cues 
+and narration compared to the properties of narration and audio 
+defined in SR-13 and SR-14.
 
 \textit{Associated hazards:}
 \hazref{AudioVisualMismatch}
