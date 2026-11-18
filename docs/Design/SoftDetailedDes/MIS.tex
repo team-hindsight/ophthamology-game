@@ -2465,6 +2465,8 @@ Types:
   (\srsitemref{FR_HoldSkip}{FR21})
 \item $\T{ANSWER\_REVEAL\_MAX\_S} = 1$, in seconds
   (\srsitemref{NFR_Responsiveness}{NFR12})
+\item $\T{AV\_SYNC\_MAX\_MS} = 100$, in milliseconds
+  (\srsitemref{NFR_AVSync}{NFR14})
 \end{itemize}
 
 \paragraph{Exported Types}
@@ -2602,20 +2604,28 @@ non-empty lines through Narration, with their visual cues. The step returns
 when its end condition holds or it is cancelled. On either return, call
 SceneStaging.highlight($\langle\rangle$) and
 SceneStaging.listen($\langle\rangle$) to clear its glows and target input.
-Cancellation also removes the step's buttons and calls
-SceneStaging.resetEquipment().
+Cancellation also removes the step's buttons and calls Narration.stop()
+and SceneStaging.stopAll().
+
+When a line accompanies an animation, their starts are at most
+$\T{AV\_SYNC\_MAX\_MS}$ milliseconds apart. Use presentTogether for a
+line paired with a stage action. The same start-time limit applies to
+lines paired with screen effects. Sensation descriptions finish before
+the corresponding demonstration begins (\srsitemref{FR_DescribeSensations}{FR8}).
 
 \begin{itemize}
-\item PanelStepT: play the stage action, say line and followUp, and
-  wait for Next or the hold button, as given by endOn. When discover is
-  non-empty, pass $\langle\T{discover}\rangle$ to SceneStaging.highlight
+\item PanelStepT: when sensation is false, call presentTogether(beat, line),
+  then say followUp. When sensation is true, say line and followUp in full,
+  then call SceneStaging.play(beat) and wait until isPlaying() is false.
+  Afterwards, wait for Next or the hold button, as given by endOn. When
+  discover is non-empty, pass $\langle\T{discover}\rangle$ to SceneStaging.highlight
   and listen. The object glows while the panel runs. When
   SceneStaging.tapped(discover) is true, say discoverLine as an aside,
   then call listen again with $\langle\T{discover}\rangle$ to clear the tap.
 \item TapTargetStepT: pass $\langle\T{target}\rangle$ to
   SceneStaging.highlight and listen, say line and wait for the target.
-  When SceneStaging.tapped(target) is true, play the stage action, say
-  reaction and call SceneStaging.frame(afterShot). Otherwise, when
+  When SceneStaging.tapped(target) is true, call presentTogether(beat,
+  reaction), then SceneStaging.frame(afterShot). Otherwise, when
   SceneStaging.missed() is true, say hint and call listen again with
   the target to clear the previous taps and permit another attempt.
 \item HoldStillStepT: say coming and call SceneStaging.setDrop(spot, 0)
@@ -2643,8 +2653,22 @@ The equipment controls for ChartStepT, ExamStepT and CloseupStepT are TBD.
 
 While a character speaks, pass Narration.speaker and loudness to
 SceneStaging.speaking, using $\V{none}$ for the off-screen narrator.
+These updates continue while the runner waits for narration or an action.
 An incorrect action never stops the level or removes a reward
 (\srsitemref{FR_NoPenalty}{FR19}).
+
+\noindent $\T{presentTogether}$ : $(\text{BeatT} \times \text{LineT}) \to ()$
+
+For action $b$ and line $x$, call SceneStaging.play($b$) and
+Narration.say($x$, $\false$) so that the action and line start within
+$\T{AV\_SYNC\_MAX\_MS}$ milliseconds of each other. The action continues
+while say runs. Wait for say to return and for SceneStaging.isPlaying()
+to be $\false$ before continuing. When both $x.\T{words}$ and
+$x.\T{caption}$ are empty, play only the action and wait for it to finish.
+
+All waits in present keep the level controls active. Pausing stops the
+action and narration at their current positions, and resuming continues
+both. Cancelling the step stops both and abandons the rest of the step.
 
 \noindent $\T{handle}$ : ControlRequestT $\to ()$
 
@@ -2690,7 +2714,6 @@ after the last step.
 \item Pending callbacks, cancellation generations, repeated input and
   interruption handling during the ending: TBD.
 \item Changing age-group content during a level and applyPreferences: TBD.
-\item $\T{AV\_SYNC\_MAX\_MS}$ and detailed audio-visual timing: TBD.
 \item Touch-response timing and usability checks for the level controls: TBD.
 \item Additional procedure activities and their Scene Staging controls: TBD.
 \end{itemize}
@@ -4073,7 +4096,8 @@ resetEquipment & -- & -- & --\\
 listen & $\T{ts}$ : seq of String & -- & UnknownTarget\\
 tapped & $t$ : String & $\B$ & UnknownTarget\\
 missed & -- & $\B$ & --\\
-play & $b$ : BeatT & -- & --\\
+play & $b$ : BeatT & -- & AlreadyPlaying\\
+isPlaying & -- & $\B$ & --\\
 speaking & $c$ : CastT $\cup \{\V{none}\}$, $v$ : $\R$ & -- & OutOfRange\\
 stopAll & -- & -- & --\\
 pause & -- & -- & --\\
@@ -4094,6 +4118,8 @@ resume & -- & -- & --\\
 \item $\T{highlighted}$ : set of String, the targets that glow
 \item $\T{dropEye}$ : EyeT $\cup \{\V{none}\}$, the eye receiving the drop
 \item $\T{dropProgress}$ : $\R$, from 0 (at the bottle) to 1 (landed)
+\item $\T{action}$ : BeatT $\cup \{\V{none}\}$, the running or paused
+  stage action
 \item $\T{listening}$ : set of String, the targets that accept taps now
 \item $\T{hits}$ : set of String, the listening targets tapped since the last
   listen
@@ -4120,7 +4146,8 @@ When $\T{dropEye} = \V{none}$, $\T{dropProgress} = 0$.
 init() is called after the exam room is loaded and before any other access
 program. Shot and target names are non-empty. The room supplies an initial shot.
 An interactive drop and a stage action that moves the bottle do not run
-at the same time.
+at the same time. The caller starts a stage action only when the room is
+not paused.
 
 \paragraph{Access Routine Semantics}
 
@@ -4145,6 +4172,7 @@ at the same time.
   and $\T{shot}$ to its initial shot, and show that view. Set
   $\T{highlighted} := \{\}$ and
   $\T{dropEye}, \T{dropProgress} := \V{none}, 0$.
+  Set $\T{action} := \V{none}$.
   The targets have no glow and the equipment is in its starting place.
 \item exception: none
 \end{itemize}
@@ -4210,10 +4238,11 @@ at the same time.
 \begin{samepage}
 \noindent resetEquipment():
 \begin{itemize}
-\item transition: stop every equipment action, remove the drop and return
-  the equipment to its starting place. Set
-  $\T{dropEye}, \T{dropProgress} := \V{none},0$. The camera view and
-  characters do not change. This also works while paused.
+\item transition: if the current stage action uses equipment, cancel it
+  and set $\T{action} := \V{none}$. Remove the drop and return the
+  equipment to its starting place. Set
+  $\T{dropEye}, \T{dropProgress} := \V{none},0$. Keep the camera view
+  and the characters' current positions and poses. This also works while paused.
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4254,10 +4283,25 @@ at the same time.
 \begin{samepage}
 \noindent play($b$):
 \begin{itemize}
-\item transition: the characters and the equipment of $\T{room}$ perform
-  action $b$, and the routine returns when it is done. For example,
+\item transition: $\T{action} := b$. The characters and equipment of
+  $\T{room}$ start action $b$, and the routine returns once it has started.
+  The action continues after the call returns. On completion,
+  $\T{action} := \V{none}$. For example,
   $\V{DropOnPeer}$ holds the eye-drop bottle over the peer's eye and lets one
-  drop fall. While $\T{paused}$ is $\true$, the action waits.
+  drop fall. While paused, the action keeps its current position and does
+  not complete.
+\item exception: $\exc := (\T{action} \neq \V{none} \Rightarrow
+  \text{AlreadyPlaying})$
+\end{itemize}
+\end{samepage}
+\par\pagebreak[0]
+
+\begin{samepage}
+\noindent isPlaying():
+\begin{itemize}
+\item output: $\out := \T{action} \neq \V{none}$. This remains $\true$
+  while the action is paused and becomes $\false$ when it finishes or is
+  cancelled.
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4276,7 +4320,8 @@ at the same time.
 \begin{samepage}
 \noindent stopAll():
 \begin{itemize}
-\item transition: every running action stops, every character returns to its
+\item transition: every running or paused action stops and
+  $\T{action} := \V{none}$. Every character returns to its
   idle pose with its mouth closed, and resetEquipment() returns the equipment
   to its starting place. Call highlight($\langle\rangle$) and set
   $\T{listening}, \T{hits} := \{\}, \{\}$
@@ -4315,9 +4360,10 @@ at the same time.
 
 \paragraph{Considerations}
 
-While a narrated line plays, the Procedure Runner Module (\misref{Runner}{10}) calls speaking
-with the speaker and the loudness of the line, so the voice and the mouth start
-together (\srsitemref{NFR_AVSync}{NFR14}). The layout of the room and how each
+Procedure Runner (\misref{Runner}{10}) coordinates the start and completion
+of an action and its accompanying line through presentTogether
+(\srsitemref{NFR_AVSync}{NFR14}). It also calls speaking with the speaker
+and loudness while the line plays. The layout of the room and how each
 action is animated are the secrets of this module, and they are reviewed with
 the clinicians (\srsitemref{NFR_ClinicalAccuracy}{NFR22}). No action, such as
 the examination light, flashes more than $\T{FLASH\_MAX\_PER\_S}$ times in
