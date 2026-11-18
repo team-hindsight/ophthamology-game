@@ -706,8 +706,13 @@ Modules:
 
 Types:
 \begin{itemize}
-\item RecordT from Player Data Module (\misref{PlayerData}{5})
+\item RecordT, GivenT from Player Data Module (\misref{PlayerData}{5})
 \item BoardT from Scoreboard Screen Module (\misref{Scoreboard}{15})
+\item AgeGroupT from Preferences Module (\misref{Prefs}{6})
+\item SceneT from Hardware-Hiding Module (\misref{HH}{1})
+\item ItemT from Accessory Catalogue Module (\misref{Accessories}{8})
+\item WardrobeT from Wardrobe Module (\misref{Wardrobe}{4})
+\item LevelIdT from Level Catalogue Module (\misref{Levels}{7})
 \end{itemize}
 
 \subsubsection{Syntax}
@@ -718,10 +723,62 @@ None.
 
 \paragraph{Exported Types}
 
-AppContextT: the startup acknowledgement, age-group selection, scene
-loading, catalogue items, character-picture query, and operations for
-saving player changes supplied to application control. Its fields and
-bindings are TBD.
+AppContextT is a tuple with the fields in Table~\ref{TblAppContext}.
+The engine supplies it during startup. The operations
+are supplied callbacks; Application Control calls them through $c$.
+
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{@{}p{0.17\textwidth}p{0.27\textwidth}p{0.50\textwidth}@{}}
+\caption{Application context}\label{TblAppContext}\\
+\toprule
+\textbf{Field} & \textbf{Type} & \textbf{Meaning and binding}\\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Field} & \textbf{Type} & \textbf{Meaning and binding (continued)}\\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+isAcknowledged & $() \to \B$ & Calls Preferences.isAcknowledged().\\[0.4em]
+acknowledge & $() \to ()$ & Calls Preferences.acknowledge().\\[0.4em]
+ageGroup & $() \to \text{AgeGroupT}$ & Returns the age group from
+Preferences.get().\\[0.4em]
+current & $() \to \text{RecordT}$ & Calls PlayerData.current(). Each call
+returns the current record in memory, including changes made during play.\\[0.4em]
+rememberPlayer & $\N \to ()$ & Calls Preferences.setLastPlayer with the
+chosen slot.\\[0.4em]
+startLevel & $\text{LevelIdT} \to ()$ & Calls PlayerData.startLevel for
+the selected player.\\[0.4em]
+finishLevel & $\text{LevelIdT} \to \text{GivenT}$ & Calls
+PlayerData.finishLevel for the selected player and returns its result.\\[0.4em]
+loadScene & $\text{SceneT} \to ()$ & Loads the scene through HardwareHiding
+and initializes its scene services. Returns when they are ready. The exam
+room uses the current player's look and the current preferences.\\[0.4em]
+onBackground & $(() \to ()) \to ()$ & Registers the supplied callback
+through HardwareHiding.onBackground.\\[0.4em]
+onForeground & $(() \to ()) \to ()$ & Registers the supplied callback
+through HardwareHiding.onForeground.\\[0.4em]
+characterPicture & $(\text{seq of ItemT})$ $\to \text{ImageT}$ & Returns a
+picture of the supplied look without changing the player's data.\\[0.4em]
+items & seq of ItemT & The result of AccessoryCatalogue.items(), including
+the free character items.\\[0.4em]
+saveDressUp & $(\text{WardrobeT} \times \N)$ $\to ()$ & Takes the changed
+wardrobe and coins spent. Deducts that amount from the current player's
+progress and saves the updated record through PlayerData.save.\\[0.4em]
+scoreboard & $() \to \text{BoardT}$ & Builds the current player's BoardT
+from their progress, the level catalogue, nickname and character picture.
+Rows follow catalogue order. A completed level shows its reward points;
+other levels show 0.\\[0.4em]
+applySettings & $\text{SettingsResultT} \to \B$ & For $\V{Closed}$ or $\V{OpenGuide}$,
+calls PlayerData.setNickname. Returns $\false$ without a change if the
+nickname is too long. For $\V{ResetJourney}$, calls PlayerData.resetJourney.
+For $\V{ClearAllData}$, calls PlayerData.clearAll and Preferences.clear.
+Returns $\true$ when the request is applied.\\
+\end{longtable}
+\endgroup
 
 \paragraph{Exported Access Programs}
 
@@ -737,14 +794,14 @@ start & $c$ : AppContextT & -- & AlreadyStarted\\
 \item $\T{started}$ : $\B$, initially $\false$
 \item $\T{screen}$ : $\{\V{Notice}, \V{Players}, \V{Map}, \V{Level},
   \V{DressUp}, \V{Scoreboard}, \V{Settings}, \V{Guide}\}$
-\item $\T{player}$ : RecordT, the player returned by Player Select
+\item $\T{player}$ : RecordT, the most recently read player record
 \item $\T{choice}$ : ChoiceT, the choice returned by Journey Map
 \end{itemize}
 
 \paragraph{Environment Variables}
 
-$\T{screenDisplay}$: the display used for the medical notice. The screen
-modules present the other screens.
+$\T{screenDisplay}$: the display used for the medical notice and a message
+when a nickname is too long. The screen modules present the other screens.
 
 \paragraph{State Invariant}
 
@@ -752,22 +809,30 @@ None.
 
 \paragraph{Assumptions}
 
-The engine initializes the modules before start is called, with each
-dependency ready before its users. Scene services are initialized after
-their scene loads. The supplied context provides the startup and saved-data
-operations. Their connection to the engine and persistence modules is TBD.
+The engine initializes the modules that do not belong to a scene before
+start is called, with each dependency ready before its users. PlayerData.init receives
+Preferences.lastPlayer() as its initial slot. Scene services are initialized
+by $c$.loadScene after their scene loads.
+
+The player callbacks use the selected player at the time of each call.
+They do not keep the record from startup. Player selection cannot change
+while a level or dress-up screen is open. The supplied content and wardrobe
+values satisfy the called modules' assumptions, and spending does not
+exceed the current balance. The save callbacks follow Player Data's save
+policy, including keeping the previous file after a failed write.
 
 \paragraph{Access Routine Semantics}
 
 \begin{samepage}
 \noindent start($c$):
 \begin{itemize}
-\item transition: $\T{started} := \true$. Follow
-  Table~\ref{TblApplicationFlow} until the application closes. A stored
-  acknowledgement starts at $\V{Players}$. Otherwise it starts at
-  $\V{Notice}$. Application interruptions suspend the running level with
-  ProcedureRunner.suspend, and returning resumes it with
-  ProcedureRunner.resume. Registering these operations is TBD.
+\item transition: $\T{started} := \true$. Set $\T{screen}$ to
+  $\V{Players}$ when $c$.isAcknowledged() is $\true$, and to
+  $\V{Notice}$ otherwise. Call $c$.loadScene($\V{Menu}$).
+  Through $c$.onBackground and
+  $c$.onForeground, register callbacks that call ProcedureRunner.suspend
+  and ProcedureRunner.resume respectively when $\T{screen} = \V{Level}$.
+  Follow Table~\ref{TblApplicationFlow} until the application closes.
 \item exception: $\exc := (\T{started} \Rightarrow \text{AlreadyStarted})$
 \end{itemize}
 \end{samepage}
@@ -776,7 +841,7 @@ operations. Their connection to the engine and persistence modules is TBD.
 \begingroup
 \small
 \renewcommand{\arraystretch}{1.2}
-\begin{longtable}{@{}p{0.16\textwidth}p{0.80\textwidth}@{}}
+\begin{longtable}{@{}p{0.16\textwidth}>{\raggedright\arraybackslash}p{0.80\textwidth}@{}}
 \caption{Application screen flow}\label{TblApplicationFlow}\\
 \toprule
 \textbf{Screen} & \textbf{Action and next screen}\\
@@ -791,42 +856,55 @@ operations. Their connection to the engine and persistence modules is TBD.
 $\V{Notice}$ & Show the notice that \progname{} is an educational
 preparation aid and does not replace professional medical advice,
 diagnosis or treatment. The only control is ``I understand''. On that
-choice, record the acknowledgement and show $\V{Players}$. The
-persistence binding is TBD (\srsitemref{FR_MedicalNotice}{FR1},
+choice, call $c$.acknowledge() and show $\V{Players}$
+(\srsitemref{FR_MedicalNotice}{FR1},
 \srsitemref{FR_RecordAck}{FR2}).\\[0.4em]
-$\V{Players}$ & Call PlayerSelectScreen.open($k$), with the character-picture
-query supplied through $c$. It selects the player
-through Player Data and returns the slot and record. Keep the returned
-record as $\T{player}$ and show $\V{Map}$.\\[0.4em]
-$\V{Map}$ & Set $\T{choice} :=$
+$\V{Players}$ & Set $v :=$
+PlayerSelectScreen.open($c.\T{characterPicture}$). It selects the player
+through Player Data. Call $c$.rememberPlayer($v.\T{slot}$) and show
+$\V{Map}$.\\[0.4em]
+$\V{Map}$ & Read $\T{player} := c$.current() on every entry to the map,
+then set $\T{choice} :=$
 JourneyMapScreen.open($\T{player}.\T{progress}$). Its kind chooses
 $\V{Level}$, $\V{DressUp}$, $\V{Scoreboard}$, $\V{Settings}$
 for $\V{Caregiver}$, or $\V{Players}$.\\[0.4em]
-$\V{Level}$ & Load the exam-room scene, then call
-ProcedureRunner.play($\T{choice}.\T{level}$, $a$, $h$), where $a$
-is the selected age group and $h$ supplies the start, completion and
-settings operations. Repeat while the result is $\V{PlayAgain}$.
-Load the menu scene and return to $\V{Map}$. The scene-loading and
-callback bindings in $c$ are TBD.\\[0.4em]
-$\V{DressUp}$ & Call DressUpScreen.open with the player's wardrobe,
-the shop items, and the balance returned by the map. Return to
-$\V{Map}$. Applying the returned spending and saving the changed
-wardrobe together is TBD.\\[0.4em]
-$\V{Scoreboard}$ & Call PlayerSelectScreen.showScoreboard($b$), then
-return to $\V{Map}$. Preparing the current player's BoardT $b$ is TBD.\\[0.4em]
-$\V{Settings}$ & Call SettingsScreen.open with the current nickname
-and data controls enabled. The screen applies its parental gate before
-showing settings. Its result requests closing, opening the guide,
-resetting the journey, or clearing all data. Closing or resetting returns
-to $\V{Map}$, and clearing all data returns to $\V{Notice}$. Applying the
-returned nickname and data changes, clearing the notice acknowledgement,
-and refreshing $\T{player}$ through $c$ are TBD.\\[0.4em]
+$\V{Level}$ & Call $c$.loadScene($\V{ExamRoom}$). Supply RunHooksT $h$
+with $\T{start} = c.\T{startLevel}$, $\T{finish} = c.\T{finishLevel}$,
+and a settings callback that calls $\T{levelSettings}(c)$.
+Call ProcedureRunner.play($\T{choice}.\T{level}$, $c$.ageGroup(), $h$).
+Repeat while the result is $\V{PlayAgain}$. Call
+$c$.loadScene($\V{Menu}$) and return to $\V{Map}$, which reads the updated
+record before showing progress.\\[0.4em]
+$\V{DressUp}$ & Read $\T{player} := c$.current(). Call DressUpScreen.open
+with $\T{player}.\T{wardrobe}$, $c.\T{items}$ and the balance returned by
+the map. Pass the changed wardrobe and returned spending to
+$c$.saveDressUp, then return to $\V{Map}$.\\[0.4em]
+$\V{Scoreboard}$ & Call
+PlayerSelectScreen.showScoreboard($c$.scoreboard()), then return to
+$\V{Map}$.\\[0.4em]
+$\V{Settings}$ & Call SettingsScreen.open with $c$.current().nickname
+and data controls enabled. Apply its result $r$ through
+$c$.applySettings($r$). If this returns $\false$, show a message that the
+nickname is too long and reopen settings. Otherwise, $\V{Closed}$ or $\V{ResetJourney}$
+returns to $\V{Map}$, $\V{OpenGuide}$ opens $\V{Guide}$, and $\V{ClearAllData}$ returns
+to $\V{Notice}$.\\[0.4em]
 $\V{Guide}$ & Call GuideScreen.open(). A $\V{ShowNotice}$ result
 shows the medical notice with a close control, without recording a new
 acknowledgement. Closing the notice returns to the guide, and closing the
 guide returns to settings.\\
 \end{longtable}
 \endgroup
+
+\paragraph{Local Procedures}
+
+$\T{levelSettings}$ : AppContextT $\to ()$
+
+Set $\T{screen} := \V{Settings}$ and follow the Settings and Guide rows
+of Table~\ref{TblApplicationFlow}, with data controls disabled.
+Closing settings sets $\T{screen} := \V{Level}$
+and returns to Procedure Runner, which resumes the paused level. The
+player cannot be reset or cleared during this call. While settings or
+the guide is open, the level stays paused, including after an interruption.
 
 \paragraph{Considerations}
 
@@ -837,17 +915,18 @@ diagnose or treat (\srsitemref{NFR_Language}{NFR8},
 \srsitemref{NFR_NoClaims}{NFR32}). A studio splash screen appears
 before the flow in Table~\ref{TblApplicationFlow}.
 
+The map reads the current record after a level is started, finished or
+left early. It does not rely on an earlier RecordT changing in place.
+The start and finish callbacks save through Player Data before returning;
+Application Control does not save its earlier copy over those changes.
+
 \par\pagebreak[0]
 \begin{samepage}
 \paragraph{Future Revisions}
 
 \begin{itemize}
-\item AppContextT and the startup, scene-loading, player-data and
-  preference bindings: TBD.
-\item Refreshing the supplied player record after level and wardrobe
-  changes: TBD.
 \item The home screen, navigation history, and direct guide access: TBD.
-\item Settings opened during a level and the return to that level: TBD.
+\item Saving each wardrobe change before the next input: TBD.
 \item Scene-load recovery, repeated navigation input, and interruptions
   outside a level: TBD.
 \item Startup timing, supported-platform checks and child-facing store
@@ -1430,7 +1509,9 @@ the callback bindings are TBD.
 \begin{samepage}
 \noindent current():
 \begin{itemize}
-\item output: $\out := \T{rec}$
+\item output: $\out := \T{rec}$, the current record in memory. Callers
+  read it again after a change; an earlier result is not guaranteed to
+  reflect later changes.
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -1692,9 +1773,7 @@ the device preferences.
   including accessory checks through \misref{Accessories}{8} and recovery through \misref{DataFile}{20}: TBD.
 \item Binding PlayerOpsT and the summary query to the current player: TBD.
 \item The pointsEarned query for one scoreboard row: TBD.
-\item Saving changes made through the Dress-Up Screen interface: TBD.
-\item Remembering the last selected slot through the supplied startup
-  context: TBD.
+\item Saving each dress-up change before the next input: TBD.
 \item Save rollback, retry, repeated initialization and migration of
   older records: TBD.
 \end{itemize}
@@ -2401,8 +2480,9 @@ Types:
   start records a level start, finish records completion and returns
   the reward actually given, and settings opens caregiver settings with
   data controls disabled.
-  Their bindings to progress, persistence and application navigation
-  are TBD.
+  Application Control takes start and finish from AppContextT and
+  supplies a settings callback that calls its levelSettings procedure
+  (\misref{Control}{2}).
 \end{itemize}
 
 \paragraph{Exported Access Programs}
@@ -2442,9 +2522,10 @@ $\T{level} \neq \V{none} \Rightarrow i \leq |\T{steps}|$.
 
 init is called before the other access programs. The exam-room scene and
 the presentation modules are ready before play. The caller supplies the
-level definition, age group and callbacks. The callbacks retain the
-current player, and finish returns the result of the same change that
-grants the reward.
+level definition, age group and callbacks. The selected player stays the
+same throughout play. The start and finish callbacks operate on that
+player's current record and save through Player Data before returning.
+finish returns the result of the same change that grants the reward.
 
 \paragraph{Access Routine Semantics}
 
@@ -2578,8 +2659,8 @@ An incorrect action never stops the level or removes a reward
   advance $i$. Sensation
   descriptions are not skipped (\srsitemref{FR_DescribeSensations}{FR8}).
 \item $\V{Settings}$: suspend, call the supplied settings operation,
-  then resume. The application-level return and interruption rules
-  are TBD.
+  then resume. The callback returns only when settings and any opened
+  guide have closed.
 \end{itemize}
 
 \noindent $\T{stopAll}$ : $() \to ()$
@@ -2604,7 +2685,6 @@ after the last step.
 \paragraph{Future Revisions}
 
 \begin{itemize}
-\item Binding RunHooksT to progress, player-data saving and settings: TBD.
 \item The full level state machine, save failure and retry, and repeated
   initialization: TBD.
 \item Pending callbacks, cancellation generations, repeated input and
@@ -2937,8 +3017,9 @@ current player's scoreboard, supplied by the caller.
 \paragraph{Considerations}
 
 Player selection is passed through this screen so Application Control
-does not call Player Data. The returned record can be passed to the
-map and dress-up screens. The scoreboard is reached through this
+does not call Player Data directly. The returned record describes the
+player at selection time. Application Control reads the current record
+through its context before showing player data. The scoreboard is reached through this
 module, as in the \mg{} uses table.
 
 Deleting a player erases saved progress, so only a caregiver can do it.
@@ -2949,7 +3030,7 @@ delete control by accident cannot pass the gate.
 \paragraph{Future Revisions}
 
 \begin{itemize}
-\item Character pictures supplied by $k$ and preparation of BoardT: TBD.
+\item Final character pictures supplied by $k$: TBD.
 \item The caregiver management view and managePlayers: TBD.
 \item Back navigation, including after deleting the current player: TBD.
 \item Slot nicknames, narrated selection guidance, fixed slot markers
@@ -3041,7 +3122,8 @@ has been aligned with the catalogue.
 \paragraph{Considerations}
 
 The screen reads the supplied progress. It does not start a level or
-give a reward. Application Control handles the returned choice.
+give a reward. Application Control reads the current player record before
+each call to open and handles the returned choice.
 
 \paragraph{Future Revisions}
 
@@ -3053,7 +3135,6 @@ give a reward. Application Control handles the returned choice.
 \item Usability, shared control placement and finding a named level
   from launch: TBD.
 \item Repeated input, interruptions and cancellation of pending navigation: TBD.
-\item Refreshing the map after player changes, purchases and resets: TBD.
 \end{itemize}
 
 % =====================================================================
@@ -3249,7 +3330,6 @@ comparison with another player (\srsitemref{NFR_NoPressure}{NFR7}).
 \paragraph{Future Revisions}
 
 \begin{itemize}
-\item Preparation of BoardT, including the pointsEarned query for one row: TBD.
 \item Layout for long level lists and long nicknames, and narrated guidance: TBD.
 \item Shared control placement and touch-target sizes for the back control: TBD.
 \end{itemize}
@@ -3365,8 +3445,7 @@ The Player Data Module (\misref{PlayerData}{5}) saves each change to the wardrob
 \paragraph{Future Revisions}
 
 \begin{itemize}
-\item Saving purchases and wardrobe changes through Player Data, and applying the
-  returned spending: TBD.
+\item Saving each purchase and wardrobe change before the next input: TBD.
 \item Reward-only items, items not for sale, and the final inclusive collection: TBD.
 \item Preview cleanup, repeated input and interruptions during a purchase: TBD.
 \end{itemize}
@@ -3567,9 +3646,6 @@ left with its player erased. No setting is offered outside this screen
 
 \begin{itemize}
 \item Caption-size preference and its control: TBD.
-\item Opening the settings during a level and returning to that level: TBD.
-\item Applying the returned nickname and data requests through Application
-  Control: TBD.
 \end{itemize}
 
 % =====================================================================
