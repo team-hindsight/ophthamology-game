@@ -2604,8 +2604,8 @@ non-empty lines through Narration, with their visual cues. The step returns
 when its end condition holds or it is cancelled. On either return, call
 SceneStaging.highlight($\langle\rangle$) and
 SceneStaging.listen($\langle\rangle$) to clear its glows and target input.
-Cancellation also removes the step's buttons and calls Narration.stop()
-and SceneStaging.stopAll().
+Cancellation also removes the step's buttons and calls Narration.stop(),
+SceneStaging.stopAll() and ScreenEffects.clear().
 
 When a line accompanies an animation, their starts are at most
 $\T{AV\_SYNC\_MAX\_MS}$ milliseconds apart. Use presentTogether for a
@@ -2642,6 +2642,7 @@ the corresponding demonstration begins (\srsitemref{FR_DescribeSensations}{FR8})
   the step ends. There is no failure.
 \item BlinkStepT: say line. Each blink tap plays ScreenEffects.blink
   and reduces the blur until the required number of taps is reached.
+  Call ScreenEffects.clear() on completion or skip.
 \item QuestionStepT: say prompt and show the answers. A correct
   answer is praised. After an incorrect answer, reveal every correct
   answer within $\T{ANSWER\_REVEAL\_MAX\_S}$ using its line, an
@@ -4715,8 +4716,9 @@ setReducedMotion the reduced-motion preference of the Preferences Module (\misre
 \begin{samepage}
 \noindent clear():
 \begin{itemize}
-\item transition: every running effect stops, $\T{dark}, \T{blur} := 0, 0$,
-  and $\T{overlay}$ is empty (\srsitemref{FR_StopOnExit}{FR23}).
+\item transition: cancel every running or paused effect,
+  $\T{dark}, \T{blur} := 0, 0$, and $\T{overlay}$ is empty
+  (\srsitemref{FR_StopOnExit}{FR23}). Cleared effects do not resume.
 \item exception: none
 \end{itemize}
 \end{samepage}
