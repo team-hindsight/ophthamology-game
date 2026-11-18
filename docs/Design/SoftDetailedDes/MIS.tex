@@ -2506,6 +2506,7 @@ resume & -- & -- & --\\
 \item $\T{steps}$ : seq of StepT
 \item $i$ : $\N$, the current step
 \item $\T{paused}$ : $\B$
+\item $\T{describing}$ : $\B$, whether a required sensation description is playing
 \end{itemize}
 
 \paragraph{Environment Variables}
@@ -2534,8 +2535,8 @@ finish returns the result of the same change that grants the reward.
 \begin{samepage}
 \noindent init():
 \begin{itemize}
-\item transition: $\T{level}, \T{steps}, i, \T{paused} := \V{none},
-  \langle\rangle, 0, \false$. The controls are hidden.
+\item transition: $\T{level}, \T{steps}, i, \T{paused}, \T{describing} :=
+  \V{none}, \langle\rangle, 0, \false, \false$. The controls are hidden.
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -2545,7 +2546,8 @@ finish returns the result of the same change that grants the reward.
 \noindent play($l$, $a$, $h$):
 \begin{itemize}
 \item transition: obtain $s := \text{ProcedureContent.stepsFor}(l.\T{id},a)$,
-  then set $\T{level}, \T{steps}, i := l.\T{id}, s, 0$ and call
+  then set $\T{level}, \T{steps}, i := l.\T{id}, s, 0$.
+  Call $\T{stopAll}()$ and SceneStaging.reset(), then
   $h.\T{start}(l.\T{id})$. Show the home, restart, skip and settings
   controls in their fixed positions, with one indicator per step.
   Home, restart and settings take one tap, including while narration
@@ -2599,9 +2601,11 @@ finish returns the result of the same change that grants the reward.
 
 $\T{present}$ : StepT $\to ()$
 
-For a step $s$, call SceneStaging.frame($s.\T{shot}$), then present its
+For a step $s$, set $\T{describing} := \false$ and call
+SceneStaging.frame($s.\T{shot}$), then present its
 non-empty lines through Narration, with their visual cues. The step returns
-when its end condition holds or it is cancelled. On either return, call
+when its end condition holds or it is cancelled. On either return, set
+$\T{describing} := \false$ and call
 SceneStaging.highlight($\langle\rangle$) and
 SceneStaging.listen($\langle\rangle$) to clear its glows and target input.
 Cancellation also removes the step's buttons and calls Narration.stop(),
@@ -2618,8 +2622,10 @@ the corresponding demonstration begins (\srsitemref{FR_DescribeSensations}{FR8})
   is non-empty, pass $\langle\T{discover}\rangle$ to SceneStaging.highlight.
   The object glows while the panel runs. When sensation is false, call
   presentTogether(beat, line), then say followUp. When sensation is true,
-  say line and followUp in full, then call SceneStaging.play(beat) and wait
-  until isPlaying() is false. Afterwards, listen for discover if non-empty
+  set $\T{describing} := \true$ and say line and followUp in full.
+  When both have finished, set $\T{describing} := \false$, then call
+  SceneStaging.play(beat) and wait until isPlaying() is false.
+  Afterwards, listen for discover if non-empty
   and wait for Next or the hold button, as given by endOn. Earlier discovery
   taps are ignored (\srsitemref{FR_HoldSkip}{FR21}). When
   SceneStaging.tapped(discover) is true, call listen($\langle\rangle$),
@@ -2682,12 +2688,12 @@ both. Cancelling the step stops both and abandons the rest of the step.
 \item $\V{Home}$: call $\T{stopAll}()$, hide the level controls,
   set $\T{level} := \V{none}$, and return $\V{ToMap}$ from play
   without reporting completion.
-\item $\V{Restart}$: call $\T{stopAll}()$, set $i := 0$, and
-  begin the first step again. Keep saved progress and rewards.
-\item $\V{Skip}$: unless the current step is a PanelStepT with
-  sensation set to $\true$, cancel it, call Narration.stop and
-  advance $i$. Sensation
-  descriptions are not skipped (\srsitemref{FR_DescribeSensations}{FR8}).
+\item $\V{Restart}$: call $\T{stopAll}()$ and SceneStaging.reset(),
+  set $i := 0$, and begin the first step again. Keep saved progress and rewards.
+\item $\V{Skip}$: when $\T{describing}$ is $\true$, ignore the request
+  without keeping it for later. Otherwise, cancel the current step and
+  advance $i$. The animation after a sensation description can be skipped
+  (\srsitemref{FR_DescribeSensations}{FR8}, \srsitemref{FR_NoPenalty}{FR19}).
 \item $\V{Settings}$: suspend, call the supplied settings operation,
   then resume. The callback returns only when settings and any opened
   guide have closed.
@@ -2695,7 +2701,7 @@ both. Cancelling the step stops both and abandons the rest of the step.
 
 \noindent $\T{stopAll}$ : $() \to ()$
 
-Cancel the active step, remove its controls and call Narration.stop,
+Set $\T{describing} := \false$. Cancel any active step, remove its controls and call Narration.stop,
 SoundEffects.stopAll, ScreenEffects.clear and SceneStaging.stopAll.
 
 \paragraph{Local Types}
@@ -4104,6 +4110,7 @@ None.
 
 \begin{accessprogs}
 init & $k$ : LookT & -- & --\\
+reset & -- & -- & --\\
 actor & $c$ : CastT & ActorT & --\\
 place & $n$ : String & PlaceT & UnknownPlace\\
 frame & $s$ : String & -- & UnknownShot\\
@@ -4127,8 +4134,11 @@ resume & -- & -- & --\\
 
 \begin{itemize}
 \item $\T{cast}$ : CastT $\to$ ActorT, the character for each role
+\item $\T{initialPlaces}$ : CastT $\to$ PlaceT, each character's starting
+  position and facing direction
 \item $\T{places}$ : set of String, the names of the places in the room
 \item $\T{shots}$ : set of String, the names of the camera views
+\item $\T{initialShot}$ : String, the starting camera view
 \item $\T{shot}$ : String, the current camera view
 \item $\T{targets}$ : set of String, the names of the objects that can be
   tapped
@@ -4155,13 +4165,14 @@ equipment, drawn on the screen and touched through the Hardware-Hiding Module.
 Every tapped target is listening, and every listening target is a target of
 the room: $\T{hits} \subseteq \T{listening} \subseteq \T{targets}$.
 Also, $\T{highlighted} \subseteq \T{targets}$,
-$\T{shot} \in \T{shots}$, and $0 \leq \T{dropProgress} \leq 1$.
+$\T{shot}, \T{initialShot} \in \T{shots}$, and $0 \leq \T{dropProgress} \leq 1$.
 When $\T{dropEye} = \V{none}$, $\T{dropProgress} = 0$.
 
 \paragraph{Assumptions}
 
 init() is called after the exam room is loaded and before any other access
-program. Shot and target names are non-empty. The room supplies an initial shot.
+program. Shot and target names are non-empty. The room supplies an initial shot
+and a starting position and facing direction for each character.
 An interactive drop and a stage action that moves the bottle do not run
 at the same time. The caller starts a stage action only when the room is
 not paused.
@@ -4184,13 +4195,26 @@ not paused.
   \T{listening}, \T{hits}, \T{miss}, \T{paused} := \{\}, \{\}, \false,
   \false
   \end{array}\]
-  Then $\T{cast}(\V{Player})$.show($\false$), so the player's character is
-  hidden until $\V{PlayerAppear}$. Set $\T{shots}$ to the room's shot names
-  and $\T{shot}$ to its initial shot, and show that view. Set
-  $\T{highlighted} := \{\}$ and
-  $\T{dropEye}, \T{dropProgress} := \V{none}, 0$.
-  Set $\T{action} := \V{none}$.
-  The targets have no glow and the equipment is in its starting place.
+  Set $\T{shots}$ to the room's shot names, $\T{initialShot}$ to its
+  initial shot, and $\T{initialPlaces}$ to the starting positions and facing
+  directions of the cast. Set $\T{action} := \V{none}$, then call reset().
+\item exception: none
+\end{itemize}
+\end{samepage}
+\par\pagebreak[0]
+
+\begin{samepage}
+\noindent reset():
+\begin{itemize}
+\item transition: call stopAll(), then set $\T{paused} := \false$.
+  For each character $c$, call $\T{cast}(c)$.resume(),
+  $\T{cast}(c)$.placeAt($\T{initialPlaces}(c)$) and
+  $\T{cast}(c)$.setMood($\V{Neutral}$).
+  Show the doctor and peer with show($\true$), and hide the player with
+  show($\false$) until $\V{PlayerAppear}$. Call frame($\T{initialShot}$).
+  The existing characters keep their looks. The room has its starting
+  camera view, positions, idle poses and equipment, with no active actions,
+  highlights or stored taps.
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4307,6 +4331,11 @@ not paused.
   $\V{DropOnPeer}$ holds the eye-drop bottle over the peer's eye and lets one
   drop fall. While paused, the action keeps its current position and does
   not complete.
+  Character movements use the Character Rig access programs:
+  $\V{PeerTiltBack}$ calls the peer's pose($\V{TiltBack}$), and
+  $\V{PeerBlink}$ calls its blink(). The stage action finishes when its
+  character and equipment actions finish. Cancelling it abandons any
+  remaining actions.
 \item exception: $\exc := (\T{action} \neq \V{none} \Rightarrow
   \text{AlreadyPlaying})$
 \end{itemize}
@@ -4338,10 +4367,11 @@ not paused.
 \noindent stopAll():
 \begin{itemize}
 \item transition: every running or paused action stops and
-  $\T{action} := \V{none}$. Every character returns to its
-  idle pose with its mouth closed, and resetEquipment() returns the equipment
+  $\T{action} := \V{none}$. Call stop() on every character in $\T{cast}$,
+  returning each to its idle pose with its mouth closed.
+  resetEquipment() returns the equipment
   to its starting place. Call highlight($\langle\rangle$) and set
-  $\T{listening}, \T{hits} := \{\}, \{\}$
+  $\T{listening}, \T{hits}, \T{miss} := \{\}, \{\}, \false$
   (\srsitemref{FR_StopOnExit}{FR23}).
 \item exception: none
 \end{itemize}
@@ -4351,8 +4381,9 @@ not paused.
 \begin{samepage}
 \noindent pause():
 \begin{itemize}
-\item transition: $\T{paused} := \true$, and every animation in $\T{room}$
-  stops (\srsitemref{FR_Suspend}{FR27}).
+\item transition: $\T{paused} := \true$. Call pause() on every character
+  in $\T{cast}$ and pause the equipment animations and the stage action's
+  timing (\srsitemref{FR_Suspend}{FR27}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4361,8 +4392,9 @@ not paused.
 \begin{samepage}
 \noindent resume():
 \begin{itemize}
-\item transition: $\T{paused} := \false$, and every animation in $\T{room}$
-  continues from where it stopped (\srsitemref{FR_Suspend}{FR27}).
+\item transition: $\T{paused} := \false$. Call resume() on every character
+  in $\T{cast}$ and continue the equipment animations and the stage action's
+  timing from where they stopped (\srsitemref{FR_Suspend}{FR27}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4424,7 +4456,7 @@ None.
   at most one item of each category.
 \item $\T{RoleT} = \{\V{Child}, \V{Doctor}\}$
 \item $\T{PoseT} = \{\V{Idle}, \V{Wave}, \V{Cheer}, \V{Sit}, \V{Walk},
-  \V{Interact}, \V{UseItem}\}$
+  \V{TiltBack}, \V{Interact}, \V{UseItem}\}$
 \item $\T{MoodT} = \{\V{Neutral}, \V{Happy}, \V{Worried}, \V{Surprised},
   \V{Focused}\}$
 \item $\T{PlaceT}$: a position and a facing direction in a 3D scene
@@ -4439,9 +4471,13 @@ show & $b$ : $\B$ & -- & --\\
 placeAt & $p$ : PlaceT & -- & --\\
 walkTo & $p$ : PlaceT & -- & --\\
 pose & $p$ : PoseT & -- & --\\
+blink & -- & -- & --\\
 setMood & $m$ : MoodT & -- & --\\
 talk & $v$ : $\R$ & -- & OutOfRange\\
 dance & $t$ : $\R$ & -- & OutOfRange\\
+stop & -- & -- & --\\
+pause & -- & -- & --\\
+resume & -- & -- & --\\
 \end{accessprogs}
 
 \subsubsection{Semantics}
@@ -4456,11 +4492,13 @@ dance & $t$ : $\R$ & -- & OutOfRange\\
 \item $\T{mood}$ : MoodT
 \item $\T{mouth}$ : $\R$, how far the mouth is open, from 0 (closed) to 1
 \item $\T{visible}$ : $\B$
+\item $\T{paused}$ : $\B$
 \end{itemize}
 
 \paragraph{Environment Variables}
 
-$\T{model}$: the 3D model of this character in the current scene.
+$\T{model}$: the 3D model of this character in the current scene, including
+its running or paused animations.
 
 \paragraph{State Invariant}
 
@@ -4469,7 +4507,9 @@ $\T{look}$ has at most one item of each category, and $0 \leq \T{mouth} \leq
 
 \paragraph{Assumptions}
 
-None.
+The caller starts walkTo, pose, blink or dance only when the character is
+not paused and the previous such call has returned. pause, resume and stop
+may be called while one runs. placeAt is called when no movement is running.
 
 \paragraph{Access Routine Semantics}
 
@@ -4477,7 +4517,9 @@ None.
 \noindent new ActorT($k$, $r$):
 \begin{itemize}
 \item transition: $\T{look}, \T{role}, \T{posed}, \T{mood}, \T{mouth},
-  \T{visible} := k, r, \V{Idle}, \V{Neutral}, 0, \true$. $\T{model}$ shows the
+  \T{visible} := k, r, \V{Idle}, \V{Neutral}, 0, \true$.
+  Set $\T{paused} := \false$ and $\T{at}$ to the model's initial position
+  and facing direction. $\T{model}$ shows the
   character of $k$ wearing its accessories. When $k$ has no character, the
   default character of the Accessory Catalogue Module is shown. With role
   $\V{Doctor}$, the model also wears a white coat and a head mirror.
@@ -4520,8 +4562,8 @@ None.
 \begin{samepage}
 \noindent walkTo($p$):
 \begin{itemize}
-\item transition: $\T{at} := p$, and $\T{model}$ walks to $p$. The routine
-  returns when it arrives.
+\item transition: $\T{model}$ walks to $p$, updating $\T{at}$ as it moves.
+  The routine returns when it arrives or stop cancels it.
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4531,6 +4573,19 @@ None.
 \noindent pose($p$):
 \begin{itemize}
 \item transition: $\T{posed} := p$, and the body of $\T{model}$ plays the pose.
+  $\V{TiltBack}$ tilts the head back, keeping the character seated if it
+  is already seated. The routine returns when the pose animation finishes
+  or stop cancels it.
+\item exception: none
+\end{itemize}
+\end{samepage}
+\par\pagebreak[0]
+
+\begin{samepage}
+\noindent blink():
+\begin{itemize}
+\item transition: $\T{model}$ closes and opens its eyes once, keeping its
+  body pose. The routine returns when the eyes reopen or stop cancels it.
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4548,7 +4603,8 @@ None.
 \begin{samepage}
 \noindent talk($v$):
 \begin{itemize}
-\item transition: $\T{mouth} := v$
+\item transition: when not paused, $\T{mouth} := v$. While paused,
+  nothing changes.
 \item exception: $\exc := (v < 0 \vee v > 1 \Rightarrow \text{OutOfRange})$
 \end{itemize}
 \end{samepage}
@@ -4557,9 +4613,42 @@ None.
 \begin{samepage}
 \noindent dance($t$):
 \begin{itemize}
-\item transition: $\T{model}$ dances for $t$ seconds, and then $\T{posed} :=
-  \V{Idle}$.
+\item transition: $\T{model}$ dances for $t$ seconds of unpaused time,
+  and then $\T{posed} := \V{Idle}$. The routine returns when the dance
+  finishes or stop cancels it.
 \item exception: $\exc := (t < 0 \Rightarrow \text{OutOfRange})$
+\end{itemize}
+\end{samepage}
+\par\pagebreak[0]
+
+\begin{samepage}
+\noindent stop():
+\begin{itemize}
+\item transition: cancel every running or paused movement, pose, blink and
+  dance. Set $\T{posed}, \T{mouth} := \V{Idle}, 0$. The model is idle with
+  its eyes open at its current position. Cancelled routines return without
+  completing their remaining movements. They do not resume later.
+\item exception: none
+\end{itemize}
+\end{samepage}
+\par\pagebreak[0]
+
+\begin{samepage}
+\noindent pause():
+\begin{itemize}
+\item transition: $\T{paused} := \true$. Every animation and its timing
+  stop at their current positions. Active routines wait without completing.
+\item exception: none
+\end{itemize}
+\end{samepage}
+\par\pagebreak[0]
+
+\begin{samepage}
+\noindent resume():
+\begin{itemize}
+\item transition: $\T{paused} := \false$. Paused animations and their
+  timing continue from where they stopped.
+\item exception: none
 \end{itemize}
 \end{samepage}
 \par\pagebreak[0]
