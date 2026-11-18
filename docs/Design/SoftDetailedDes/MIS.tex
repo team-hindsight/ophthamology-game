@@ -2165,7 +2165,7 @@ Types:
 \item AgeGroupT from Preferences Module (\misref{Prefs}{6})
 \item LevelIdT from Level Catalogue Module (\misref{Levels}{7})
 \item LineT from Narration Module (\misref{Narration}{11})
-\item BeatT from Scene Staging Module (\misref{Staging}{22})
+\item BeatT, EyeT from Scene Staging Module (\misref{Staging}{22})
 \end{itemize}
 
 \subsubsection{Syntax}
@@ -2182,19 +2182,20 @@ $\T{SENTENCE\_MAX\_WORDS} = 10$ (\srsitemref{NFR_Language}{NFR8})
   how the level presents it.
 \item $\T{EndOnT} = \{\V{Next}, \V{Hold}\}$: whether a panel ends on
   Next or on holding the hold button.
-\item $\T{EyeT} = \{\V{PlayerEye}, \V{PeerEye}\}$
 \item $\T{AnswerT} = \text{tuple of } (\T{picture} : \text{ImageT},
   \T{line} : \text{LineT}, \T{correct} : \B)$
 \item StepT: one of the step records in Table~\ref{TblStepContent}.
   The record's name identifies its kind. LineT comes from Narration,
-  BeatT from Scene Staging, AgeGroupT from Preferences, and LevelIdT
+  BeatT and EyeT from Scene Staging, AgeGroupT from Preferences, and LevelIdT
   from Level Catalogue. These are data types, and this module does not call
   those modules.
 \end{itemize}
 
-The records hold the content of each step. Procedure Runner
-performs the steps. An empty shot or object name means ``none'', and a
-line may be empty when there is no line to say.
+The records hold the content of each step. Procedure Runner performs the
+steps. Shot and target names refer to the views and tappable objects of
+Scene Staging. An empty shot keeps the current view, and an empty
+discovery name means there is no discovery object. A line may be empty
+when there is no line to say.
 
 \begingroup
 \small
@@ -2281,6 +2282,8 @@ For every stored sequence of steps:
 
 init is called before any query. Packaged content is checked against the
 invariant. Every included level has default content and a guide entry.
+Every non-empty shot or discovery name, and every tap target, matches one
+in the exam room.
 
 \paragraph{Access Routine Semantics}
 
@@ -2513,23 +2516,34 @@ grants the reward.
 
 $\T{present}$ : StepT $\to ()$
 
-Frame the step using its shot, then present its non-empty lines through
-Narration, with their visual cues. The step returns when its end condition
-holds or it is cancelled. Scene Staging supplies the framing, room actions
-and tappable targets. Cancellation removes the step's glows and buttons
-and returns its equipment to its starting place.
+For a step $s$, call SceneStaging.frame($s.\T{shot}$), then present its
+non-empty lines through Narration, with their visual cues. The step returns
+when its end condition holds or it is cancelled. On either return, call
+SceneStaging.highlight($\langle\rangle$) and
+SceneStaging.listen($\langle\rangle$) to clear its glows and target input.
+Cancellation also removes the step's buttons and calls
+SceneStaging.resetEquipment().
 
 \begin{itemize}
 \item PanelStepT: play the stage action, say line and followUp, and
-  wait for Next or the hold button, as given by endOn. The discovery
-  object glows while the panel runs, and tapping it says discoverLine as an aside.
-\item TapTargetStepT: say line and wait for the target. A missed tap
-  says hint and permits another attempt. A correct tap plays the
-  stage action, says reaction and changes the framing to afterShot.
-\item HoldStillStepT: say coming and hold the bottle over the selected eye. Holding
-  the control advances the drop for the specified duration, and letting
-  go pauses it and says reminder. When it lands, show the soft flash
-  and blur and say landed. There is no failure.
+  wait for Next or the hold button, as given by endOn. When discover is
+  non-empty, pass $\langle\T{discover}\rangle$ to SceneStaging.highlight
+  and listen. The object glows while the panel runs. When
+  SceneStaging.tapped(discover) is true, say discoverLine as an aside,
+  then call listen again with $\langle\T{discover}\rangle$ to clear the tap.
+\item TapTargetStepT: pass $\langle\T{target}\rangle$ to
+  SceneStaging.highlight and listen, say line and wait for the target.
+  When SceneStaging.tapped(target) is true, play the stage action, say
+  reaction and call SceneStaging.frame(afterShot). Otherwise, when
+  SceneStaging.missed() is true, say hint and call listen again with
+  the target to clear the previous taps and permit another attempt.
+\item HoldStillStepT: say coming and call SceneStaging.setDrop(spot, 0)
+  to hold the bottle over the selected eye. While the control is held,
+  call setDrop with the same eye and the elapsed hold time divided by
+  $\T{seconds}$, capped at 1. Count only time held while the level is not
+  paused. Letting go keeps the drop in place and says reminder. At 1, the drop has landed;
+  show the soft flash and blur and say landed. Call resetEquipment when
+  the step ends. There is no failure.
 \item BlinkStepT: say line. Each blink tap plays ScreenEffects.blink
   and reduces the blur until the required number of taps is reached.
 \item QuestionStepT: say prompt and show the answers. A correct
@@ -2544,8 +2558,7 @@ and returns its equipment to its starting place.
   tapLine and makes the pupil grow.
 \end{itemize}
 
-These are the behaviours of the step types. The camera-shot
-and equipment-control interfaces needed within Scene Staging are TBD.
+The equipment controls for ChartStepT, ExamStepT and CloseupStepT are TBD.
 
 While a character speaks, pass Narration.speaker and loudness to
 SceneStaging.speaking, using $\V{none}$ for the off-screen narrator.
@@ -3957,6 +3970,8 @@ None.
 \item $\T{CastT} = \{\V{Doctor}, \V{Peer}, \V{Player}\}$: the characters in
   the exam room. The peer is a child character who has each procedure first,
   as a model for the player.
+\item $\T{EyeT} = \{\V{PlayerEye}, \V{PeerEye}\}$: the eye that receives
+  the drop.
 \item $\T{BeatT}$: the stage actions of the eye-drop level,
   \[\begin{array}{l}
   \{\V{DoctorWave}, \V{DoctorCheer}, \V{DoctorToDropPoint},
@@ -3975,6 +3990,10 @@ None.
 init & $k$ : LookT & -- & --\\
 actor & $c$ : CastT & ActorT & --\\
 place & $n$ : String & PlaceT & UnknownPlace\\
+frame & $s$ : String & -- & UnknownShot\\
+highlight & $\T{ts}$ : seq of String & -- & UnknownTarget\\
+setDrop & $e$ : EyeT, $k$ : $\R$ & -- & OutOfRange\\
+resetEquipment & -- & -- & --\\
 listen & $\T{ts}$ : seq of String & -- & UnknownTarget\\
 tapped & $t$ : String & $\B$ & UnknownTarget\\
 missed & -- & $\B$ & --\\
@@ -3992,8 +4011,13 @@ resume & -- & -- & --\\
 \begin{itemize}
 \item $\T{cast}$ : CastT $\to$ ActorT, the character for each role
 \item $\T{places}$ : set of String, the names of the places in the room
+\item $\T{shots}$ : set of String, the names of the camera views
+\item $\T{shot}$ : String, the current camera view
 \item $\T{targets}$ : set of String, the names of the objects that can be
   tapped
+\item $\T{highlighted}$ : set of String, the targets that glow
+\item $\T{dropEye}$ : EyeT $\cup \{\V{none}\}$, the eye receiving the drop
+\item $\T{dropProgress}$ : $\R$, from 0 (at the bottle) to 1 (landed)
 \item $\T{listening}$ : set of String, the targets that accept taps now
 \item $\T{hits}$ : set of String, the listening targets tapped since the last
   listen
@@ -4004,18 +4028,23 @@ resume & -- & -- & --\\
 
 \paragraph{Environment Variables}
 
-$\T{room}$: the 3D exam room with its characters and clinical equipment, drawn
-on the screen and touched through the Hardware-Hiding Module.
+$\T{room}$: the 3D exam room with its camera, characters and clinical
+equipment, drawn on the screen and touched through the Hardware-Hiding Module.
 
 \paragraph{State Invariant}
 
 Every tapped target is listening, and every listening target is a target of
 the room: $\T{hits} \subseteq \T{listening} \subseteq \T{targets}$.
+Also, $\T{highlighted} \subseteq \T{targets}$,
+$\T{shot} \in \T{shots}$, and $0 \leq \T{dropProgress} \leq 1$.
+When $\T{dropEye} = \V{none}$, $\T{dropProgress} = 0$.
 
 \paragraph{Assumptions}
 
 init() is called after the exam room is loaded and before any other access
-program.
+program. Shot and target names are non-empty. The room supplies an initial shot.
+An interactive drop and a stage action that moves the bottle do not run
+at the same time.
 
 \paragraph{Access Routine Semantics}
 
@@ -4036,7 +4065,11 @@ program.
   \false
   \end{array}\]
   Then $\T{cast}(\V{Player})$.show($\false$), so the player's character is
-  hidden until $\V{PlayerAppear}$.
+  hidden until $\V{PlayerAppear}$. Set $\T{shots}$ to the room's shot names
+  and $\T{shot}$ to its initial shot, and show that view. Set
+  $\T{highlighted} := \{\}$ and
+  $\T{dropEye}, \T{dropProgress} := \V{none}, 0$.
+  The targets have no glow and the equipment is in its starting place.
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4057,6 +4090,55 @@ program.
 \item output: $\out :=$ the position in $\T{room}$ of the place named $n$.
 \item exception: $\exc := (n \notin \T{places} \Rightarrow
   \text{UnknownPlace})$
+\end{itemize}
+\end{samepage}
+\par\pagebreak[0]
+
+\begin{samepage}
+\noindent frame($s$):
+\begin{itemize}
+\item transition: when $s$ is not empty, $\T{shot} := s$ and the camera
+  shows that view of the room. An empty $s$ keeps the current view.
+\item exception: $\exc := (s \neq \text{``''} \wedge s \notin \T{shots}
+  \Rightarrow \text{UnknownShot})$
+\end{itemize}
+\end{samepage}
+\par\pagebreak[0]
+
+\begin{samepage}
+\noindent highlight($\T{ts}$):
+\begin{itemize}
+\item transition: $\T{highlighted} := \{t \mid t \in \T{ts}\}$. Exactly
+  these targets glow. An empty sequence clears every glow. This does not
+  change which targets accept taps.
+\item exception: $\exc := (\{t \mid t \in \T{ts}\} \not\subseteq \T{targets}
+  \Rightarrow \text{UnknownTarget})$
+\end{itemize}
+\end{samepage}
+\par\pagebreak[0]
+
+\begin{samepage}
+\noindent setDrop($e$, $k$):
+\begin{itemize}
+\item transition: when not paused, $\T{dropEye}, \T{dropProgress} := e,k$.
+  The bottle is held over eye $e$. At 0, the drop is at the bottle; at 1,
+  it has landed in the eye. Between them, it is partway through its fall.
+  The drop stays there until another call or resetEquipment. The call
+  returns after setting its position; it does not wait for a hold.
+  While paused, nothing changes.
+\item exception: $\exc := (k < 0 \vee k > 1 \Rightarrow \text{OutOfRange})$
+\end{itemize}
+\end{samepage}
+\par\pagebreak[0]
+
+\begin{samepage}
+\noindent resetEquipment():
+\begin{itemize}
+\item transition: stop every equipment action, remove the drop and return
+  the equipment to its starting place. Set
+  $\T{dropEye}, \T{dropProgress} := \V{none},0$. The camera view and
+  characters do not change. This also works while paused.
+\item exception: none
 \end{itemize}
 \end{samepage}
 \par\pagebreak[0]
@@ -4119,8 +4201,9 @@ program.
 \noindent stopAll():
 \begin{itemize}
 \item transition: every running action stops, every character returns to its
-  idle pose with its mouth closed, the equipment returns to its starting
-  place, and $\T{listening}, \T{hits} := \{\}, \{\}$
+  idle pose with its mouth closed, and resetEquipment() returns the equipment
+  to its starting place. Call highlight($\langle\rangle$) and set
+  $\T{listening}, \T{hits} := \{\}, \{\}$
   (\srsitemref{FR_StopOnExit}{FR23}).
 \item exception: none
 \end{itemize}
@@ -4167,7 +4250,7 @@ one second (\srsitemref{NFR_Flashing}{NFR16}).
 \paragraph{Future Revisions}
 
 \begin{itemize}
-\item The camera-shot and equipment-control interfaces used by Procedure Runner: TBD.
+\item Equipment controls for the chart, examination light and model eye: TBD.
 \item Stage actions for the Vision Testing and Slit-Lamp Preparation levels: TBD.
 \item Scene-load errors and repeated initialization: TBD.
 \end{itemize}
