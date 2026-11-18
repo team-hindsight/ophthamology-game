@@ -2614,14 +2614,19 @@ lines paired with screen effects. Sensation descriptions finish before
 the corresponding demonstration begins (\srsitemref{FR_DescribeSensations}{FR8}).
 
 \begin{itemize}
-\item PanelStepT: when sensation is false, call presentTogether(beat, line),
-  then say followUp. When sensation is true, say line and followUp in full,
-  then call SceneStaging.play(beat) and wait until isPlaying() is false.
-  Afterwards, wait for Next or the hold button, as given by endOn. When
-  discover is non-empty, pass $\langle\T{discover}\rangle$ to SceneStaging.highlight
-  and listen. The object glows while the panel runs. When
-  SceneStaging.tapped(discover) is true, say discoverLine as an aside,
-  then call listen again with $\langle\T{discover}\rangle$ to clear the tap.
+\item PanelStepT: call SceneStaging.listen($\langle\rangle$). When discover
+  is non-empty, pass $\langle\T{discover}\rangle$ to SceneStaging.highlight.
+  The object glows while the panel runs. When sensation is false, call
+  presentTogether(beat, line), then say followUp. When sensation is true,
+  say line and followUp in full, then call SceneStaging.play(beat) and wait
+  until isPlaying() is false. Afterwards, listen for discover if non-empty
+  and wait for Next or the hold button, as given by endOn. Earlier discovery
+  taps are ignored (\srsitemref{FR_HoldSkip}{FR21}). When
+  SceneStaging.tapped(discover) is true, call listen($\langle\rangle$),
+  then Narration.aside(discoverLine). Next and the hold button do not end
+  the panel while the aside runs. When it returns, listen again with
+  $\langle\T{discover}\rangle$ only if the panel is still active. Taps during
+  the aside are not kept for later.
 \item TapTargetStepT: pass $\langle\T{target}\rangle$ to
   SceneStaging.highlight and listen, say line and wait for the target.
   When SceneStaging.tapped(target) is true, call presentTogether(beat,
@@ -2806,7 +2811,8 @@ $\T{speaking} \Rightarrow \T{current} \neq \V{none}$
 init is called before any other access program. $p$ returns the current
 caregiver preferences without changing them. The content tests check
 that the caption of every line has at most $\T{CAPTION\_MAX\_WORDS}$
-words.
+words. The caller starts a new say only after any earlier say or aside
+has returned. pause, resume and stop may be called while either runs.
 
 \paragraph{Access Routine Semantics}
 
@@ -2834,9 +2840,10 @@ words.
   at $\T{preferences}().\T{narrationVolume}$, or nothing if there is no
   recording, for $\T{duration}(x)$. Then $\T{speaking} := \false$. If
   $\T{wait}$, the Next control appears and say returns when it is tapped, or at
-  once when $\T{preferences}().\T{autoContinue}$. Otherwise say returns. Taps
-  outside the Next, replay, home and restart controls do not shorten a line
-  (\srsitemref{FR_IgnoreRepeatedTouches}{FR20}).
+  once when $\T{preferences}().\T{autoContinue}$. Otherwise say returns.
+  Next, replay and discovery taps do not shorten a playing line
+  (\srsitemref{FR_HoldSkip}{FR21}). The level controls remain active through
+  Procedure Runner (\misref{Runner}{10}).
 \item exception: $\exc := (x.\T{words} = \text{``''} \wedge x.\T{caption} =
   \text{``''} \Rightarrow \text{EmptyLine})$
 \end{itemize}
@@ -2846,8 +2853,15 @@ words.
 \begin{samepage}
 \noindent aside($x$):
 \begin{itemize}
-\item transition: as say($x$, $\false$), and afterwards $\T{bubble}$ shows the
-  line that was current before again.
+\item transition: when $\T{speaking} \vee \T{paused}$, return without
+  changing the current line or keeping the aside for later
+  (\srsitemref{FR_HoldSkip}{FR21}). Otherwise, remember $\T{current}$ and
+  $\T{bubble}$, then present $x$ as in say($x$, $\false$). Next and replay
+  are disabled while the aside runs. When it finishes, restore
+  $\T{current}$ and $\T{bubble}$, including their previous controls, with
+  $\T{speaking} := \false$. The earlier line has already finished and is
+  not played again. If there was no earlier line, hide $\T{bubble}$.
+  If stop is called, return without restoring the earlier line or controls.
 \item exception: $\exc := (x.\T{words} = \text{``''} \wedge x.\T{caption} =
   \text{``''} \Rightarrow \text{EmptyLine})$
 \end{itemize}
@@ -2859,6 +2873,8 @@ words.
 \begin{itemize}
 \item transition: $\T{current}, \T{speaking} := \V{none}, \false$,
   then HardwareHiding.stopAudio($\V{Voice}$), and $\T{bubble}$ is hidden.
+  Cancel any active say or aside. It returns without showing another line
+  or restoring earlier controls.
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -2932,7 +2948,7 @@ $\T{inaudible}() \equiv \text{HardwareHiding.isMuted}() \vee
 \paragraph{Future Revisions}
 
 \begin{itemize}
-\item Repeated initialization and overlapping presentation requests: TBD.
+\item Repeated initialization: TBD.
 \item Replay controls, cancellation of pending callbacks, and detailed pause timing: TBD.
 \item Caption-size changes and refreshing guidance during an active line: TBD.
 \item Accessible caption and cue presentation, recording review and
