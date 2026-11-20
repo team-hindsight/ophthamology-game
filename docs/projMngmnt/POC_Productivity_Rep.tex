@@ -196,9 +196,40 @@ for review and implementation of the necessary changes.
 
 \section{CICD via GitHub Actions}
 
-\wss{Say how CICD technology is used and will be used in your project.}
+GitHub Actions will be used to automate testing, building,
+and delivering project documentation and software.
+Currently, our
+\href{https://github.com/team-hindsight/ophthamology-game/blob/main/.github/workflows/latex-pages.yml}{\texttt{latex-pages.yml}}
+workflow automatically compiles LaTeX documents into PDFs
+and publishes them for easy access. This ensures that
+documentation remains up to date and helps identify
+compilation errors. \\
 
-\wss{Provide links to your CICD yaml files}
+As development progresses, we plan to use GitHub Actions
+for continuous integration (CI) of our Unity game.
+Whenever a pull request is submitted or updated, CI will
+automatically run unit tests using the Unity Test Framework.
+These tests will verify individual game components and
+logic to ensure that changes do not break
+existing functionality. Tests will primarily run in
+Unity's Edit Mode, allowing game logic to be tested
+without launching the full game. \\
+
+GitHub Actions will also check code quality and verify
+that the Unity project builds successfully. If any
+automated tests or checks fail, the results will be
+reported on the pull request, and the issues must be
+resolved before merging into the main branch.
+We aim to achieve 80\% line coverage for game logic,
+as outlined in the VnV Plan, to help identify areas
+that require additional testing. \\
+
+For continuous delivery, GitHub Actions may also generate
+game builds for demonstrations and milestone submissions.
+However, requirements such as usability, device
+performance, and clinical-content accuracy will still
+require manual testing and review. Links to additional
+workflow YAML files will be included as they are developed.
 
 \section{Custom Documents (CDs)}
 
