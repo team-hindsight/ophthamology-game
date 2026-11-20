@@ -2,6 +2,7 @@
 
 \usepackage{fullpage}
 \usepackage{float}
+\usepackage{parskip}
 \restylefloat{table}
 
 \usepackage{booktabs}
@@ -203,7 +204,7 @@ Currently, our
 workflow automatically compiles LaTeX documents into PDFs
 and publishes them for easy access. This ensures that
 documentation remains up to date and helps identify
-compilation errors. \\
+compilation errors.
 
 As development progresses, we plan to use GitHub Actions
 for continuous integration (CI) of our Unity game.
@@ -213,7 +214,7 @@ These tests will verify individual game components and
 logic to ensure that changes do not break
 existing functionality. Tests will primarily run in
 Unity's Edit Mode, allowing game logic to be tested
-without launching the full game. \\
+without launching the full game.
 
 GitHub Actions will also check code quality and verify
 that the Unity project builds successfully. If any
@@ -222,7 +223,7 @@ reported on the pull request, and the issues must be
 resolved before merging into the main branch.
 We aim to achieve 80\% line coverage for game logic,
 as outlined in the VnV Plan, to help identify areas
-that require additional testing. \\
+that require additional testing. 
 
 For continuous delivery, GitHub Actions may also generate
 game builds for demonstrations and milestone submissions.
