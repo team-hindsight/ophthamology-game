@@ -708,7 +708,6 @@ Types:
 \begin{itemize}
 \item RecordT, GivenT from Player Data Module (\misref{PlayerData}{5})
 \item BoardT from Scoreboard Screen Module (\misref{Scoreboard}{15})
-\item AgeGroupT from Preferences Module (\misref{Prefs}{6})
 \item SceneT from Hardware-Hiding Module (\misref{HH}{1})
 \item ItemT from Accessory Catalogue Module (\misref{Accessories}{8})
 \item WardrobeT from Wardrobe Module (\misref{Wardrobe}{4})
@@ -744,8 +743,6 @@ are supplied callbacks; Application Control calls them through $c$.
 \endfoot
 isAcknowledged & $() \to \B$ & Calls Preferences.isAcknowledged().\\[0.4em]
 acknowledge & $() \to ()$ & Calls Preferences.acknowledge().\\[0.4em]
-ageGroup & $() \to \text{AgeGroupT}$ & Returns the age group from
-Preferences.get().\\[0.4em]
 current & $() \to \text{RecordT}$ & Calls PlayerData.current(). Each call
 returns the current record in memory, including changes made during play.\\[0.4em]
 rememberPlayer & $\N \to ()$ & Calls Preferences.setLastPlayer with the
@@ -871,7 +868,7 @@ for $\V{Caregiver}$, or $\V{Players}$.\\[0.4em]
 $\V{Level}$ & Call $c$.loadScene($\V{ExamRoom}$). Supply RunHooksT $h$
 with $\T{start} = c.\T{startLevel}$, $\T{finish} = c.\T{finishLevel}$,
 and a settings callback that calls $\T{levelSettings}(c)$.
-Call ProcedureRunner.play($\T{choice}.\T{level}$, $c$.ageGroup(), $h$).
+Call ProcedureRunner.play($\T{choice}.\T{level}$, $h$).
 Repeat while the result is $\V{PlayAgain}$. Call
 $c$.loadScene($\V{Menu}$) and return to $\V{Map}$, which reads the updated
 record before showing progress.\\[0.4em]
@@ -1143,7 +1140,7 @@ $\T{coinReward}(l) \equiv \text{LevelCatalogue.level}(l).\T{reward}.\T{coins}$
 
 Every level can be started, and a completed level stays completed during
 replay. A level's reward is given only on its first completion
-(\srsitemref{FR_NoDuplicateReward}{FR32}). align() keeps saved progress
+(\srsitemref{FR_NoDuplicateReward}{FR31}). align() keeps saved progress
 in step with the available levels.
 
 \paragraph{Future Revisions}
@@ -1210,7 +1207,7 @@ None.
 \paragraph{State Invariant}
 
 For every category $c$, $\T{worn}(c)$ belongs to $c$ and is owned.
-One item is worn in each category (\srsitemref{FR_Equip}{FR39}).
+One item is worn in each category (\srsitemref{FR_Equip}{FR38}).
 
 \paragraph{Assumptions}
 
@@ -1251,10 +1248,10 @@ by the caller for the player who owns this wardrobe.
 \begin{samepage}
 \noindent buy($i$, $c$):
 \begin{itemize}
-\item transition: $\T{owned} := \T{owned} \cup \{i\}$ (\srsitemref{FR_Purchase}{FR37})
+\item transition: $\T{owned} := \T{owned} \cup \{i\}$ (\srsitemref{FR_Purchase}{FR36})
 \item output: $\out := i.\T{price}$, the coins to deduct. The caller
   applies this amount to the player's progress.
-\item exception: (\srsitemref{FR_PurchaseRefused}{FR38})
+\item exception: (\srsitemref{FR_PurchaseRefused}{FR37})
   \[\exc := (\T{owns}(i) \Rightarrow \text{AlreadyOwned} \mid i.\T{price} >
   c \Rightarrow \text{InsufficientCoins})\]
 \end{itemize}
@@ -1292,7 +1289,7 @@ by the caller for the player who owns this wardrobe.
 \noindent remove($c$):
 \begin{itemize}
 \item transition: $\T{worn}(c) := \text{AccessoryCatalogue.default}(c)$. The
-  item stays in $\T{owned}$ (\srsitemref{FR_Equip}{FR39}).
+  item stays in $\T{owned}$ (\srsitemref{FR_Equip}{FR38}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -1314,7 +1311,7 @@ by the caller for the player who owns this wardrobe.
 
 Choosing a character means wearing items of the feature
 categories. Coins are the only currency used for purchases
-(\srsitemref{FR_NoRealMoney}{FR40}). buy returns the cost, so this module
+(\srsitemref{FR_NoRealMoney}{FR39}). buy returns the cost, so this module
 does not call Journey Progress. The worn items are returned as a sequence,
 and the set of its elements is a LookT of the Character Rig interface.
 
@@ -1634,8 +1631,8 @@ the callback bindings are TBD.
 \item output: $\out := \T{given}$. A first completion returns
   $(\true,r)$, where $r$ is the level's reward. Otherwise it returns
   $(\false,(0,0,\V{none}))$
-  (\srsitemref{FR_FirstReward}{FR31},
-  \srsitemref{FR_NoDuplicateReward}{FR32}).
+  (\srsitemref{FR_FirstReward}{FR30},
+  \srsitemref{FR_NoDuplicateReward}{FR31}).
 \item exception: $\exc := (\T{ops}.\text{finishLevel}(\T{rec}, l)
   \text{ signals UnknownLevel} \Rightarrow \text{UnknownLevel})$
 \end{itemize}
@@ -1720,7 +1717,7 @@ the callback bindings are TBD.
 \noindent setNickname($n$):
 \begin{itemize}
 \item transition: $\T{rec}.\T{nickname} := n$, then $\T{store}()$.
-  The empty string clears it (\srsitemref{FR_Nickname}{FR43}).
+  The empty string clears it (\srsitemref{FR_Nickname}{FR42}).
 \item exception: $\exc := (|n| > \T{NICKNAME\_MAX\_CHARS}
   \Rightarrow \text{NicknameTooLong})$
 \end{itemize}
@@ -1733,7 +1730,7 @@ the callback bindings are TBD.
 \item transition: replace $\T{rec}$ with a copy of $\T{fresh}$,
   then $\T{store}()$. This restores a new player's progress, wardrobe and
   nickname. Device preferences and the notice acknowledgement are kept
-  (\srsitemref{FR_ResetJourney}{FR45}).
+  (\srsitemref{FR_ResetJourney}{FR44}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -1744,7 +1741,7 @@ the callback bindings are TBD.
 \begin{itemize}
 \item transition: $\T{slots}$.deleteAll(), then $\T{slot} := 0$,
   $\T{rec} :=$ a copy of $\T{fresh}$, and $\T{chosen} := \false$
-  (\srsitemref{FR_ClearAllData}{FR46}).
+  (\srsitemref{FR_ClearAllData}{FR45}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -1762,7 +1759,7 @@ The current record remains in memory.
 \paragraph{Considerations}
 
 Each change to a chosen player calls store before returning
-(\srsitemref{FR_PersistState}{FR28}). Reading the slot summaries before
+(\srsitemref{FR_PersistState}{FR27}). Reading the slot summaries before
 selection does not create an empty save. Player files are separate from
 the device preferences.
 
@@ -1797,19 +1794,17 @@ Modules:
 
 \paragraph{Exported Constants}
 
-$\T{DEFAULT\_PREFS} : \text{PrefsT} = (\V{Unset}, 1.0, 1.0, \true,
-\V{Standard}, \false, \false)$, that is: age group not set, full narration and
+$\T{DEFAULT\_PREFS} : \text{PrefsT} = (1.0, 1.0, \true,
+\V{Standard}, \false, \false)$, that is: full narration and
 sound volume, captions on, standard visual cues, no auto-continue, full
 motion.
 
 \paragraph{Exported Types}
 
 \begin{itemize}
-\item $\T{AgeGroupT} = \{\V{Unset}, \V{Ages3to4}, \V{Ages5to7}\}$
-  (\srsitemref{FR_AgeGroup}{FR7})
 \item $\T{CueSizeT} = \{\V{Standard}, \V{Large}\}$
-\item $\T{PrefsT} = \text{tuple of } (\T{ageGroup} : \text{AgeGroupT},
-  \T{narrationVolume} : \R, \T{soundVolume} : \R, \T{captions} : \B,
+\item $\T{PrefsT} = \text{tuple of } (\T{narrationVolume} : \R,
+  \T{soundVolume} : \R, \T{captions} : \B,
   \T{cueSize} : \text{CueSizeT}, \T{autoContinue} : \B, \T{reduceMotion} :
   \B)$
 \end{itemize}
@@ -1860,7 +1855,7 @@ init() is called before any other access program.
   (\T{DEFAULT\_PREFS}, \false, 0),\ \T{valid})\]
   then $\T{prefs}, \T{ack}, \T{last} := t.\T{prefs}, t.\T{ack}, t.\T{last}$,
   where $t = \T{file}.\text{load}()$. Damaged data gives the defaults
-  (\srsitemref{FR_CorruptData}{FR30}).
+  (\srsitemref{FR_CorruptData}{FR29}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -1878,7 +1873,7 @@ init() is called before any other access program.
 \begin{samepage}
 \noindent set($p$):
 \begin{itemize}
-\item transition: $\T{prefs} := p$, then $\T{store}()$ (\srsitemref{FR_Preferences}{FR44})
+\item transition: $\T{prefs} := p$, then $\T{store}()$ (\srsitemref{FR_Preferences}{FR43})
 \item exception: $\exc := (\neg\T{inRange}(p) \Rightarrow \text{InvalidPreference})$
 \end{itemize}
 \end{samepage}
@@ -1924,7 +1919,7 @@ init() is called before any other access program.
 \noindent clear():
 \begin{itemize}
 \item transition: $\T{prefs}, \T{ack}, \T{last} := \T{DEFAULT\_PREFS}, \false, 0$,
-  then $\T{file}$.delete() (\srsitemref{FR_ClearAllData}{FR46})
+  then $\T{file}$.delete() (\srsitemref{FR_ClearAllData}{FR45})
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -1955,9 +1950,9 @@ exception is not passed on, and the previous file is kept.
 
 The preferences belong to the device and are shared by every player. Modules
 that present output read get() each time they present it, so a change takes
-effect while the settings are still open (\srsitemref{FR_Preferences}{FR44}).
+effect while the settings are still open (\srsitemref{FR_Preferences}{FR43}).
 There is no preference that turns the visual cues off. Only their size can be
-changed (\srsitemref{FR_VisualCues}{FR15}).
+changed (\srsitemref{FR_VisualCues}{FR14}).
 
 \paragraph{Future Revisions}
 
@@ -2102,7 +2097,7 @@ Modules: None.
 \begin{itemize}
 \item $\T{FEATURES} = \{\V{Skin}, \V{Eyes}, \V{Mouth}, \V{Brows}, \V{Aid}\}$:
   the categories that make up a character. $\V{Aid}$ holds glasses, an eye patch,
-  a wheelchair and the other aids of \srsitemref{FR_DiverseCharacters}{FR35}.
+  a wheelchair and the other aids of \srsitemref{FR_DiverseCharacters}{FR34}.
 \item $\T{ACCESSORIES} = \{\V{Hat}, \V{Outfit}\}$: the categories sold in the
   shop.
 \end{itemize}
@@ -2186,7 +2181,7 @@ init() is called before any other access program.
 \noindent shopItems():
 \begin{itemize}
 \item output: $\out :=$ the items of $\T{all}$ with $\T{price} > 0$, in the
-  order of $\T{all}$ (\srsitemref{FR_Shop}{FR36})
+  order of $\T{all}$ (\srsitemref{FR_Shop}{FR35})
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -2207,7 +2202,7 @@ init() is called before any other access program.
 \item output: $\out := \langle \T{defaults}(c) \mid c \in
   \text{CategoryT}\rangle$, the items of the default character, one per
   category (the order does not matter)
-  (\srsitemref{FR_ChooseCharacter}{FR34})
+  (\srsitemref{FR_ChooseCharacter}{FR33})
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -2216,7 +2211,7 @@ init() is called before any other access program.
 \paragraph{Considerations}
 
 The catalogue has the categories Skin, Eyes, Mouth, Brows, Hat, Outfit and
-Aid. $\V{Aid}$ meets \srsitemref{FR_DiverseCharacters}{FR35}, and its items
+Aid. $\V{Aid}$ meets \srsitemref{FR_DiverseCharacters}{FR34}, and its items
 are free because they describe the child, not a reward.
 
 \paragraph{Future Revisions}
@@ -2241,7 +2236,6 @@ Modules: None.
 
 Types:
 \begin{itemize}
-\item AgeGroupT from Preferences Module (\misref{Prefs}{6})
 \item LevelIdT from Level Catalogue Module (\misref{Levels}{7})
 \item LineT from Narration Module (\misref{Narration}{11})
 \item BeatT, EyeT from Scene Staging Module (\misref{Staging}{22})
@@ -2265,8 +2259,8 @@ $\T{SENTENCE\_MAX\_WORDS} = 10$ (\srsitemref{NFR_Language}{NFR8})
   \T{line} : \text{LineT}, \T{correct} : \B)$
 \item StepT: one of the step records in Table~\ref{TblStepContent}.
   The record's name identifies its kind. LineT comes from Narration,
-  BeatT and EyeT from Scene Staging, AgeGroupT from Preferences, and LevelIdT
-  from Level Catalogue. These are data types, and this module does not call
+  BeatT and EyeT from Scene Staging, and LevelIdT from Level Catalogue.
+  These are data types, and this module does not call
   those modules.
 \end{itemize}
 
@@ -2318,7 +2312,7 @@ $\T{tapLine}$ : LineT\\
 
 \begin{accessprogs}
 init & -- & -- & --\\
-stepsFor & $l$ : LevelIdT, $a$ : AgeGroupT & seq of StepT & UnknownLevel\\
+stepsFor & $l$ : LevelIdT & seq of StepT & UnknownLevel\\
 guide & $l$ : LevelIdT & GuideT & UnknownLevel\\
 \end{accessprogs}
 
@@ -2327,9 +2321,8 @@ guide & $l$ : LevelIdT & GuideT & UnknownLevel\\
 \paragraph{State Variables}
 
 \begin{itemize}
-\item $\T{content}$ : $(\text{LevelIdT} \times \text{AgeGroupT})
-  \rightharpoonup \text{seq of StepT}$, with $(l,\V{Unset})$ for
-  each included level's default content
+\item $\T{content} : \text{LevelIdT} \rightharpoonup
+  \text{seq of StepT}$, with content for each included level
 \item $\T{entries}$ : LevelIdT $\rightharpoonup$ GuideT,
   with one entry for each included level
 \end{itemize}
@@ -2343,24 +2336,24 @@ None.
 For every stored sequence of steps:
 \begin{itemize}
 \item A line tells the child their doctor may do things a little
-  differently (\srsitemref{FR_ClinicsDiffer}{FR10}).
+  differently (\srsitemref{FR_ClinicsDiffer}{FR9}).
 \item A line before the ending tells the child they can tell the doctor
-  if they feel worried (\srsitemref{FR_SpeakUp}{FR11}).
+  if they feel worried (\srsitemref{FR_SpeakUp}{FR10}).
 \item A panel with $\T{sensation} = \true$ describes a sensation
   before it is shown. No line promises that a procedure will not hurt
-  (\srsitemref{FR_DescribeSensations}{FR8},
-  \srsitemref{FR_TruthfulSensations}{FR9}).
+  (\srsitemref{FR_DescribeSensations}{FR7},
+  \srsitemref{FR_TruthfulSensations}{FR8}).
 \item Each narrated sentence has at most
   $\T{SENTENCE\_MAX\_WORDS}$ words.
 \item Hold durations, blink counts and examination-point counts are
   positive. Each question has at least one correct answer
-  (\srsitemref{FR_ValidQuestions}{FR18}).
+  (\srsitemref{FR_ValidQuestions}{FR17}).
 \end{itemize}
 
 \paragraph{Assumptions}
 
 init is called before any query. Packaged content is checked against the
-invariant. Every included level has default content and a guide entry.
+invariant. Every included level has content and a guide entry.
 Every non-empty shot or discovery name, and every tap target, matches one
 in the exam room.
 
@@ -2377,12 +2370,10 @@ in the exam room.
 \par\pagebreak[0]
 
 \begin{samepage}
-\noindent stepsFor($l$, $a$):
+\noindent stepsFor($l$):
 \begin{itemize}
-\item output: $\out := ((l,a) \in \T{dom}(\T{content}) \Rightarrow
-  \T{content}(l,a) \mid \true \Rightarrow \T{content}(l,\V{Unset}))$
-  (\srsitemref{FR_AgeGroup}{FR7}).
-\item exception: $\exc := ((l,\V{Unset}) \notin
+\item output: $\out := \T{content}(l)$
+\item exception: $\exc := (l \notin
   \T{dom}(\T{content}) \Rightarrow \text{UnknownLevel})$
 \end{itemize}
 \end{samepage}
@@ -2392,7 +2383,7 @@ in the exam room.
 \noindent guide($l$):
 \begin{itemize}
 \item output: $\out := \T{entries}(l)$
-  (\srsitemref{FR_ProcedureGuide}{FR42}).
+  (\srsitemref{FR_ProcedureGuide}{FR41}).
 \item exception: $\exc := (l \notin \T{dom}(\T{entries})
   \Rightarrow \text{UnknownLevel})$
 \end{itemize}
@@ -2416,8 +2407,8 @@ and step execution in Procedure Runner.
 \paragraph{Future Revisions}
 
 \begin{itemize}
-\item The final content and age-group variants for Vision Testing,
-  Eye-Drop Preparation and Slit-Lamp Preparation: TBD.
+\item The final content for Vision Testing, Eye-Drop Preparation and
+  Slit-Lamp Preparation: TBD.
 \item The guides query, guide names and level identifiers for the
   Procedure Guide Screen: TBD.
 \item $\T{ADULT\_TEXT\_MAX\_GRADE}$ and the complete guide text: TBD.
@@ -2452,7 +2443,6 @@ Modules:
 Types:
 \begin{itemize}
 \item GivenT from Player Data Module (\misref{PlayerData}{5})
-\item AgeGroupT from Preferences Module (\misref{Prefs}{6})
 \item LevelIdT, LevelT from Level Catalogue Module (\misref{Levels}{7})
 \end{itemize}
 
@@ -2462,7 +2452,7 @@ Types:
 
 \begin{itemize}
 \item $\T{SKIP\_HOLD\_MIN\_S} = 1$, in seconds
-  (\srsitemref{FR_HoldSkip}{FR21})
+  (\srsitemref{FR_HoldSkip}{FR20})
 \item $\T{ANSWER\_REVEAL\_MAX\_S} = 1$, in seconds
   (\srsitemref{NFR_Responsiveness}{NFR12})
 \item $\T{AV\_SYNC\_MAX\_MS} = 100$, in milliseconds
@@ -2491,7 +2481,7 @@ Types:
 
 \begin{accessprogs}
 init & -- & -- & --\\
-play & $l$ : LevelT, $a$ : AgeGroupT, $h$ : RunHooksT & OutcomeT &
+play & $l$ : LevelT, $h$ : RunHooksT & OutcomeT &
 UnknownLevel, AlreadyPlaying\\
 suspend & -- & -- & --\\
 resume & -- & -- & --\\
@@ -2525,7 +2515,7 @@ $\T{level} \neq \V{none} \Rightarrow i \leq |\T{steps}|$.
 
 init is called before the other access programs. The exam-room scene and
 the presentation modules are ready before play. The caller supplies the
-level definition, age group and callbacks. The selected player stays the
+level definition and callbacks. The selected player stays the
 same throughout play. The start and finish callbacks operate on that
 player's current record and save through Player Data before returning.
 finish returns the result of the same change that grants the reward.
@@ -2543,9 +2533,9 @@ finish returns the result of the same change that grants the reward.
 \par\pagebreak[0]
 
 \begin{samepage}
-\noindent play($l$, $a$, $h$):
+\noindent play($l$, $h$):
 \begin{itemize}
-\item transition: obtain $s := \text{ProcedureContent.stepsFor}(l.\T{id},a)$,
+\item transition: obtain $s := \text{ProcedureContent.stepsFor}(l.\T{id})$,
   then set $\T{level}, \T{steps}, i := l.\T{id}, s, 0$.
   Call $\T{stopAll}()$ and SceneStaging.reset(), then
   $h.\T{start}(l.\T{id})$. Show the home, restart, skip and settings
@@ -2567,7 +2557,7 @@ finish returns the result of the same change that grants the reward.
   the ending.
 \item exception: $\exc := (\T{level} \neq \V{none} \Rightarrow
   \text{AlreadyPlaying}$\\
-  $\phantom{\exc := (}\mid \text{ProcedureContent.stepsFor}(l.\T{id}, a)
+  $\phantom{\exc := (}\mid \text{ProcedureContent.stepsFor}(l.\T{id})
   \text{ signals UnknownLevel} \Rightarrow \text{UnknownLevel})$
 \end{itemize}
 \end{samepage}
@@ -2579,7 +2569,7 @@ finish returns the result of the same change that grants the reward.
 \item transition: when $\T{level} \neq \V{none}$: $\T{paused} := \true$,
   then Narration.pause(), SoundEffects.pause(), ScreenEffects.pause() and
   SceneStaging.pause(). The current interaction and its timing stop
-  (\srsitemref{FR_Suspend}{FR27}).
+  (\srsitemref{FR_Suspend}{FR26}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -2591,7 +2581,7 @@ finish returns the result of the same change that grants the reward.
 \item transition: when $\T{level} \neq \V{none}$: $\T{paused} := \false$,
   then Narration.resume(), SoundEffects.resume(), ScreenEffects.resume() and
   SceneStaging.resume(). The current interaction and its timing continue
-  from where they stopped (\srsitemref{FR_Suspend}{FR27}).
+  from where they stopped (\srsitemref{FR_Suspend}{FR26}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -2615,7 +2605,7 @@ When a line accompanies an animation, their starts are at most
 $\T{AV\_SYNC\_MAX\_MS}$ milliseconds apart. Use presentTogether for a
 line paired with a stage action. The same start-time limit applies to
 lines paired with screen effects. Sensation descriptions finish before
-the corresponding demonstration begins (\srsitemref{FR_DescribeSensations}{FR8}).
+the corresponding demonstration begins (\srsitemref{FR_DescribeSensations}{FR7}).
 
 \begin{itemize}
 \item PanelStepT: call SceneStaging.listen($\langle\rangle$). When discover
@@ -2627,7 +2617,7 @@ the corresponding demonstration begins (\srsitemref{FR_DescribeSensations}{FR8})
   SceneStaging.play(beat) and wait until isPlaying() is false.
   Afterwards, listen for discover if non-empty
   and wait for Next or the hold button, as given by endOn. Earlier discovery
-  taps are ignored (\srsitemref{FR_HoldSkip}{FR21}). When
+  taps are ignored (\srsitemref{FR_HoldSkip}{FR20}). When
   SceneStaging.tapped(discover) is true, call listen($\langle\rangle$),
   then Narration.aside(discoverLine). Next and the hold button do not end
   the panel while the aside runs. When it returns, listen again with
@@ -2667,7 +2657,7 @@ While a character speaks, pass Narration.speaker and loudness to
 SceneStaging.speaking, using $\V{none}$ for the off-screen narrator.
 These updates continue while the runner waits for narration or an action.
 An incorrect action never stops the level or removes a reward
-(\srsitemref{FR_NoPenalty}{FR19}).
+(\srsitemref{FR_NoPenalty}{FR18}).
 
 \noindent $\T{presentTogether}$ : $(\text{BeatT} \times \text{LineT}) \to ()$
 
@@ -2693,7 +2683,7 @@ both. Cancelling the step stops both and abandons the rest of the step.
 \item $\V{Skip}$: when $\T{describing}$ is $\true$, ignore the request
   without keeping it for later. Otherwise, cancel the current step and
   advance $i$. The animation after a sensation description can be skipped
-  (\srsitemref{FR_DescribeSensations}{FR8}, \srsitemref{FR_NoPenalty}{FR19}).
+  (\srsitemref{FR_DescribeSensations}{FR7}, \srsitemref{FR_NoPenalty}{FR18}).
 \item $\V{Settings}$: suspend, call the supplied settings operation,
   then resume. The callback returns only when settings and any opened
   guide have closed.
@@ -2725,7 +2715,7 @@ after the last step.
   initialization: TBD.
 \item Pending callbacks, cancellation generations, repeated input and
   interruption handling during the ending: TBD.
-\item Changing age-group content during a level and applyPreferences: TBD.
+\item Applying changed preferences during a level: TBD.
 \item Touch-response timing and usability checks for the level controls: TBD.
 \item Additional procedure activities and their Scene Staging controls: TBD.
 \end{itemize}
@@ -2839,17 +2829,17 @@ has returned. pause, resume and stop may be called while either runs.
 \begin{itemize}
 \item transition: $\T{current}, \T{speaking} := x, \true$. $\T{bubble}$ shows
   the portrait of $x.\T{speaker}$ and $x.\T{cue}$
-  (\srsitemref{FR_VisualCues}{FR15}), and $x.\T{caption}$ when
+  (\srsitemref{FR_VisualCues}{FR14}), and $x.\T{caption}$ when
   $\T{preferences}().\T{captions} \vee \T{inaudible}()$. When
   $\T{inaudible}()$, $\T{bubble}$ also shows a prompt that tells the caregiver
   how to turn the sound on, and the prompt does not stop play
-  (\srsitemref{FR_NarrationFallback}{FR16}). $\T{voice}$ plays $x.\T{recording}$
+  (\srsitemref{FR_NarrationFallback}{FR15}). $\T{voice}$ plays $x.\T{recording}$
   at $\T{preferences}().\T{narrationVolume}$, or nothing if there is no
   recording, for $\T{duration}(x)$. Then $\T{speaking} := \false$. If
   $\T{wait}$, the Next control appears and say returns when it is tapped, or at
   once when $\T{preferences}().\T{autoContinue}$. Otherwise say returns.
   Next, replay and discovery taps do not shorten a playing line
-  (\srsitemref{FR_HoldSkip}{FR21}). The level controls remain active through
+  (\srsitemref{FR_HoldSkip}{FR20}). The level controls remain active through
   Procedure Runner (\misref{Runner}{10}).
 \item exception: $\exc := (x.\T{words} = \text{``''} \wedge x.\T{caption} =
   \text{``''} \Rightarrow \text{EmptyLine})$
@@ -2862,7 +2852,7 @@ has returned. pause, resume and stop may be called while either runs.
 \begin{itemize}
 \item transition: when $\T{speaking} \vee \T{paused}$, return without
   changing the current line or keeping the aside for later
-  (\srsitemref{FR_HoldSkip}{FR21}). Otherwise, remember $\T{current}$ and
+  (\srsitemref{FR_HoldSkip}{FR20}). Otherwise, remember $\T{current}$ and
   $\T{bubble}$, then present $x$ as in say($x$, $\false$). Next and replay
   are disabled while the aside runs. When it finishes, restore
   $\T{current}$ and $\T{bubble}$, including their previous controls, with
@@ -3070,7 +3060,7 @@ module, as in the \mg{} uses table.
 
 Deleting a player erases saved progress, so only a caregiver can do it.
 The parental gate comes before the confirmation, as it does for the
-caregiver settings (\srsitemref{FR_ParentGate}{FR41}). A child who taps the
+caregiver settings (\srsitemref{FR_ParentGate}{FR40}). A child who taps the
 delete control by accident cannot pass the gate.
 
 \paragraph{Future Revisions}
@@ -3247,15 +3237,15 @@ $\true$ only when that report gave the level's reward.
 \noindent show($\T{name}$, $\T{first}$, $p$):
 \begin{itemize}
 \item transition: $\T{screen}$ celebrates the end of level $\T{name}$
-  (\srsitemref{FR_LevelEnd}{FR12}).
+  (\srsitemref{FR_LevelEnd}{FR11}).
   \begin{itemize}
   \item When $\T{first}$ is $\true$, the screen shows each part of $p$ that the
     level gives: the journey points, the coins, and the accessory picture. A
     part that is 0 or $\V{none}$ is not shown
-    (\srsitemref{FR_FirstReward}{FR31}).
+    (\srsitemref{FR_FirstReward}{FR30}).
   \item When $\T{first}$ is $\false$, the screen congratulates the child and
     shows no points, coins or accessory
-    (\srsitemref{FR_NoDuplicateReward}{FR32}).
+    (\srsitemref{FR_NoDuplicateReward}{FR31}).
   \end{itemize}
   The screen then shows a home control and a play-again control, and waits
   until the child taps one of them.
@@ -3351,7 +3341,7 @@ player's character.
 \noindent show($b$):
 \begin{itemize}
 \item transition: $\T{screen}$ shows the personal scoreboard
-  (\srsitemref{FR_Scoreboard}{FR33}):
+  (\srsitemref{FR_Scoreboard}{FR32}):
   \begin{itemize}
   \item for each row, the level name, its status and the points earned. Each
     status has its own icon and word, so it does not depend on colour
@@ -3360,7 +3350,7 @@ player's character.
     the number of rows.
   \item the coin balance and the picture of the character.
   \item the nickname, when it is not empty. Otherwise the heading is not
-    personalized (\srsitemref{FR_Nickname}{FR43}).
+    personalized (\srsitemref{FR_Nickname}{FR42}).
   \end{itemize}
   The screen then waits until the child taps the back control.
 \item exception: none
@@ -3451,24 +3441,24 @@ coin balance.
   category of the items in $\T{shop}$. A tab shows each item of its category
   with its picture, its price when it is not free, and whether it is owned or
   worn. The character tab lets the child choose a character
-  (\srsitemref{FR_ChooseCharacter}{FR34}), and the other tabs are the shop
-  (\srsitemref{FR_Shop}{FR36}).
+  (\srsitemref{FR_ChooseCharacter}{FR33}), and the other tabs are the shop
+  (\srsitemref{FR_Shop}{FR35}).
 
   The screen then reacts to the child until the back control is chosen:
   \begin{itemize}
   \item An owned or free item that is not worn is worn with the Wardrobe
     Module. An accessory that is worn is removed with the Wardrobe Module. At
     most one item of each category is worn, and the character on the screen is
-    dressed in the new look (\srsitemref{FR_Equip}{FR39}).
+    dressed in the new look (\srsitemref{FR_Equip}{FR38}).
   \item An item that is not owned is tried on the character, so the child can
-    preview it (\srsitemref{FR_Shop}{FR36}). A buy control with the price
+    preview it (\srsitemref{FR_Shop}{FR35}). A buy control with the price
     appears.
   \item The buy control asks the Wardrobe Module to buy the item with the
-    coins that are left (\srsitemref{FR_Purchase}{FR37}). When the price is
+    coins that are left (\srsitemref{FR_Purchase}{FR36}). When the price is
     more than the coins left, the purchase is refused, nothing changes, and the
     screen shows how many more coins are needed. When the item is already
     owned, the screen offers to wear it instead
-    (\srsitemref{FR_PurchaseRefused}{FR38}).
+    (\srsitemref{FR_PurchaseRefused}{FR37}).
   \item The back control dresses the character in the look worn in $w$ again,
     so an item that was tried on but not bought is not kept.
   \end{itemize}
@@ -3484,9 +3474,9 @@ coin balance.
 
 Coins earned in the game are the only currency. No control leads to a
 real-money purchase, an advertisement or a link out of the game
-(\srsitemref{FR_NoRealMoney}{FR40}, \srsitemref{NFR_StoreCompliance}{NFR34}).
+(\srsitemref{FR_NoRealMoney}{FR39}, \srsitemref{NFR_StoreCompliance}{NFR34}).
 The Player Data Module (\misref{PlayerData}{5}) saves each change to the wardrobe
-(\srsitemref{FR_PersistState}{FR28}).
+(\srsitemref{FR_PersistState}{FR27}).
 
 \paragraph{Future Revisions}
 
@@ -3554,7 +3544,7 @@ None.
   $\T{GATE\_OPERAND\_MIN}$ and $\T{GATE\_OPERAND\_MAX}$. $\T{screen}$ shows the
   written question ``What is $x$ plus $y$?'' with both numbers spelled out in
   words, such as ``What is seven plus four?''. The question has no narration
-  and no picture of the numbers (\srsitemref{FR_ParentGate}{FR41}). Below it,
+  and no picture of the numbers (\srsitemref{FR_ParentGate}{FR40}). Below it,
   the screen shows a keypad of the digits 0 to 9, a delete key, a done key and
   a cancel key. Every key is at least $\T{TOUCH\_TARGET\_MIN}$ wide and high
   (\srsitemref{NFR_TouchTarget}{NFR3}). The screen waits until done or cancel
@@ -3571,7 +3561,7 @@ None.
 
 Because the question is shown only in words, it cannot be passed by tapping
 pictures or by following the narration. Most children aged 3 to 7 cannot read
-it, while a caregiver can (\srsitemref{FR_ParentGate}{FR41},
+it, while a caregiver can (\srsitemref{FR_ParentGate}{FR40},
 \srsitemref{NFR_StoreCompliance}{NFR34}).
 
 \paragraph{Future Revisions}
@@ -3647,19 +3637,19 @@ $\T{nickname}$ is the current player's nickname, or empty when none is set.
   $\T{screen}$ shows the settings, written for caregivers
   (\srsitemref{NFR_Language}{NFR8}):
   \begin{itemize}
-  \item every caregiver preference held by the Preferences Module: the age
-    group, the narration volume, the music and sound-effect volume, the
-    caption and visual-cue sizes, auto-continue, and reduced motion. Each
+  \item every caregiver preference held by the Preferences Module: the
+    narration volume, the music and sound-effect volume, the caption and
+    visual-cue sizes, auto-continue, and reduced motion. Each
     change is stored in the Preferences Module at once, so it takes effect
-    while the settings are still open (\srsitemref{FR_Preferences}{FR44}).
+    while the settings are still open (\srsitemref{FR_Preferences}{FR43}).
   \item the nickname, which starts as $\T{nickname}$ and can be typed,
-    changed or cleared (\srsitemref{FR_Nickname}{FR43}).
+    changed or cleared (\srsitemref{FR_Nickname}{FR42}).
   \item a control that opens the procedure guide.
   \item when $\T{dataControls}$ is $\true$, a reset-journey control and a
     clear-all-data control. Each one first states what will be erased and asks
     for confirmation with UI Widgets. When the caregiver cancels, nothing
-    changes (\srsitemref{FR_ResetJourney}{FR45},
-    \srsitemref{FR_ClearAllData}{FR46}).
+    changes (\srsitemref{FR_ResetJourney}{FR44},
+    \srsitemref{FR_ClearAllData}{FR45}).
   \item a close control.
   \end{itemize}
 \item output: $\out := (r, n)$, where $n$ is the nickname shown when the
@@ -3686,7 +3676,7 @@ $\V{ClearAllData}$, the Player Data Module and the Preferences Module erase the
 data, and the screen that the SRS requires is shown next. When the settings are
 opened from inside a level, $\T{dataControls}$ is $\false$, so a level is never
 left with its player erased. No setting is offered outside this screen
-(\srsitemref{FR_ParentGate}{FR41}).
+(\srsitemref{FR_ParentGate}{FR40}).
 
 \paragraph{Future Revisions}
 
@@ -3752,7 +3742,7 @@ None.
   in the Procedure Content Module. When the caregiver selects one, the screen
   shows its guide entry: what the child may experience during the procedure,
   and how the matching level presents it
-  (\srsitemref{FR_ProcedureGuide}{FR42}). The text is written for caregivers
+  (\srsitemref{FR_ProcedureGuide}{FR41}). The text is written for caregivers
   (\srsitemref{NFR_Language}{NFR8}). The screen waits until the caregiver
   taps the medical-notice control or the close control.
 \item output: $\out := (\text{the medical-notice control is tapped}
@@ -3859,7 +3849,7 @@ Only this instance writes the file $\T{name}$.
 \item output: $\out :=$ the value saved in file $\T{name}$ when the file
   exists, can be read and holds a valid value. Otherwise $\out := \T{fresh}$.
   Missing, unreadable and invalid data never cause a failure
-  (\srsitemref{FR_CorruptData}{FR30}).
+  (\srsitemref{FR_CorruptData}{FR29}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -3889,11 +3879,11 @@ Only this instance writes the file $\T{name}$.
 \begin{itemize}
 \item transition: file $\T{name}$ holds $v$. The file is replaced in one
   indivisible step, so it never holds a partly written value
-  (\srsitemref{FR_PersistState}{FR28}).
+  (\srsitemref{FR_PersistState}{FR27}).
 \item exception: $\exc := (\neg\T{valid}(v) \Rightarrow \text{InvalidValue}
   \mid \text{the storage cannot be written} \Rightarrow \text{WriteFailed})$.
   After either exception the file still holds the value saved before
-  (\srsitemref{FR_PersistState}{FR28}).
+  (\srsitemref{FR_PersistState}{FR27}).
 \end{itemize}
 \end{samepage}
 \par\pagebreak[0]
@@ -4013,7 +4003,7 @@ None.
 \begin{itemize}
 \item output: $\out := \T{slots}[s]$.exists() $\wedge\ \neg\T{slots}[s]$.recovered().
   A slot whose data is not valid counts as unused, so it is offered as a new
-  game (\srsitemref{FR_CorruptData}{FR30}).
+  game (\srsitemref{FR_CorruptData}{FR29}).
 \item exception: $\exc := (s \geq \T{PLAYER\_SLOTS} \Rightarrow
   \text{InvalidSlot})$
 \end{itemize}
@@ -4024,7 +4014,7 @@ None.
 \noindent save($s$, $v$):
 \begin{itemize}
 \item transition: $\T{slots}[s]$.save($v$)
-  (\srsitemref{FR_PersistState}{FR28})
+  (\srsitemref{FR_PersistState}{FR27})
 \item exception: $\exc := (s \geq \T{PLAYER\_SLOTS} \Rightarrow
   \text{InvalidSlot} \mid \neg\T{valid}(v) \Rightarrow \text{InvalidValue}
   \mid \text{the storage cannot be written} \Rightarrow \text{WriteFailed})$
@@ -4046,7 +4036,7 @@ None.
 \noindent deleteAll():
 \begin{itemize}
 \item transition: $\T{slots}[s]$.delete() for every slot $s$
-  (\srsitemref{FR_ClearAllData}{FR46})
+  (\srsitemref{FR_ClearAllData}{FR45})
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4315,7 +4305,7 @@ not paused.
 \noindent missed():
 \begin{itemize}
 \item output: $\out := \T{miss}$. The Procedure Runner Module (\misref{Runner}{10}) uses it to
-  give a hint (\srsitemref{FR_HintOnMiss}{FR14}).
+  give a hint (\srsitemref{FR_HintOnMiss}{FR13}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4372,7 +4362,7 @@ not paused.
   resetEquipment() returns the equipment
   to its starting place. Call highlight($\langle\rangle$) and set
   $\T{listening}, \T{hits}, \T{miss} := \{\}, \{\}, \false$
-  (\srsitemref{FR_StopOnExit}{FR23}).
+  (\srsitemref{FR_StopOnExit}{FR22}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4383,7 +4373,7 @@ not paused.
 \begin{itemize}
 \item transition: $\T{paused} := \true$. Call pause() on every character
   in $\T{cast}$ and pause the equipment animations and the stage action's
-  timing (\srsitemref{FR_Suspend}{FR27}).
+  timing (\srsitemref{FR_Suspend}{FR26}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4394,7 +4384,7 @@ not paused.
 \begin{itemize}
 \item transition: $\T{paused} := \false$. Call resume() on every character
   in $\T{cast}$ and continue the equipment animations and the stage action's
-  timing from where they stopped (\srsitemref{FR_Suspend}{FR27}).
+  timing from where they stopped (\srsitemref{FR_Suspend}{FR26}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4534,7 +4524,7 @@ may be called while one runs. placeAt is called when no movement is running.
 \noindent dress($k$):
 \begin{itemize}
 \item transition: $\T{look} := k$, and $\T{model}$ shows the new look
-  (\srsitemref{FR_Equip}{FR39}).
+  (\srsitemref{FR_Equip}{FR38}).
 \item exception: $\exc := (k \text{ has two items of one category}
   \Rightarrow \text{InvalidLook})$
 \end{itemize}
@@ -4657,7 +4647,7 @@ may be called while one runs. placeAt is called when no movement is running.
 
 The models and animations are the secret of this module (AC13 of the \mg{}). Each
 one is approved as not frightening (\srsitemref{NFR_ChildSafe}{NFR2}), and the
-characters vary as the SRS requires (\srsitemref{FR_DiverseCharacters}{FR35},
+characters vary as the SRS requires (\srsitemref{FR_DiverseCharacters}{FR34},
 \srsitemref{NFR_Inclusivity}{NFR31}).
 
 \paragraph{Future Revisions}
@@ -4753,7 +4743,7 @@ setReducedMotion the reduced-motion preference of the Preferences Module (\misre
 \begin{samepage}
 \noindent setReducedMotion($r$):
 \begin{itemize}
-\item transition: $\T{reduced} := r$ (\srsitemref{FR_Preferences}{FR44})
+\item transition: $\T{reduced} := r$ (\srsitemref{FR_Preferences}{FR43})
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4807,7 +4797,7 @@ setReducedMotion the reduced-motion preference of the Preferences Module (\misre
 \begin{itemize}
 \item transition: cancel every running or paused effect,
   $\T{dark}, \T{blur} := 0, 0$, and $\T{overlay}$ is empty
-  (\srsitemref{FR_StopOnExit}{FR23}). Cleared effects do not resume.
+  (\srsitemref{FR_StopOnExit}{FR22}). Cleared effects do not resume.
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4817,7 +4807,7 @@ setReducedMotion the reduced-motion preference of the Preferences Module (\misre
 \noindent pause():
 \begin{itemize}
 \item transition: $\T{paused} := \true$, and every running effect stops where
-  it is (\srsitemref{FR_Suspend}{FR27}).
+  it is (\srsitemref{FR_Suspend}{FR26}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4827,7 +4817,7 @@ setReducedMotion the reduced-motion preference of the Preferences Module (\misre
 \noindent resume():
 \begin{itemize}
 \item transition: $\T{paused} := \false$, and every paused effect continues
-  (\srsitemref{FR_Suspend}{FR27}).
+  (\srsitemref{FR_Suspend}{FR26}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4930,7 +4920,7 @@ recorded with a peak no higher than the peak of the narration recordings.
 \noindent setVolume($s$, $n$):
 \begin{itemize}
 \item transition: $\T{soundVolume}, \T{narrationVolume} := s, n$
-  (\srsitemref{FR_Preferences}{FR44})
+  (\srsitemref{FR_Preferences}{FR43})
 \item exception: $\exc := (s < 0 \vee s > 1 \vee n < 0 \vee n > 1
   \Rightarrow \text{OutOfRange})$
 \end{itemize}
@@ -4952,7 +4942,7 @@ recorded with a peak no higher than the peak of the narration recordings.
 \noindent stopAll():
 \begin{itemize}
 \item transition: $\T{speaker}$ stops every sound effect
-  (\srsitemref{FR_StopOnExit}{FR23}).
+  (\srsitemref{FR_StopOnExit}{FR22}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4962,7 +4952,7 @@ recorded with a peak no higher than the peak of the narration recordings.
 \noindent pause():
 \begin{itemize}
 \item transition: $\T{paused} := \true$, and $\T{speaker}$ pauses the sound
-  effects (\srsitemref{FR_Suspend}{FR27}).
+  effects (\srsitemref{FR_Suspend}{FR26}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -4972,7 +4962,7 @@ recorded with a peak no higher than the peak of the narration recordings.
 \noindent resume():
 \begin{itemize}
 \item transition: $\T{paused} := \false$, and the paused sound effects
-  continue (\srsitemref{FR_Suspend}{FR27}).
+  continue (\srsitemref{FR_Suspend}{FR26}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -5091,10 +5081,10 @@ None.
   (\srsitemref{NFR_Colour}{NFR10}). A touched control looks pressed within
   $\T{RESPONSE\_MAX\_MS}$ (\srsitemref{NFR_Responsiveness}{NFR12}). A control
   that must be held shows how long it has been held
-  (\srsitemref{FR_HoldSkip}{FR21}). The routine returns at the first choice.
+  (\srsitemref{FR_HoldSkip}{FR20}). The routine returns at the first choice.
   The controls stay on the screen until the caller replaces them, but no
   further touch is acted on until the next call
-  (\srsitemref{FR_IgnoreRepeatedTouches}{FR20}).
+  (\srsitemref{FR_IgnoreRepeatedTouches}{FR19}).
 \item output: $\out :=$ the position in $\T{cs}$ of the first control that is
   tapped or, when it has a hold time, held for that long without letting go.
 \item exception: (\srsitemref{NFR_TouchTarget}{NFR3})
@@ -5136,7 +5126,7 @@ None.
 \noindent cue($i$, $g$):
 \begin{itemize}
 \item transition: $\T{screen}$ shows the visual cue $i$ pointing at region
-  $g$, such as a hand over the object to tap (\srsitemref{FR_VisualCues}{FR15}).
+  $g$, such as a hand over the object to tap (\srsitemref{FR_VisualCues}{FR14}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -5147,7 +5137,7 @@ None.
 \begin{itemize}
 \item transition: $\T{screen}$ shows the text $m$ in a banner, such as a
   prompt for the caregiver to read an instruction aloud
-  (\srsitemref{FR_NarrationFallback}{FR16}).
+  (\srsitemref{FR_NarrationFallback}{FR15}).
 \item exception: none
 \end{itemize}
 \end{samepage}
@@ -5308,8 +5298,7 @@ under each respective team member's name.
     with collecting children's medical information. As a
     result, the application was designed to avoid using a
     database and instead store only minimal information,
-    such as a player's nickname and potentially their age,
-    privately on the device.
+    such as a player's nickname, privately on the device.
 
     The supervisor also explained that obtaining ethics
     approval for direct testing with children would be
