@@ -2463,11 +2463,11 @@ feedback on both requirements.
 
 \textit{Requirements Covered:} \srsnfrref{NFR_Layout}{1}.
 
-\textit{Initial State:} The latest build is open in the Unity editor. The designated position of each shared control, such as the exit, hint, and settings buttons, is recorded in the design.
+\textit{Initial State:} The latest build is open in the Unity editor. The designated position of each shared control, such as the exit, hint, and settings buttons, is recorded in the design for phone and tablet layouts using screen-relative anchors.
 
 \textit{Input/Condition:} Visit every screen of every level, the journey map, the scoreboard, and the character screen at each test screen size.
 
-\textit{Output/Result:} On every screen where a shared control appears, its centre is within \constref{CONTROL_POSITION_TOLERANCE_MM} millimetres of its designated position.
+\textit{Output/Result:} On every screen where a shared control appears, its centre is within \constref{CONTROL_POSITION_TOLERANCE_MM} millimetres of its designated position for that screen size.
 
 \textit{How test will be performed:} A Play Mode test opens each screen and records the on-screen position of each shared control. It converts the distance from the designated position to millimetres using the screen density of each test screen size. A team member reviews any screen that fails and checks the results on one physical device.
 
@@ -2510,11 +2510,11 @@ on these requirements.
 
 \textit{Initial State:} The latest build is open in the Unity editor and installed on the test devices.
 
-\textit{Input/Condition:} Visit every screen of the game at each test screen size.
+\textit{Input/Condition:} Visit every screen of the game at each test screen size, including phone and tablet layouts and both child-facing and caregiver-facing controls.
 
 \textit{Output/Result:} Every interactive element has a touch target at least \constref{TOUCH_TARGET_MIN} millimetres wide and high.
 
-\textit{How test will be performed:} A Play Mode test opens each screen, finds every interactive element, and converts the size of its touch area to millimetres using the screen density. A team member then measures the smallest elements on each physical test device with a ruler or a screenshot of known scale.
+\textit{How test will be performed:} A Play Mode test opens each screen, finds every interactive element, and converts the size of its touch area to millimetres using the screen density. A team member then measures the smallest elements on each physical test device with a ruler or a screenshot of known scale. The team will also check the minimum size against research on touch accuracy for children aged 3--7, rather than relying only on adult touch-target guidance, and document any concerns with the chosen threshold.
 
 \item[\testdef{ST_Exit}]\textbf{One-Touch Exit from Every Screen}
 
