@@ -914,7 +914,7 @@ caregiver's journey-reset control before starting the test.
 \textit{Input/Condition:} From the home screen, open the journey map.
 Do not start any level.
 
-\textit{Output/Result:} Exactly the three defined procedure levels are
+\textit{Output/Result:} The three defined procedure levels are
 shown in level-number order: Vision Testing, Eye-Drop Preparation, and
 Slit-Lamp Preparation. Each has a name, an illustration, and a visible
 \textit{Not Started} status. No level is displayed as locked.
@@ -1022,35 +1022,53 @@ separately in the NFR tests.
 
 \begin{frtestlist}
 
-\item[\frtestdef{ST_AM_ProcedureContent}]\textbf{Procedure Content in Every Level}
+\item[\frtestdef{ST_AM_ProcedureContent}]
+\textbf{Procedure Content in Every Level}
 
-\textit{Type:} Functional, Dynamic, manual content inspection.
+\textit{Type:} Functional, Dynamic, manual gameplay inspection.
 
-\textit{Requirements Covered:} \srsfrref{FR_LevelContent}{6}.
+\textit{Requirements Covered:} \srsfrref{FR_LevelContent}{6}, \srsfrref{FR_HintOnMiss}{14}.
 
 \textit{Initial State:} Initial setup is complete and the three
 procedure levels are available with the final content inventory.
 
-\textit{Input/Condition:} Open Vision Testing, Eye-Drop Preparation,
-and Slit-Lamp Preparation separately. For each, advance through all
-built-in screens and animations, including any optional exercises.
+\textit{Input/Condition:} Open Vision Testing, Eye Drop Preparation, 
+and Slit Lamp Preparation separately. For each level, advance through
+all built-in screens and animations, including optional exercises. 
+During interactive activities, deliberately
+provide incorrect responses or actions and repeat them
+where applicable to observe how the game responds.
 
 \textit{Output/Result:} Each level presents at least one identifiable
-step, piece of equipment, or instruction for its own procedure:
-Vision Testing includes an eye-chart or symbol-identification activity;
-Eye-Drop Preparation depicts or explains clinician-administered drops;
-and Slit-Lamp Preparation depicts or explains the slit-lamp device or
-patient positioning. None is an unrelated activity without procedure
-information.
+step, piece of equipment, or instruction for its corresponding
+procedure. Vision Testing includes an eye chart or
+symbol identification activity, Eye Drop Preparation
+depicts or explains clinician administered drops, and
+Slit Lamp Preparation depicts or explains the slit lamp
+device or patient positioning.
 
-\textit{Test Case Derivation:} \srsfrref{FR_LevelContent}{6} requires each level to prepare for
-its corresponding procedure by presenting at least one relevant part.
-The three use cases describe the intended procedure examples.
+When incorrect responses or actions occur, the game
+provides appropriate hints or guidance and allows the
+child to continue without becoming permanently stuck.
+Relevant procedure information remains accessible
+regardless of the child's performance in optional
+activities.
 
-\textit{How test will be performed:} Play each level from its beginning,
-record the first qualifying procedure moment and its asset or screen ID,
-and capture a screenshot or narrated-screen recording. Compare the
-three observations with the approved procedure inventory.
+\textit{Test Case Derivation:} \srsfrref{FR_LevelContent}{6} requires each level to
+present relevant procedure information, while
+\srsfrref{FR_HintOnMiss}{14} requires guidance when
+the child makes an incorrect attempt. The test verifies
+that children can access the intended educational
+content even when they struggle with gameplay.
+
+\textit{How test will be performed:} Play each level from beginning to end, recording the
+first qualifying procedure moment and its asset or
+screen ID. During interactive activities, intentionally
+make incorrect attempts and observe the resulting hints,
+feedback, and ability to continue. Capture screenshots
+or screen recordings of the procedure content and
+recovery behaviour, and compare the observations
+against the approved procedure inventory.
 
 \item[\frtestdef{ST_AM_AgeGroupSelection}]\textbf{Age-Specific Content Selection}
 
@@ -1145,24 +1163,38 @@ recording. Mark a level as failing if either channel is missing.
 
 \textit{Requirements Covered:} \srsfrref{FR_SpeakUp}{11}.
 
-\textit{Initial State:} All three levels are accessible and audio
-is enabled.
+\textit{Initial State:} All three levels are accessible and audio is enabled.
 
-\textit{Input/Condition:} Complete each level once normally. Reset
-the journey, then complete each level using skip for every optional
-exercise or animation that offers it.
+\textit{Input/Condition:} Complete each level once normally. Reset the journey,
+then complete each level using skip for every optional
+exercise or animation that offers it. Observe how the
+game communicates that children can express worry
+or discomfort to the doctor.
 
-\textit{Output/Result:} Before the ending in both paths for all three
-levels, the child is told that they may tell the doctor if they feel
-worried or uncomfortable. Skipping exercises does not remove this message.
+\textit{Output/Result:} Before the ending in both paths for all three levels,
+the child is explicitly told that they may inform the
+doctor if they feel worried or uncomfortable. The
+message is communicated through clear, age-appropriate
+narration. Any accompanying visual cues or character
+interactions are checked to ensure they reinforce
+the message. Skipping optional exercises does not
+remove this guidance.
 
-\textit{Test Case Derivation:} \srsfrref{FR_SpeakUp}{11} requires the reassurance before
-the end of every level. The alternative skip path checks that a child
-cannot miss it by bypassing an optional exercise.
+\textit{Test Case Derivation:} \srsfrref{FR_SpeakUp}{11} requires children to be
+informed that they can express worry or discomfort
+to the doctor before the end of each level. The
+test checks that this guidance is presented clearly
+and remains accessible when optional activities
+are skipped.
 
-\textit{How test will be performed:} Record the normal and skip-heavy
-runs for all three levels, identify the screen or narration ID conveying
-the message, and confirm that it occurs before each end-of-level screen.
+\textit{How test will be performed:} Record normal and skip-heavy runs for all three
+levels. Identify the narration or screen ID
+communicating the message and verify that it
+occurs before each end-of-level screen. Review
+the wording and any accompanying visual cues
+to determine whether the message clearly
+encourages children to speak to the doctor
+when they feel uncomfortable.
 
 \item[\frtestdef{ST_AM_LevelCompletion}]\textbf{Completion Recorded Only at Level Ending}
 
@@ -3219,7 +3251,7 @@ link to the SRS, and test IDs link to the corresponding cases in this plan.
 \srsfrref{FR_SpokenInstructions}{13} & Narrated instructions and demonstrations &
   \frtestref{ST_InstructionsFeedback_01}\\
 \srsfrref{FR_HintOnMiss}{14} & Encouraging hints after errors &
-  \frtestref{ST_InstructionsFeedback_02}\\
+  \frtestref{ST_InstructionsFeedback_02}, \frtestref{ST_AM_ProcedureContent}\\
 \srsfrref{FR_VisualCues}{15} & Persistent visual cues &
   \frtestref{ST_InstructionsFeedback_03}, \frtestref{ST_CaregiverFeatures_01}\\
 \srsfrref{FR_NarrationFallback}{16} & Instructions without sound &
