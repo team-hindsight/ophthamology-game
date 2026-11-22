@@ -906,7 +906,7 @@ unnecessary frustration or loss of progress.
 \textit{Associated hazards:}
 \hazref{GameplayStuck}
 
-\textit{SRS:} \srsfrref{FR_ExitLevel}{20}, \srsfrref{FR_ExitKeepsData}{22}, \srsfrref{FR_RestartAfterExit}{23}, \srsfrref{FR_RestartLevel}{24}; \srsnfrref{NFR_Exit}{4}, \srsnfrref{NFR_Reliability}{17}
+\textit{SRS:} \srsfrref{FR_ExitLevel}{21}, \srsfrref{FR_ExitKeepsData}{23}, \srsfrref{FR_RestartAfterExit}{24}, \srsfrref{FR_RestartLevel}{25}; \srsnfrref{NFR_Exit}{4}, \srsnfrref{NFR_Reliability}{17}
 
 \item[\srdef{ClinicianApproval}] \textbf{Clinical Approval of Procedure Content}
 
@@ -963,7 +963,7 @@ it, and does not learn to distrust the people who prepared them.
 
 \textit{Associated hazards:} \hazref{SensationsHidden}
 
-\textit{SRS:} \srsfrref{FR_DescribeSensations}{8}; \srsnfrref{NFR_ChildSafe}{2}
+\textit{SRS:} \srsfrref{FR_DescribeSensations}{7}; \srsnfrref{NFR_ChildSafe}{2}
 
 \item[\srdef{ChildLifeReview}] \textbf{Child-Life Review of Content}
 
@@ -1050,7 +1050,7 @@ to perform correctly.
 \textit{Associated hazards:}
 \hazref{PunitiveFeedback}
 
-\textit{SRS:} \srsfrref{FR_HintOnMiss}{13}, \srsfrref{FR_NoPenalty}{18}, \srsfrref{FR_FirstReward}{28}
+\textit{SRS:} \srsfrref{FR_HintOnMiss}{13}, \srsfrref{FR_NoPenalty}{18}, \srsfrref{FR_FirstReward}{30}
 
 \item[\srdef{StopAudioVisualsOnExit}]
 \textbf{Termination of Audio and Visual Effects on Exit}
@@ -1073,7 +1073,7 @@ fully ends the activity.
 \textit{Associated hazards:}
 \hazref{AudioVisualsContinueOnExit}
 
-\textit{SRS:} \srsfrref{FR_StopOnExit}{21}; \srsnfrref{NFR_Exit}{4}
+\textit{SRS:} \srsfrref{FR_StopOnExit}{22}; \srsnfrref{NFR_Exit}{4}
 
 \item[\srdef{SafeAudioVisuals}]
 \textbf{Safe Audio and Visual Effects}
@@ -1095,7 +1095,7 @@ preserving the educational purpose of the game.
 \textit{Associated hazards:}
 \hazref{UnsafeAudioVisuals}
 
-\textit{SRS:} \srsfrref{FR_NarrationFallback}{15}, \srsfrref{FR_Preferences}{41}; \srsnfrref{NFR_AudioSafety}{15}, \srsnfrref{NFR_Flashing}{16}
+\textit{SRS:} \srsfrref{FR_NarrationFallback}{15}, \srsfrref{FR_Preferences}{43}; \srsnfrref{NFR_AudioSafety}{15}, \srsnfrref{NFR_Flashing}{16}
 
 \item[\srdef{CharacterDiversityInclusivity}]
 \textbf{Assuring Game Characters and Cosmetic Rewards are Diverse and Inclusive}
@@ -1116,7 +1116,7 @@ exhaustion while still providing a diverse catalogue.
 \textit{Associated hazards:}
 \hazref{DiverseCharacterCatalogue}
 
-\textit{SRS:} \srsfrref{FR_DiverseCharacters}{32}; \srsnfrref{NFR_Inclusivity}{31}
+\textit{SRS:} \srsfrref{FR_DiverseCharacters}{34}; \srsnfrref{NFR_Inclusivity}{31}
 
 \item[\srdef{CorrectAnswerReveal}]
 \textbf{Revealing Correct Answers for Learning Benefit}
@@ -1167,7 +1167,7 @@ spontaneous interruptions it ensures children do not miss content during the gam
 \textit{Associated hazards:}
 \hazref{NarrationDisabledSetting}
 
-\textit{SRS:} \srsfrref{FR_NarrationFallback}{15}, \srsfrref{FR_Suspend}{25}; \srsnfrref{NFR_Accessibility}{9}
+\textit{SRS:} \srsfrref{FR_NarrationFallback}{15}, \srsfrref{FR_Suspend}{26}; \srsnfrref{NFR_Accessibility}{9}
 
 \item[\srdef{VisualCuesSetting}]
 \textbf{Visual Cues Inclusion during Gameplay}
@@ -1183,7 +1183,7 @@ while still allowing a parent to adjust for accessibility needs.
 \textit{Associated hazards:}
 \hazref{VisualCuesDisabledSetting}
 
-\textit{SRS:} \srsfrref{FR_VisualCues}{14}, \srsfrref{FR_ParentGate}{38}, \srsfrref{FR_Preferences}{41}; \srsnfrref{NFR_Accessibility}{9}
+\textit{SRS:} \srsfrref{FR_VisualCues}{14}, \srsfrref{FR_ParentGate}{40}, \srsfrref{FR_Preferences}{43}; \srsnfrref{NFR_Accessibility}{9}
 
 \item[\srdef{ReliableSaveData}]
 \textbf{Reliable Save Data Handling}
@@ -1204,7 +1204,7 @@ unexpected application or device failures.
 \textit{Associated hazards:}
 \hazref{SaveDataCorruption}
 
-\textit{SRS:} \srsfrref{FR_PersistState}{26}, \srsfrref{FR_CorruptData}{27}; \srsnfrref{NFR_Reliability}{17}
+\textit{SRS:} \srsfrref{FR_PersistState}{27}, \srsfrref{FR_CorruptData}{29}; \srsnfrref{NFR_Reliability}{17}
 
 \item[\srdef{MinimalSaveData}]
 \textbf{Minimization and Protection of Game Data}
@@ -1300,7 +1300,7 @@ intended ages and abilities, not just checked for game errors.
 \textit{Associated hazards:}
 \hazref{InaccessibleInteraction}
 
-\textit{SRS:} \srsfrref{FR_AgeGroup}{7}, \srsfrref{FR_SpokenInstructions}{12}, \srsfrref{FR_Preferences}{41}; \srsnfrref{NFR_TouchTarget}{3}, \srsnfrref{NFR_Usability}{5}, \srsnfrref{NFR_Language}{8}, \srsnfrref{NFR_Accessibility}{9}, \srsnfrref{NFR_Colour}{10}
+\textit{SRS:} \srsfrref{FR_SpokenInstructions}{12}, \srsfrref{FR_Preferences}{43}; \srsnfrref{NFR_TouchTarget}{3}, \srsnfrref{NFR_Usability}{5}, \srsnfrref{NFR_Language}{8}, \srsnfrref{NFR_Accessibility}{9}, \srsnfrref{NFR_Colour}{10}
 
 \item[\srdef{ConsistentAudioVisuals}]
 \textbf{Consistent Narration and Animation}
@@ -1323,7 +1323,7 @@ defined in SR-13 and SR-14.
 \textit{Associated hazards:}
 \hazref{AudioVisualMismatch}
 
-\textit{SRS:} \srsfrref{FR_Suspend}{25}; \srsnfrref{NFR_AVSync}{14}
+\textit{SRS:} \srsfrref{FR_Suspend}{26}; \srsnfrref{NFR_AVSync}{14}
 
 \item[\srdef{OfflinePreparation}]
 \textbf{Offline Availability of Preparation Content}
