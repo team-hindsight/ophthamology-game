@@ -262,16 +262,15 @@ decisions not specified in the SRS.
 
 \item[\acdef{acContent}] The content of
   each level and of the procedure guide: the steps, their order, the narrated
-  wording, the sensation descriptions, the content for each age group and the
-  language.
+  wording, the sensation descriptions, and the language.
 
-\textit{Rationale:} Procedure wording and step order may change after clinical and child-life review (\srsitemref{LC_ClinicalContent}{LC3}). Age-specific content and additional languages are also anticipated (\srsitemref{LC_AgeContent}{LC7}, \srsitemref{LC_Language}{LC8}), and revised clinical content must still meet \srsitemref{NFR_ClinicalAccuracy}{NFR22}.
+\textit{Rationale:} Procedure wording and step order may change after clinical and child-life review (\srsitemref{LC_ClinicalContent}{LC3}). Content may be refined for children aged 3 to 7, and additional languages are also anticipated (\srsitemref{LC_AgeContent}{LC7}, \srsitemref{LC_Language}{LC8}). Revised clinical content must still meet \srsitemref{NFR_ClinicalAccuracy}{NFR22}.
 
 \item[\acdef{acRunner}] How a level is
   played from its steps: how skipping, restarting, leaving and interruptions
   are handled, such as resuming an interrupted level instead of restarting it.
 
-\textit{Rationale:} Different level formats may require changes to how steps are played (\srsitemref{LC_LevelFormat}{LC1}). The runner must continue to support the exit, restart, and interruption behaviour specified in \srsitemref{FR_ExitLevel}{FR22}, \srsitemref{FR_RestartAfterExit}{FR25}, and \srsitemref{FR_Suspend}{FR27}.
+\textit{Rationale:} Different level formats may require changes to how steps are played (\srsitemref{LC_LevelFormat}{LC1}). The runner must continue to support the exit, restart, and interruption behaviour specified in \srsitemref{FR_ExitLevel}{FR21}, \srsitemref{FR_RestartAfterExit}{FR24}, and \srsitemref{FR_Suspend}{FR26}.
 
 \item[\acdef{acSteps}] The kinds of
   exercises a level can contain and how each kind interacts with the child,
@@ -288,18 +287,18 @@ decisions not specified in the SRS.
 \item[\acdef{acScoreboard}] The contents
   and presentation of the personal scoreboard.
 
-\textit{Rationale:} The way progress is displayed may be improved after usability testing. The scoreboard must still show the personal progress information required by \srsitemref{FR_Scoreboard}{FR33} without adding pressure or comparisons between children (\srsitemref{NFR_NoPressure}{NFR7}).
+\textit{Rationale:} The way progress is displayed may be improved after usability testing. The scoreboard must still show the personal progress information required by \srsitemref{FR_Scoreboard}{FR32} without adding pressure or comparisons between children (\srsitemref{NFR_NoPressure}{NFR7}).
 
 \item[\acdef{acDressUp}] The presentation
   of the character choice, the shop and the dressing room.
 
-\textit{Rationale:} Changes to the character and accessory catalogue (\srsitemref{LC_Characters}{LC5}) may require changes to the shop and dressing-room screens. The screens must still support accessory previews, purchases, and equipping as required by \srsitemref{FR_Shop}{FR36} and \srsitemref{FR_Equip}{FR39}.
+\textit{Rationale:} Changes to the character and accessory catalogue (\srsitemref{LC_Characters}{LC5}) may require changes to the shop and dressing-room screens. The screens must still support accessory previews, purchases, and equipping as required by \srsitemref{FR_Shop}{FR35} and \srsitemref{FR_Equip}{FR38}.
 
 \item[\acdef{acDataFile}] The format in
   which data is written to storage and how a failed or interrupted write is
   recovered from.
 
-\textit{Rationale:} The storage format may evolve as the saved state changes. It must continue to keep an earlier valid save when a write fails (\srsitemref{FR_PersistState}{FR28}) and recover safely from unreadable data (\srsitemref{FR_CorruptData}{FR30}).
+\textit{Rationale:} The storage format may evolve as the saved state changes. It must continue to keep an earlier valid save when a write fails (\srsitemref{FR_PersistState}{FR27}) and recover safely from unreadable data (\srsitemref{FR_CorruptData}{FR29}).
 
 \item[\acdef{acStaging}] The layout of the
   3D exam room: where characters and equipment stand, which objects can be
@@ -321,7 +320,7 @@ decisions not specified in the SRS.
 \item[\acdef{acSound}] The sound effects,
   the music and how their volume is set against the narration.
 
-\textit{Rationale:} Music and sound effects may be replaced during development (\srsitemref{LC_Assets}{LC11}) or adjusted after testing. They must remain within the relative volume limit in \srsitemref{NFR_AudioSafety}{NFR15}, while following the caregiver settings in \srsitemref{FR_Preferences}{FR44}.
+\textit{Rationale:} Music and sound effects may be replaced during development (\srsitemref{LC_Assets}{LC11}) or adjusted after testing. They must remain within the relative volume limit in \srsitemref{NFR_AudioSafety}{NFR15}, while following the caregiver settings in \srsitemref{FR_Preferences}{FR43}.
 
 \item[\acdef{acWidgets}] The look and feel
   of the shared controls: buttons, switches, confirmation dialogs and the coin
@@ -370,8 +369,8 @@ progress is cleared only through a reset.
 \textit{Rationale:} The SRS defines these rules as part of the game's progress
 and reward behaviour (\srsitemref{ULC_RewardOnce}{ULC4}). Changing them would
 affect how completion, rewards, saved state, and resetting progress work across
-the application (\srsitemref{FR_FirstReward}{FR32},
-\srsitemref{FR_ResetJourney}{FR46}).
+the application (\srsitemref{FR_FirstReward}{FR30},
+\srsitemref{FR_ResetJourney}{FR44}).
 
 \item[\ucdef{ucNoFail}] A level has no failure state. An incorrect action
 gives a hint, an incorrect answer shows the correct answer, and an exercise can
@@ -380,7 +379,7 @@ be skipped without penalty.
 \textit{Rationale:} The SRS rules out failure states to avoid increasing a
 child's anxiety (\srsitemref{ULC_NoFail}{ULC3}). Adding penalties or a failure
 state would go against the non-punitive feedback and low-pressure experience
-required by the SRS (\srsitemref{FR_NoPenalty}{FR20},
+required by the SRS (\srsitemref{FR_NoPenalty}{FR18},
 \srsitemref{NFR_NoPressure}{NFR7}).
 
 \item[\ucdef{ucMoney}] Accessories are purchased only with coins earned in
@@ -389,7 +388,7 @@ the game. There are no real-money purchases or advertisements.
 \textit{Rationale:} The SRS excludes real-money purchases and advertising
 (\srsitemref{ULC_NoRealMoney}{ULC9}). Introducing either would change the
 reward and shop design and would be inappropriate for the game's young users
-(\srsitemref{FR_NoRealMoney}{FR41}).
+(\srsitemref{FR_NoRealMoney}{FR39}).
 
 \item[\ucdef{ucPersonal}] The game does not collect or store personal or
 health information.
@@ -507,28 +506,26 @@ decisions resulting from these requirements are explained below.
   \srsitemref{NFR_ClinicianUse}{NFR6}, since a clinician must be able to find
   a named level quickly.
 
-\item \srsitemref{FR_LevelContent}{FR6}, \srsitemref{FR_DescribeSensations}{FR8},
-  \srsitemref{FR_TruthfulSensations}{FR9}, \srsitemref{FR_ClinicsDiffer}{FR10},
-  and \srsitemref{FR_SpeakUp}{FR11} specify what children must learn during a
+\item \srsitemref{FR_LevelContent}{FR6}, \srsitemref{FR_DescribeSensations}{FR7},
+  \srsitemref{FR_TruthfulSensations}{FR8}, \srsitemref{FR_ClinicsDiffer}{FR9},
+  and \srsitemref{FR_SpeakUp}{FR10} specify what children must learn during a
   procedure level. The Procedure Content Module (\mref{mContent}) stores the
   approved instructions and sensation descriptions, the Procedure Runner Module
   (\mref{mRunner}) presents them in order, and the Scene Staging Module
   (\mref{mStaging}) displays the corresponding actions. The Procedure Guide
   Screen Module (\mref{mGuide}) uses the same clinical content to support
-  \srsitemref{FR_ProcedureGuide}{FR42}. Keeping the content separate from
+  \srsitemref{FR_ProcedureGuide}{FR41}. Keeping the content separate from
   presentation allows revisions without rewriting the gameplay logic, while
   \srsitemref{NFR_ClinicalAccuracy}{NFR22} still requires clinical approval.
 
-\item \srsitemref{FR_AgeGroup}{FR7} and \srsitemref{FR_Preferences}{FR44}
-  require age-appropriate content and caregiver-controlled settings. The
-  Preferences Module (\mref{mPrefs}) stores the selected age group and audio or
-  visual preferences. The Procedure Content Module (\mref{mContent}) selects
-  the appropriate wording when an age-specific version is available. The
-  Narration Module (\mref{mNarration}) and shared presentation modules apply
-  these settings without changing the underlying procedure.
+\item \srsitemref{FR_Preferences}{FR43} requires caregiver-controlled
+  settings. The Preferences Module (\mref{mPrefs}) stores audio and visual
+  preferences. The Narration Module (\mref{mNarration}) and shared
+  presentation modules apply these settings without changing the underlying
+  procedure.
 
-\item \srsitemref{FR_SpokenInstructions}{FR13}, \srsitemref{FR_VisualCues}{FR15},
-  and \srsitemref{FR_NarrationFallback}{FR16} require instructions that do not
+\item \srsitemref{FR_SpokenInstructions}{FR12}, \srsitemref{FR_VisualCues}{FR14},
+  and \srsitemref{FR_NarrationFallback}{FR15} require instructions that do not
   depend on reading or audible narration alone. The Narration Module
   (\mref{mNarration}) presents speech, the Scene Staging Module
   (\mref{mStaging}) shows the action, and the UI Widgets Module
@@ -536,8 +533,8 @@ decisions resulting from these requirements are explained below.
   responsibilities also support \srsitemref{NFR_Accessibility}{NFR9} and
   \srsitemref{NFR_Language}{NFR8}.
 
-\item \srsitemref{FR_HintOnMiss}{FR14}, \srsitemref{FR_RevealAnswer}{FR17},
-  \srsitemref{FR_ValidQuestions}{FR18}, and \srsitemref{FR_NoPenalty}{FR19}
+\item \srsitemref{FR_HintOnMiss}{FR13}, \srsitemref{FR_RevealAnswer}{FR16},
+  \srsitemref{FR_ValidQuestions}{FR17}, and \srsitemref{FR_NoPenalty}{FR18}
   require exercises to provide help without punishing incorrect actions. The
   Procedure Content Module (\mref{mContent}) defines valid questions and
   answers, while the Procedure Runner Module (\mref{mRunner}) handles hints,
@@ -545,8 +542,8 @@ decisions resulting from these requirements are explained below.
   (\mref{mProgress}) awards no penalty based on answers. This supports
   \srsitemref{NFR_NoPressure}{NFR7}.
 
-\item \srsitemref{FR_IgnoreRepeatedTouches}{FR20},
-  \srsitemref{FR_HoldSkip}{FR21}, and \srsitemref{FR_RestartLevel}{FR26}
+\item \srsitemref{FR_IgnoreRepeatedTouches}{FR19},
+  \srsitemref{FR_HoldSkip}{FR20}, and \srsitemref{FR_RestartLevel}{FR25}
   require input to be handled deliberately. The UI Widgets Module
   (\mref{mWidgets}) handles shared controls and prevents repeated navigation
   input during transitions. The Procedure Runner Module (\mref{mRunner})
@@ -554,9 +551,9 @@ decisions resulting from these requirements are explained below.
   actions. Keeping these checks outside individual exercises supports
   \srsitemref{NFR_Exit}{NFR4} and \srsitemref{NFR_Responsiveness}{NFR12}.
 
-\item \srsitemref{FR_ExitLevel}{FR22}, \srsitemref{FR_StopOnExit}{FR23},
-  \srsitemref{FR_ExitKeepsData}{FR24}, \srsitemref{FR_RestartAfterExit}{FR25},
-  and \srsitemref{FR_Suspend}{FR27} specify what happens when gameplay is
+\item \srsitemref{FR_ExitLevel}{FR21}, \srsitemref{FR_StopOnExit}{FR22},
+  \srsitemref{FR_ExitKeepsData}{FR23}, \srsitemref{FR_RestartAfterExit}{FR24},
+  and \srsitemref{FR_Suspend}{FR26} specify what happens when gameplay is
   interrupted. The Procedure Runner Module (\mref{mRunner}) stops the current
   activity and coordinates the Narration Module (\mref{mNarration}), Screen
   Effects Module (\mref{mEffects}), Sound Effects Module (\mref{mSound}), and
@@ -565,8 +562,8 @@ decisions resulting from these requirements are explained below.
   A level that ends early does not update the Journey Progress Module
   (\mref{mProgress}) as completed.
 
-\item \srsitemref{FR_PersistState}{FR28}, \srsitemref{FR_RestoreState}{FR29},
-  and \srsitemref{FR_CorruptData}{FR30} require progress to survive a restart
+\item \srsitemref{FR_PersistState}{FR27}, \srsitemref{FR_RestoreState}{FR28},
+  and \srsitemref{FR_CorruptData}{FR29} require progress to survive a restart
   and invalid saved data to be handled safely. The Player Data Module
   (\mref{mPlayerData}) owns the selected player's state, the Save Slots Module
   (\mref{mSlots}) identifies the local save, and the Data File Module
@@ -575,8 +572,8 @@ decisions resulting from these requirements are explained below.
   can satisfy \srsitemref{NFR_DataProtection}{NFR26} without tying the player
   data model to a particular operating system.
 
-\item \srsitemref{FR_LevelEnd}{FR12}, \srsitemref{FR_FirstReward}{FR31},
-  \srsitemref{FR_NoDuplicateReward}{FR32}, and \srsitemref{FR_Scoreboard}{FR33}
+\item \srsitemref{FR_LevelEnd}{FR11}, \srsitemref{FR_FirstReward}{FR30},
+  \srsitemref{FR_NoDuplicateReward}{FR31}, and \srsitemref{FR_Scoreboard}{FR32}
   define level completion, first-time rewards, replay behaviour, and the
   personal scoreboard. The Procedure Runner Module (\mref{mRunner}) reports
   completed levels, but only the Journey Progress Module (\mref{mProgress})
@@ -584,23 +581,23 @@ decisions resulting from these requirements are explained below.
   (\mref{mReward}) and Scoreboard Screen Module (\mref{mScoreboard}) display
   the resulting state rather than updating it themselves.
 
-\item \srsitemref{FR_ChooseCharacter}{FR34},
-  \srsitemref{FR_DiverseCharacters}{FR35}, and
-  \srsitemref{FR_Shop}{FR36}--\srsitemref{FR_Equip}{FR39} specify character
+\item \srsitemref{FR_ChooseCharacter}{FR33},
+  \srsitemref{FR_DiverseCharacters}{FR34}, and
+  \srsitemref{FR_Shop}{FR35}--\srsitemref{FR_Equip}{FR38} specify character
   selection, accessory purchases, and equipping. The Accessory Catalogue
   Module (\mref{mAccessories}) defines the items and prices, the Wardrobe
   Module (\mref{mWardrobe}) enforces ownership and equipment rules, and the
   Dress-Up Screen Module (\mref{mDressUp}) provides the interface. The
   Character Rig Module (\mref{mRig}) handles the visual models. No module
   offers real-money purchases, in accordance with
-  \srsitemref{FR_NoRealMoney}{FR40}.
+  \srsitemref{FR_NoRealMoney}{FR39}.
 
-\item \srsitemref{FR_ParentGate}{FR41} requires caregiver settings to be
+\item \srsitemref{FR_ParentGate}{FR40} requires caregiver settings to be
   protected from children. The Parental Gate Module (\mref{mGate}) verifies
   the reading-based gate before the Application Control Module
   (\mref{mControl}) opens the Settings Screen Module (\mref{mSettings}). That
   screen handles the nickname, preferences, reset, and data deletion controls
-  in \srsitemref{FR_Nickname}{FR43}--\srsitemref{FR_ClearAllData}{FR46}, while
+  in \srsitemref{FR_Nickname}{FR42}--\srsitemref{FR_ClearAllData}{FR45}, while
   the Player Data Module (\mref{mPlayerData}) and Preferences Module
   (\mref{mPrefs}) perform the relevant data changes.
 
@@ -726,8 +723,8 @@ to be implemented.
 \begin{description}
 \item[Secrets:] The set of caregiver preferences, their allowed values and
   their defaults.
-\item[Services:] Stores and returns the age group, the narration and sound
-  volumes, the caption and visual-cue sizes, auto-continue, reduced motion, the
+\item[Services:] Stores and returns the narration and sound volumes,
+  the caption and visual-cue sizes, auto-continue, reduced motion, the
   last player and the acknowledgement of the medical notice. Applies to every
   player on the device.
 \item[Implemented By:] \progname{}
@@ -760,10 +757,8 @@ to be implemented.
 
 \begin{description}
 \item[Secrets:] The content of each level and of the procedure guide: its
-  steps, their order, the narrated lines and the variants for each age group.
-\item[Services:] Returns the steps of a level for an age group, using the
-  default content when there is none for that group, and the guide entry of a
-  level.
+  steps, their order and the narrated lines.
+\item[Services:] Returns the steps and guide entry of a level.
 \item[Implemented By:] \progname{}
 \item[Type of Module:] Abstract Object
 \end{description}
@@ -1018,46 +1013,46 @@ the corresponding design decisions.
 \srsitemref{FR_StartLevel}{FR4} & \mref{mMap}, \mref{mLevels}, \mref{mRunner}, \mref{mControl} \\
 \srsitemref{FR_Replay}{FR5} & \mref{mRunner}, \mref{mProgress} \\
 \srsitemref{FR_LevelContent}{FR6} & \mref{mContent}, \mref{mRunner}, \mref{mStaging} \\
-\srsitemref{FR_AgeGroup}{FR7} & \mref{mPrefs}, \mref{mContent} \\
-\srsitemref{FR_DescribeSensations}{FR8} & \mref{mContent}, \mref{mNarration}, \mref{mStaging} \\
-\srsitemref{FR_TruthfulSensations}{FR9} & \mref{mContent}, \mref{mNarration} \\
-\srsitemref{FR_ClinicsDiffer}{FR10} & \mref{mContent}, \mref{mNarration} \\
-\srsitemref{FR_SpeakUp}{FR11} & \mref{mContent}, \mref{mNarration} \\
-\srsitemref{FR_LevelEnd}{FR12} & \mref{mRunner}, \mref{mProgress}, \mref{mReward} \\
-\srsitemref{FR_SpokenInstructions}{FR13} & \mref{mNarration}, \mref{mStaging}, \mref{mWidgets} \\
-\srsitemref{FR_HintOnMiss}{FR14} & \mref{mRunner}, \mref{mStaging}, \mref{mWidgets} \\
-\srsitemref{FR_VisualCues}{FR15} & \mref{mNarration}, \mref{mStaging}, \mref{mWidgets} \\
-\srsitemref{FR_NarrationFallback}{FR16} & \mref{mNarration}, \mref{mWidgets}, \mref{mHH} \\
-\srsitemref{FR_RevealAnswer}{FR17} & \mref{mContent}, \mref{mRunner}, \mref{mNarration}, \mref{mWidgets} \\
-\srsitemref{FR_ValidQuestions}{FR18} & \mref{mContent}, \mref{mRunner} \\
-\srsitemref{FR_NoPenalty}{FR19} & \mref{mRunner}, \mref{mProgress} \\
-\srsitemref{FR_IgnoreRepeatedTouches}{FR20} & \mref{mWidgets}, \mref{mControl} \\
-\srsitemref{FR_HoldSkip}{FR21} & \mref{mRunner}, \mref{mWidgets} \\
-\srsitemref{FR_ExitLevel}{FR22} & \mref{mRunner}, \mref{mControl} \\
-\srsitemref{FR_StopOnExit}{FR23} & \mref{mRunner}, \mref{mNarration}, \mref{mStaging}, \mref{mEffects}, \mref{mSound} \\
-\srsitemref{FR_ExitKeepsData}{FR24} & \mref{mRunner}, \mref{mProgress} \\
-\srsitemref{FR_RestartAfterExit}{FR25} & \mref{mRunner} \\
-\srsitemref{FR_RestartLevel}{FR26} & \mref{mRunner}, \mref{mWidgets} \\
-\srsitemref{FR_Suspend}{FR27} & \mref{mControl}, \mref{mRunner}, \mref{mNarration}, \mref{mEffects}, \mref{mSound} \\
-\srsitemref{FR_PersistState}{FR28} & \mref{mPlayerData}, \mref{mDataFile}, \mref{mSlots} \\
-\srsitemref{FR_RestoreState}{FR29} & \mref{mPlayerData}, \mref{mDataFile}, \mref{mSlots}, \mref{mPlayerSelect} \\
-\srsitemref{FR_CorruptData}{FR30} & \mref{mDataFile}, \mref{mPlayerData} \\
-\srsitemref{FR_FirstReward}{FR31} & \mref{mProgress}, \mref{mLevels}, \mref{mReward} \\
-\srsitemref{FR_NoDuplicateReward}{FR32} & \mref{mProgress}, \mref{mReward} \\
-\srsitemref{FR_Scoreboard}{FR33} & \mref{mScoreboard}, \mref{mPlayerData}, \mref{mProgress} \\
-\srsitemref{FR_ChooseCharacter}{FR34} & \mref{mDressUp}, \mref{mRig}, \mref{mWardrobe}, \mref{mPlayerData} \\
-\srsitemref{FR_DiverseCharacters}{FR35} & \mref{mAccessories}, \mref{mRig} \\
-\srsitemref{FR_Shop}{FR36} & \mref{mDressUp}, \mref{mAccessories}, \mref{mRig} \\
-\srsitemref{FR_Purchase}{FR37} & \mref{mWardrobe}, \mref{mAccessories}, \mref{mProgress}, \mref{mPlayerData}, \mref{mDressUp} \\
-\srsitemref{FR_PurchaseRefused}{FR38} & \mref{mWardrobe}, \mref{mAccessories}, \mref{mProgress}, \mref{mDressUp} \\
-\srsitemref{FR_Equip}{FR39} & \mref{mWardrobe}, \mref{mAccessories}, \mref{mRig}, \mref{mDressUp} \\
-\srsitemref{FR_NoRealMoney}{FR40} & \mref{mDressUp}, \mref{mProgress} \\
-\srsitemref{FR_ParentGate}{FR41} & \mref{mGate}, \mref{mSettings}, \mref{mControl}, \mref{mWidgets} \\
-\srsitemref{FR_ProcedureGuide}{FR42} & \mref{mGuide}, \mref{mContent} \\
-\srsitemref{FR_Nickname}{FR43} & \mref{mSettings}, \mref{mPlayerData} \\
-\srsitemref{FR_Preferences}{FR44} & \mref{mSettings}, \mref{mPrefs} \\
-\srsitemref{FR_ResetJourney}{FR45} & \mref{mSettings}, \mref{mProgress}, \mref{mPlayerData} \\
-\srsitemref{FR_ClearAllData}{FR46} & \mref{mSettings}, \mref{mPlayerData}, \mref{mPrefs}, \mref{mDataFile}, \mref{mSlots} \\
+
+\srsitemref{FR_DescribeSensations}{FR7} & \mref{mContent}, \mref{mNarration}, \mref{mStaging} \\
+\srsitemref{FR_TruthfulSensations}{FR8} & \mref{mContent}, \mref{mNarration} \\
+\srsitemref{FR_ClinicsDiffer}{FR9} & \mref{mContent}, \mref{mNarration} \\
+\srsitemref{FR_SpeakUp}{FR10} & \mref{mContent}, \mref{mNarration} \\
+\srsitemref{FR_LevelEnd}{FR11} & \mref{mRunner}, \mref{mProgress}, \mref{mReward} \\
+\srsitemref{FR_SpokenInstructions}{FR12} & \mref{mNarration}, \mref{mStaging}, \mref{mWidgets} \\
+\srsitemref{FR_HintOnMiss}{FR13} & \mref{mRunner}, \mref{mStaging}, \mref{mWidgets} \\
+\srsitemref{FR_VisualCues}{FR14} & \mref{mNarration}, \mref{mStaging}, \mref{mWidgets} \\
+\srsitemref{FR_NarrationFallback}{FR15} & \mref{mNarration}, \mref{mWidgets}, \mref{mHH} \\
+\srsitemref{FR_RevealAnswer}{FR16} & \mref{mContent}, \mref{mRunner}, \mref{mNarration}, \mref{mWidgets} \\
+\srsitemref{FR_ValidQuestions}{FR17} & \mref{mContent}, \mref{mRunner} \\
+\srsitemref{FR_NoPenalty}{FR18} & \mref{mRunner}, \mref{mProgress} \\
+\srsitemref{FR_IgnoreRepeatedTouches}{FR19} & \mref{mWidgets}, \mref{mControl} \\
+\srsitemref{FR_HoldSkip}{FR20} & \mref{mRunner}, \mref{mWidgets} \\
+\srsitemref{FR_ExitLevel}{FR21} & \mref{mRunner}, \mref{mControl} \\
+\srsitemref{FR_StopOnExit}{FR22} & \mref{mRunner}, \mref{mNarration}, \mref{mStaging}, \mref{mEffects}, \mref{mSound} \\
+\srsitemref{FR_ExitKeepsData}{FR23} & \mref{mRunner}, \mref{mProgress} \\
+\srsitemref{FR_RestartAfterExit}{FR24} & \mref{mRunner} \\
+\srsitemref{FR_RestartLevel}{FR25} & \mref{mRunner}, \mref{mWidgets} \\
+\srsitemref{FR_Suspend}{FR26} & \mref{mControl}, \mref{mRunner}, \mref{mNarration}, \mref{mEffects}, \mref{mSound} \\
+\srsitemref{FR_PersistState}{FR27} & \mref{mPlayerData}, \mref{mDataFile}, \mref{mSlots} \\
+\srsitemref{FR_RestoreState}{FR28} & \mref{mPlayerData}, \mref{mDataFile}, \mref{mSlots}, \mref{mPlayerSelect} \\
+\srsitemref{FR_CorruptData}{FR29} & \mref{mDataFile}, \mref{mPlayerData} \\
+\srsitemref{FR_FirstReward}{FR30} & \mref{mProgress}, \mref{mLevels}, \mref{mReward} \\
+\srsitemref{FR_NoDuplicateReward}{FR31} & \mref{mProgress}, \mref{mReward} \\
+\srsitemref{FR_Scoreboard}{FR32} & \mref{mScoreboard}, \mref{mPlayerData}, \mref{mProgress} \\
+\srsitemref{FR_ChooseCharacter}{FR33} & \mref{mDressUp}, \mref{mRig}, \mref{mWardrobe}, \mref{mPlayerData} \\
+\srsitemref{FR_DiverseCharacters}{FR34} & \mref{mAccessories}, \mref{mRig} \\
+\srsitemref{FR_Shop}{FR35} & \mref{mDressUp}, \mref{mAccessories}, \mref{mRig} \\
+\srsitemref{FR_Purchase}{FR36} & \mref{mWardrobe}, \mref{mAccessories}, \mref{mProgress}, \mref{mPlayerData}, \mref{mDressUp} \\
+\srsitemref{FR_PurchaseRefused}{FR37} & \mref{mWardrobe}, \mref{mAccessories}, \mref{mProgress}, \mref{mDressUp} \\
+\srsitemref{FR_Equip}{FR38} & \mref{mWardrobe}, \mref{mAccessories}, \mref{mRig}, \mref{mDressUp} \\
+\srsitemref{FR_NoRealMoney}{FR39} & \mref{mDressUp}, \mref{mProgress} \\
+\srsitemref{FR_ParentGate}{FR40} & \mref{mGate}, \mref{mSettings}, \mref{mControl}, \mref{mWidgets} \\
+\srsitemref{FR_ProcedureGuide}{FR41} & \mref{mGuide}, \mref{mContent} \\
+\srsitemref{FR_Nickname}{FR42} & \mref{mSettings}, \mref{mPlayerData} \\
+\srsitemref{FR_Preferences}{FR43} & \mref{mSettings}, \mref{mPrefs} \\
+\srsitemref{FR_ResetJourney}{FR44} & \mref{mSettings}, \mref{mProgress}, \mref{mPlayerData} \\
+\srsitemref{FR_ClearAllData}{FR45} & \mref{mSettings}, \mref{mPlayerData}, \mref{mPrefs}, \mref{mDataFile}, \mref{mSlots} \\
 
 \end{longtable}
 
@@ -1775,23 +1770,23 @@ feedback.
 \endfoot
 \bottomrule
 \endlastfoot
-\scheduledmodule{mAccessories}{Accessory Catalogue}{\srsitemref{FR_DiverseCharacters}{FR35}, \srsitemref{FR_Shop}{FR36}, \srsitemref{FR_Equip}{FR39}} & 11 Dec.\ 2026 & Ethan McMehen \\
+\scheduledmodule{mAccessories}{Accessory Catalogue}{\srsitemref{FR_DiverseCharacters}{FR34}, \srsitemref{FR_Shop}{FR35}, \srsitemref{FR_Equip}{FR38}} & 11 Dec.\ 2026 & Ethan McMehen \\
 \scheduledmodule{mLevels}{Level Catalogue}{\srsitemref{FR_JourneyMap}{FR3}, \srsitemref{FR_StartLevel}{FR4}} & 18 Dec.\ 2026 & Mohammad Bilal \\
-\scheduledmodule{mWidgets}{UI Widgets}{\srsitemref{FR_SpokenInstructions}{FR13}, \srsitemref{FR_VisualCues}{FR15}, \srsitemref{FR_IgnoreRepeatedTouches}{FR20}, \srsitemref{FR_HoldSkip}{FR21}} & 5 Jan.\ 2027 & Jackson Beach \\
+\scheduledmodule{mWidgets}{UI Widgets}{\srsitemref{FR_SpokenInstructions}{FR12}, \srsitemref{FR_VisualCues}{FR14}, \srsitemref{FR_IgnoreRepeatedTouches}{FR19}, \srsitemref{FR_HoldSkip}{FR20}} & 5 Jan.\ 2027 & Jackson Beach \\
 \scheduledmodule{mPlayerSelect}{Player Select Screen}{\srsitemref{NFR_Layout}{NFR1}, \srsitemref{NFR_TouchTarget}{NFR3}} & 8 Jan.\ 2027 & Jake Finlay \\
 \scheduledmodule{mMap}{Journey Map Screen}{\srsitemref{FR_JourneyMap}{FR3}, \srsitemref{FR_StartLevel}{FR4}} & 8 Jan.\ 2027 & Ahsan Muzammil \\
-\scheduledmodule{mReward}{Reward Screen}{\srsitemref{FR_FirstReward}{FR31}, \srsitemref{FR_NoDuplicateReward}{FR32}} & 8 Jan.\ 2027 & Jake Finlay \\
-\scheduledmodule{mGate}{Parental Gate}{\srsitemref{FR_ParentGate}{FR41}} & 8 Jan.\ 2027 & Ethan McMehen \\
-\scheduledmodule{mGuide}{Procedure Guide Screen}{\srsitemref{FR_ProcedureGuide}{FR42}} & 11 Jan.\ 2027 & Jackson Beach \\
+\scheduledmodule{mReward}{Reward Screen}{\srsitemref{FR_FirstReward}{FR30}, \srsitemref{FR_NoDuplicateReward}{FR31}} & 8 Jan.\ 2027 & Jake Finlay \\
+\scheduledmodule{mGate}{Parental Gate}{\srsitemref{FR_ParentGate}{FR40}} & 8 Jan.\ 2027 & Ethan McMehen \\
+\scheduledmodule{mGuide}{Procedure Guide Screen}{\srsitemref{FR_ProcedureGuide}{FR41}} & 11 Jan.\ 2027 & Jackson Beach \\
 \scheduledmodule{mSettings}{Settings Screen}{\srsitemref{NFR_Layout}{NFR1}} & 12 Jan.\ 2027 & Mohammad Bilal \\
 \scheduledmodule{mControl}{Application Control}{\srsitemref{FR_MedicalNotice}{FR1}, \srsitemref{FR_RecordAck}{FR2}} & 18 Jan.\ 2027 & Ahsan Muzammil \\
-\scheduledmodule{mContent}{Procedure Content}{\srsitemref{FR_LevelContent}{FR6}, \srsitemref{FR_DescribeSensations}{FR8}, \srsitemref{FR_TruthfulSensations}{FR9}} & 22 Jan.\ 2027 & Ahsan Muzammil \\
-\scheduledmodule{mScoreboard}{Scoreboard Screen}{\srsitemref{FR_Scoreboard}{FR33}} & 22 Jan.\ 2027 & Jake Finlay \\
-\scheduledmodule{mDressUp}{Dress-Up Screen}{\srsitemref{FR_ChooseCharacter}{FR34}, \srsitemref{FR_Shop}{FR36}, \srsitemref{FR_Purchase}{FR37}, \srsitemref{FR_Equip}{FR39}} & 25 Jan.\ 2027 & Ethan McMehen \\
+\scheduledmodule{mContent}{Procedure Content}{\srsitemref{FR_LevelContent}{FR6}, \srsitemref{FR_DescribeSensations}{FR7}, \srsitemref{FR_TruthfulSensations}{FR8}} & 22 Jan.\ 2027 & Ahsan Muzammil \\
+\scheduledmodule{mScoreboard}{Scoreboard Screen}{\srsitemref{FR_Scoreboard}{FR32}} & 22 Jan.\ 2027 & Jake Finlay \\
+\scheduledmodule{mDressUp}{Dress-Up Screen}{\srsitemref{FR_ChooseCharacter}{FR33}, \srsitemref{FR_Shop}{FR35}, \srsitemref{FR_Purchase}{FR36}, \srsitemref{FR_Equip}{FR38}} & 25 Jan.\ 2027 & Ethan McMehen \\
 \midrule
-\scheduledmodule{mProgress}{Journey Progress (early version)}{\srsitemref{FR_FirstReward}{FR31}, \srsitemref{FR_NoDuplicateReward}{FR32}} & TBD\newline (feedback) & Jake Finlay \\
-\scheduledmodule{mWardrobe}{Wardrobe (early version)}{\srsitemref{FR_Purchase}{FR37}, \srsitemref{FR_Equip}{FR39}} & TBD\newline (feedback) & Ahsan Muzammil \\
-\scheduledmodule{mPlayerData}{Player Data (early version)}{\srsitemref{FR_PersistState}{FR28}, \srsitemref{FR_RestoreState}{FR29}, \srsitemref{FR_CorruptData}{FR30}} & TBD\newline (feedback) & Jackson Beach \\
+\scheduledmodule{mProgress}{Journey Progress (early version)}{\srsitemref{FR_FirstReward}{FR30}, \srsitemref{FR_NoDuplicateReward}{FR31}} & TBD\newline (feedback) & Jake Finlay \\
+\scheduledmodule{mWardrobe}{Wardrobe (early version)}{\srsitemref{FR_Purchase}{FR36}, \srsitemref{FR_Equip}{FR38}} & TBD\newline (feedback) & Ahsan Muzammil \\
+\scheduledmodule{mPlayerData}{Player Data (early version)}{\srsitemref{FR_PersistState}{FR27}, \srsitemref{FR_RestoreState}{FR28}, \srsitemref{FR_CorruptData}{FR29}} & TBD\newline (feedback) & Jackson Beach \\
 \scheduledmodule{mPrefs}{Preferences (early version)}{\srsitemref{NFR_DataProtection}{NFR26}, \srsitemref{NFR_Minimization}{NFR29}} & TBD\newline (feedback) & Mohammad Bilal \\
 \end{longtable}
 \endgroup
@@ -1831,29 +1826,29 @@ system verification schedule.
 \endlastfoot
 \scheduledmodule{mHH}{Hardware-Hiding (platform integration)}{\srsitemref{NFR_Offline}{NFR19}, \srsitemref{NFR_Portability}{NFR24}} & TBD & Mohammad Bilal \\
 \scheduledmodule{mControl}{Application Control}{\srsitemref{NFR_Startup}{NFR11}, \srsitemref{NFR_Reliability}{NFR17}} & TBD & Mohammad Bilal \\
-\scheduledmodule{mProgress}{Journey Progress}{\srsitemref{FR_Purchase}{FR37}, \srsitemref{FR_PurchaseRefused}{FR38}, \srsitemref{FR_ResetJourney}{FR45}} & TBD & Ethan McMehen \\
-\scheduledmodule{mWardrobe}{Wardrobe}{\srsitemref{FR_PurchaseRefused}{FR38}, \srsitemref{FR_Equip}{FR39}} & TBD & Ethan McMehen \\
+\scheduledmodule{mProgress}{Journey Progress}{\srsitemref{FR_Purchase}{FR36}, \srsitemref{FR_PurchaseRefused}{FR37}, \srsitemref{FR_ResetJourney}{FR44}} & TBD & Ethan McMehen \\
+\scheduledmodule{mWardrobe}{Wardrobe}{\srsitemref{FR_PurchaseRefused}{FR37}, \srsitemref{FR_Equip}{FR38}} & TBD & Ethan McMehen \\
 \scheduledmodule{mPlayerData}{Player Data}{\srsitemref{NFR_Reliability}{NFR17}, \srsitemref{NFR_Minimization}{NFR29}} & TBD & Mohammad Bilal \\
-\scheduledmodule{mPrefs}{Preferences}{\srsitemref{FR_RecordAck}{FR2}, \srsitemref{FR_AgeGroup}{FR7}} & TBD & Ahsan Muzammil \\
-\scheduledmodule{mLevels}{Level Catalogue}{\srsitemref{FR_FirstReward}{FR31}, \srsitemref{NFR_ClinicianUse}{NFR6}} & TBD & Jake Finlay \\
+\scheduledmodule{mPrefs}{Preferences}{\srsitemref{FR_RecordAck}{FR2}, \srsitemref{FR_Preferences}{FR43}} & TBD & Ahsan Muzammil \\
+\scheduledmodule{mLevels}{Level Catalogue}{\srsitemref{FR_FirstReward}{FR30}, \srsitemref{NFR_ClinicianUse}{NFR6}} & TBD & Jake Finlay \\
 \scheduledmodule{mAccessories}{Accessory Catalogue}{\srsitemref{NFR_Inclusivity}{NFR31}} & TBD & Ahsan Muzammil \\
-\scheduledmodule{mContent}{Procedure Content}{\srsitemref{FR_ProcedureGuide}{FR42}, \srsitemref{NFR_NoClaims}{NFR32}} & TBD & Ethan McMehen \\
-\scheduledmodule{mRunner}{Procedure Runner}{\srsitemref{FR_StartLevel}{FR4}, \srsitemref{FR_Replay}{FR5}, \srsitemref{FR_LevelEnd}{FR12}} & TBD & Ahsan Muzammil \\
-\scheduledmodule{mNarration}{Narration}{\srsitemref{FR_DescribeSensations}{FR8}, \srsitemref{FR_TruthfulSensations}{FR9}, \srsitemref{FR_ClinicsDiffer}{FR10}, \srsitemref{FR_SpeakUp}{FR11}} & TBD & Ahsan Muzammil \\
-\scheduledmodule{mPlayerSelect}{Player Select Screen}{\srsitemref{FR_RestoreState}{FR29}} & TBD & Jackson Beach \\
+\scheduledmodule{mContent}{Procedure Content}{\srsitemref{FR_ProcedureGuide}{FR41}, \srsitemref{NFR_NoClaims}{NFR32}} & TBD & Ethan McMehen \\
+\scheduledmodule{mRunner}{Procedure Runner}{\srsitemref{FR_StartLevel}{FR4}, \srsitemref{FR_Replay}{FR5}, \srsitemref{FR_LevelEnd}{FR11}} & TBD & Ahsan Muzammil \\
+\scheduledmodule{mNarration}{Narration}{\srsitemref{FR_DescribeSensations}{FR7}, \srsitemref{FR_TruthfulSensations}{FR8}, \srsitemref{FR_ClinicsDiffer}{FR9}, \srsitemref{FR_SpeakUp}{FR10}} & TBD & Ahsan Muzammil \\
+\scheduledmodule{mPlayerSelect}{Player Select Screen}{\srsitemref{FR_RestoreState}{FR28}} & TBD & Jackson Beach \\
 \scheduledmodule{mMap}{Journey Map Screen}{\srsitemref{NFR_Layout}{NFR1}, \srsitemref{NFR_Usability}{NFR5}, \srsitemref{NFR_Colour}{NFR10}} & TBD & Jake Finlay \\
-\scheduledmodule{mReward}{Reward Screen}{\srsitemref{FR_LevelEnd}{FR12}} & TBD & Ahsan Muzammil \\
+\scheduledmodule{mReward}{Reward Screen}{\srsitemref{FR_LevelEnd}{FR11}} & TBD & Ahsan Muzammil \\
 \scheduledmodule{mScoreboard}{Scoreboard Screen}{\srsitemref{NFR_NoPressure}{NFR7}, \srsitemref{NFR_Colour}{NFR10}} & TBD & Jake Finlay \\
 \scheduledmodule{mDressUp}{Dress-Up Screen}{\srsitemref{NFR_Layout}{NFR1}, \srsitemref{NFR_NoPressure}{NFR7}} & TBD & Jake Finlay \\
 \scheduledmodule{mGate}{Parental Gate}{\srsitemref{NFR_TouchTarget}{NFR3}} & TBD & Jake Finlay \\
-\scheduledmodule{mSettings}{Settings Screen}{\srsitemref{FR_Nickname}{FR43}, \srsitemref{FR_Preferences}{FR44}, \srsitemref{FR_ResetJourney}{FR45}, \srsitemref{FR_ClearAllData}{FR46}} & TBD & Ethan McMehen \\
+\scheduledmodule{mSettings}{Settings Screen}{\srsitemref{FR_Nickname}{FR42}, \srsitemref{FR_Preferences}{FR43}, \srsitemref{FR_ResetJourney}{FR44}, \srsitemref{FR_ClearAllData}{FR45}} & TBD & Ethan McMehen \\
 \scheduledmodule{mGuide}{Procedure Guide Screen}{\srsitemref{NFR_ClinicalAccuracy}{NFR22}} & TBD & Mohammad Bilal \\
-\scheduledmodule{mDataFile}{Data File}{\srsitemref{FR_PersistState}{FR28}, \srsitemref{FR_RestoreState}{FR29}, \srsitemref{FR_CorruptData}{FR30}} & TBD & Jackson Beach \\
-\scheduledmodule{mSlots}{Save Slots}{\srsitemref{FR_ClearAllData}{FR46}} & TBD & Ethan McMehen \\
-\scheduledmodule{mStaging}{Scene Staging}{\srsitemref{FR_SpokenInstructions}{FR13}, \srsitemref{FR_HintOnMiss}{FR14}, \srsitemref{FR_VisualCues}{FR15}, \srsitemref{FR_StopOnExit}{FR23}} & TBD & Jackson Beach \\
-\scheduledmodule{mRig}{Character Rig}{\srsitemref{FR_ChooseCharacter}{FR34}, \srsitemref{FR_DiverseCharacters}{FR35}, \srsitemref{FR_Equip}{FR39}} & TBD & Ethan McMehen \\
-\scheduledmodule{mEffects}{Screen Effects}{\srsitemref{FR_StopOnExit}{FR23}, \srsitemref{FR_Suspend}{FR27}} & TBD & Jackson Beach \\
-\scheduledmodule{mSound}{Sound Effects}{\srsitemref{FR_StopOnExit}{FR23}, \srsitemref{FR_Suspend}{FR27}} & TBD & Jackson Beach \\
+\scheduledmodule{mDataFile}{Data File}{\srsitemref{FR_PersistState}{FR27}, \srsitemref{FR_RestoreState}{FR28}, \srsitemref{FR_CorruptData}{FR29}} & TBD & Jackson Beach \\
+\scheduledmodule{mSlots}{Save Slots}{\srsitemref{FR_ClearAllData}{FR45}} & TBD & Ethan McMehen \\
+\scheduledmodule{mStaging}{Scene Staging}{\srsitemref{FR_SpokenInstructions}{FR12}, \srsitemref{FR_HintOnMiss}{FR13}, \srsitemref{FR_VisualCues}{FR14}, \srsitemref{FR_StopOnExit}{FR22}} & TBD & Jackson Beach \\
+\scheduledmodule{mRig}{Character Rig}{\srsitemref{FR_ChooseCharacter}{FR33}, \srsitemref{FR_DiverseCharacters}{FR34}, \srsitemref{FR_Equip}{FR38}} & TBD & Ethan McMehen \\
+\scheduledmodule{mEffects}{Screen Effects}{\srsitemref{FR_StopOnExit}{FR22}, \srsitemref{FR_Suspend}{FR26}} & TBD & Jackson Beach \\
+\scheduledmodule{mSound}{Sound Effects}{\srsitemref{FR_StopOnExit}{FR22}, \srsitemref{FR_Suspend}{FR26}} & TBD & Jackson Beach \\
 \scheduledmodule{mWidgets}{UI Widgets}{\srsitemref{NFR_Responsiveness}{NFR12}, \srsitemref{NFR_Portability}{NFR24}} & TBD & Mohammad Bilal \\
 \end{longtable}
 \endgroup
