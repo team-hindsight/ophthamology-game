@@ -710,7 +710,7 @@ The primary goals of \progname{} are:
     eye drops, and slit-lamp clinical examinations, reducing interruptions and repeated attempts
     during procedures.
 
-    \item \textbf{Maintain Engagement Across Age Groups:}
+    \item \textbf{Maintain Engagement Across the Target Age Range:}
     Provide engaging and age-appropriate activities that encourage
     children across the target age range to actively participate
     in their preparation.
@@ -810,8 +810,8 @@ each entity are listed below in terms of its inputs and outputs.
   \begin{itemize}
   \item Installs \progname{} and acknowledges the medical notice before first
     use (\rref{FR_RecordAck}).
-  \item Enters local preferences, such as the child's optional nickname and age
-    group (\rref{FR_Nickname}, \rref{FR_Preferences}).
+  \item Enters local preferences, such as the child's optional nickname and audio
+    settings (\rref{FR_Nickname}, \rref{FR_Preferences}).
   \item Confirms actions that cannot be undone, such as resetting saved data
     (\rref{FR_ResetJourney}).
   \item Reads the procedure guide and the notice.
@@ -2214,7 +2214,7 @@ Caregiver
 
 \textbf{Functional Requirements}
 
-\rref{FR_AgeGroup}, \rref{FR_VisualCues}, \rref{FR_ParentGate}, \rref{FR_Nickname}, \rref{FR_Preferences}.
+\rref{FR_VisualCues}, \rref{FR_ParentGate}, \rref{FR_Nickname}, \rref{FR_Preferences}.
 
 % ------------------------------------------------------------
 \refstepcounter{ucnum}\label{UC_DeleteData}
@@ -2663,23 +2663,6 @@ a level must convey.
 \ucref{UC_SlitLampGame}.
 
 \textit{Related NFRs:} \nfrref{NFR_ClinicalAccuracy}.
-
-\item[\frdef{FR_AgeGroup}]
-The age group, which the caregiver sets (\rref{FR_Preferences}), shall be
-either 3 to 4 years or 5 to 7 years, or not set.
-When an age group is set and a level provides content for that age group, the
-system shall present that content. Otherwise, the system shall present the
-level's default content.
-
-\textit{Rationale:} A three-year-old and a seven-year-old understand
-explanations differently. Content for the child's age group is easier to
-follow. The supervisor discussed whether content should vary by age
-(\hyperref[ER2]{ER2}), and the two groups match the split used in
-\nfrref{NFR_Usability}. Default content means that every level always has content to show.
-
-\textit{Traces:} \ucref{UC_AdjustPreferences}.
-
-\textit{Hazard Analysis:} \hazsr{AccessibleInteraction}{24}{InaccessibleInteraction}{2-3}.
 
 \item[\frdef{FR_DescribeSensations}]
 Before a level shows a part of a procedure that the child may feel, such
@@ -3265,11 +3248,10 @@ application does not need to collect identifying information.
 \textit{Related NFRs:} \nfrref{NFR_DataProtection}, \nfrref{NFR_Minimization}.
 
 \item[\frdef{FR_Preferences}]
-The settings shall allow the caregiver to change the age group
-(\rref{FR_AgeGroup}), the narration volume, the music and sound-effect volume,
-the size of the visual cues, and whether motion effects are reduced. Each
-change shall take effect while the settings are still open, without
-restarting the application.
+The settings shall allow the caregiver to change the narration volume,
+the music and sound-effect volume, the size of the visual cues, and whether
+motion effects are reduced. Each change shall take effect while the settings
+are still open, without restarting the application.
 
 \textit{Rationale:} Caregivers know what their child needs, such as a lower
 volume in a waiting room. Applying changes immediately lets the caregiver see
@@ -3360,8 +3342,7 @@ The system manages the following major data entities:
     examinations. Each procedure has one corresponding
     game that represents a level in the child's journey.
     A game may contain multiple interactive exercises
-    or rounds, and its content may vary according to
-    the child's age group.
+    or rounds.
 
     \item \textbf{Character:}
     Represents a character available for the child to
@@ -3395,8 +3376,8 @@ The system manages the following major data entities:
     \item \textbf{Local Preferences:}
     Represents locally stored application settings,
     including the child's optional nickname, selected
-    character, age group, display or accessibility
-    preferences, and caregiver acknowledgment of
+    character, display or accessibility preferences,
+    and caregiver acknowledgment of
     the application's educational purpose.
     These settings do not require a patient account.
 
@@ -3519,13 +3500,6 @@ Level number representing the game's position
 in the suggested journey order. \\
 \midrule
 
-Procedure Game &
-supported\_age\_groups &
-Set of Strings &
-Age groups for which the game provides
-appropriate content. \\
-\midrule
-
 Character &
 character\_id &
 String &
@@ -3634,14 +3608,6 @@ selected\_character\_id &
 Optional String &
 Identifier of the character selected by the child
 for the preparation journey. \\
-\midrule
-
-Local Preferences &
-age\_group &
-Optional Enumeration &
-Age group used to choose the content of each
-level (\rref{FR_AgeGroup}). Values: 3 to 4 years,
-5 to 7 years. \\
 \midrule
 
 Local Preferences &
@@ -3889,7 +3855,7 @@ Leaving a level for the journey map (\rref{FR_ExitLevel}, \rref{FR_RestartLevel}
 
 \textit{Rationale:} The application is intended for use at home with little or no assistance. Users should be able to understand and interact with its core features independently, supporting engagement and reducing reliance on parental guidance.
 
-\textit{Fit Criterion:} In usability testing, at least \constref{UNAIDED_RATE_MIN}\% of participants complete each core task without verbal assistance, with a median completion time per task of at most \constref{CORE_TASK_MAX_MIN} minutes. Participants aged 3--4 may have a parent present who does not explain or guide the task.
+\textit{Fit Criterion:} In usability testing, at least \constref{UNAIDED_RATE_MIN}\% of participants complete each core task without verbal assistance, with a median completion time per task of at most \constref{CORE_TASK_MAX_MIN} minutes. A caregiver may be present but shall not explain or guide the task.
 
 \textit{Traces:} \rref{FR_JourneyMap}, \rref{FR_SpokenInstructions}, \rref{FR_HintOnMiss}.
 
@@ -4346,7 +4312,7 @@ functional requirements that refine it.
 & \ucref{UC_EquipAccessory} & \rref{FR_PersistState}, \rref{FR_DiverseCharacters}, \rref{FR_Equip} \\
 
 \strref{STR_3}, \strref{STR_13}, \strref{STR_16}, \strref{STR_17} 
-& \ucref{UC_AdjustPreferences} & \rref{FR_AgeGroup}, \rref{FR_VisualCues}, \rref{FR_ParentGate}, \rref{FR_Nickname}, \rref{FR_Preferences} \\
+& \ucref{UC_AdjustPreferences} & \rref{FR_VisualCues}, \rref{FR_ParentGate}, \rref{FR_Nickname}, \rref{FR_Preferences} \\
 
 \strref{STR_13}, \strref{STR_16} & \ucref{UC_DeleteData} & \rref{FR_ParentGate}, \rref{FR_ResetJourney}, \rref{FR_ClearAllData} \\
 
@@ -4512,7 +4478,7 @@ of the Hazard Analysis.
 \hasrref{MinimalSaveData}{21} & \hahazref{SaveDataPrivacy}{2-19}, \hahazref{UnexpectedDataTransmission}{2-22} & Minimization and protection of game data & -- & \nfrref{NFR_DataProtection}, \nfrref{NFR_Privacy}, \nfrref{NFR_Minimization} \\
 \hasrref{ThirdPartyValidation}{22} & \hahazref{ThirdPartyFailure}{2-20}, \hahazref{UnexpectedDataTransmission}{2-22} & Third-party software validation & -- & \nfrref{NFR_Reliability}, \nfrref{NFR_DependencyTesting}, \nfrref{NFR_Privacy}, \nfrref{NFR_Immunity} \\
 \hasrref{ThirdPartyAssetReview}{23} & \hahazref{ThirdPartyAssetContent}{2-21} & Third-party asset review & -- & \nfrref{NFR_ChildSafe}, \nfrref{NFR_Licensing} \\
-\hasrref{AccessibleInteraction}{24} & \hahazref{InaccessibleInteraction}{2-3} & Accessible, age-appropriate interaction & \rref{FR_AgeGroup}, \rref{FR_SpokenInstructions}, \rref{FR_Preferences} & \nfrref{NFR_TouchTarget}, \nfrref{NFR_Usability}, \nfrref{NFR_Language}, \nfrref{NFR_Accessibility}, \nfrref{NFR_Colour} \\
+\hasrref{AccessibleInteraction}{24} & \hahazref{InaccessibleInteraction}{2-3} & Accessible, age-appropriate interaction & \rref{FR_SpokenInstructions}, \rref{FR_Preferences} & \nfrref{NFR_TouchTarget}, \nfrref{NFR_Usability}, \nfrref{NFR_Language}, \nfrref{NFR_Accessibility}, \nfrref{NFR_Colour} \\
 \hasrref{ConsistentAudioVisuals}{25} & \hahazref{AudioVisualMismatch}{2-17} & Consistent narration and animation & \rref{FR_Suspend} & \nfrref{NFR_AVSync} \\
 \hasrref{OfflinePreparation}{26} & \hahazref{OfflineContentUnavailable}{2-4} & Offline availability of preparation content & -- & \nfrref{NFR_Offline}, \nfrref{NFR_Installability} \\
 \end{longtable}
@@ -4718,10 +4684,10 @@ measurements, and clinician feedback.
 constants by name.
 
 \item[\lcdef{LC_AgeContent}]
-Content for each age group. Levels may add separate content for younger and
-older children.
+Content may be refined to remain suitable for all children aged 3 to 7,
+without separate age-group variants.
 
-\textit{Affects:} \rref{FR_AgeGroup} and the content of each level.
+\textit{Affects:} the content of each level.
 
 \item[\lcdef{LC_Language}]
 Additional languages, most likely French for families in Ontario.
@@ -5078,7 +5044,6 @@ for the application to work as intended. \\
 
 P2: Supporting &
 \textbf{Progress and personalization.}\newline
-\rref{FR_AgeGroup},
 \rref{FR_FirstReward},
 \rref{FR_NoDuplicateReward},
 \rref{FR_Scoreboard},
@@ -5289,8 +5254,8 @@ Use the PoC findings to build setup
 and local storage first, then the preparation journey, guidance, recovery,
 completion rewards, and caregiver controls. Table~\ref{tab:DevelopmentPhaseThree}
 lists the planned implementation for each requirement. Content is reviewed
-before demonstration or release, while age-specific content is used where
-available. The target for this phase is a working
+before demonstration or release, with the same content used for
+children aged 3 to 7. The target for this phase is a working
 core journey with its supporting quality controls, refined to the course scope.
 
 \begingroup
@@ -5320,7 +5285,6 @@ core journey with its supporting quality controls, refined to the course scope.
 \rref{FR_StartLevel} & Allow any level to start without progress or reward restrictions. \\
 \rref{FR_Replay} & Allow replay while keeping a completed level's status. \\
 \rref{FR_LevelContent} & Develop the planned vision-testing, eye-drop, and slit-lamp preparation content. \\
-\rref{FR_AgeGroup} & Select age-specific content where the level provides it. \\
 \rref{FR_DescribeSensations} & Explain possible sensations honestly before showing them. \\
 \rref{FR_TruthfulSensations} & Ensure each sensation description does not state/imply there will not be pain or discomfort. \\
 \rref{FR_ClinicsDiffer} & Explain through narration and pictures that real procedures may differ. \\
@@ -5350,7 +5314,7 @@ core journey with its supporting quality controls, refined to the course scope.
 \rref{FR_ParentGate} & Place caregiver settings behind an adult gate. \\
 \rref{FR_ProcedureGuide} & Provide caregiver explanations of the procedures and matching levels. \\
 \rref{FR_Nickname} & Support an optional nickname and neutral wording when it is absent. \\
-\rref{FR_Preferences} & Apply caregiver changes to age, audio, display, and accessibility preferences. \\
+\rref{FR_Preferences} & Apply caregiver changes to audio, display, and accessibility preferences. \\
 \rref{FR_ResetJourney} & Confirm reset; clear progress and customization but retain notice acknowledgement. \\
 \rref{FR_ClearAllData} & Confirm deletion of all local data, including notice acknowledgement. \\
 \nfrref{NFR_Layout} & Use consistent control positions across the implemented screens. \\
@@ -5604,7 +5568,6 @@ require additional design and testing. \\
 \lcref{LC_Personalization};
 related features:
 \rref{FR_JourneyMap},
-\rref{FR_AgeGroup},
 \rref{FR_Preferences} &
 Personalizing preparation activities based on
 the procedures expected during a child's
@@ -5612,7 +5575,7 @@ appointment will be left for future development.
 During the course, all preparation games will
 remain accessible to every child. The application
 will still support local caregiver preferences
-and age-appropriate content where available. \\
+and content suitable for children aged 3 to 7. \\
 
 \end{longtable}
 \endgroup
