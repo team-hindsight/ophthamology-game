@@ -5625,119 +5625,119 @@ verifying the specified requirements.
 
 \texttt{ADULT\_TEXT\_MAX\_GRADE}
 \label{const:ADULT_TEXT_MAX_GRADE}
-& 8 & reading grade & Caregivers vary in education and English proficiency (Section~\ref{SecUserCharacteristics}). Initial estimate, to be confirmed with caregivers. \\
+& 8 & reading grade & Caregivers have varied education and English proficiency (Section~\ref{SecUserCharacteristics}). Grade 8 is an initial plain-language target intended to keep instructions accessible without removing necessary detail. Confirm through caregiver review. \\
 
 \texttt{ANSWER\_REVEAL\_MAX\_S}
 \label{const:ANSWER_REVEAL_MAX_S}
-& 1 & s & Short enough that the child links the answer to the question. Initial estimate. \\
+& 1 & s & The answer should follow the question closely enough for a child to connect them. One second allows a short transition while remaining much faster than a typical multi-second activity. Initial estimate, to be checked in usability testing. \\
 
 \texttt{AV\_SYNC\_MAX\_MS}
 \label{const:AV_SYNC_MAX_MS}
-& 100 & ms & The same as \constref{RESPONSE_MAX_MS}, the longest delay that feels instant \cite{Nielsen1993}. Checked in the proof of concept. \\
+& 100 & ms & Matching the \constref{RESPONSE_MAX_MS} threshold keeps narration and the accompanying visual action closely aligned. This is an initial synchronization limit, to be checked in the proof of concept. \\
 
 \texttt{CLINICIAN\_FIND\_MAX\_MIN}
 \label{const:CLINICIAN_FIND_MAX_MIN}
-& 1 & min & From the time clinicians have per patient (Section~\ref{SecUserCharacteristics}). \\
+& 1 & min & Clinicians have limited time during appointments (Section~\ref{SecUserCharacteristics}). A one-minute limit prevents finding a level from taking a substantial part of a consultation. Initial workflow target, to be confirmed with clinicians. \\
 
 \texttt{CLINICIAN\_TRAINING\_MAX\_MIN}
 \label{const:CLINICIAN_TRAINING_MAX_MIN}
-& 5 & min & From the time clinicians have for training (Section~\ref{SecUserCharacteristics}). \\
+& 5 & min & Clinicians cannot spend much of their appointment time learning the application (Section~\ref{SecUserCharacteristics}). Five minutes is an initial upper limit for a brief introduction to the controls, to be confirmed with clinicians. \\
 
 \texttt{CONTROL\_POSITION\_TOLERANCE\_MM}
 \label{const:CONTROL_POSITION_TOLERANCE_MM}
-& 5 & mm & One third of \constref{TOUCH_TARGET_MIN}, so a control stays mostly over its usual position. Initial estimate. \\
+& 5 & mm & Five millimetres is one third of \constref{TOUCH_TARGET_MIN}. Limiting movement relative to the target size helps a child find a familiar control across screens. Initial tolerance, to be checked through design review and usability testing. \\
 
 \texttt{CPU\_UTILIZATION\_MAX\_PERCENT}
 \label{const:CPU_UTILIZATION_MAX_PERCENT}
-& 80 & \% & Initial estimate to limit sustained CPU load on low-spec devices. To be validated through proof-of-concept testing alongside device temperature measurements. \\
+& 80 & \% & An 80\% limit leaves 20\% capacity for the operating system and other tasks, rather than sustaining full CPU use. It is an initial safeguard against prolonged load and device heating, to be checked against CPU and temperature measurements on low-spec devices. \\
 
 \texttt{CORE\_TASK\_MAX\_MIN}
 \label{const:CORE_TASK_MAX_MIN}
-& 5 & min & Short enough for the attention span of a young child (Section~\ref{SecUserCharacteristics}). Initial estimate, to be confirmed in usability testing. \\
+& 5 & min & Children aged 3 to 7 have short attention spans, and the game may be used during a brief clinic wait (Section~\ref{SecUserCharacteristics}). Five minutes is an initial limit on the time required for one core task, to be checked in usability testing. \\
 
 \texttt{CRASH\_FREE\_RATE\_MIN}
 \label{const:CRASH_FREE_RATE_MIN}
-& 99 & \% & With \constref{TEST_SESSIONS_MIN} sessions, at most one session may fail. Initial estimate. \\
+& 99 & \% & At \constref{TEST_SESSIONS_MIN} sessions, 99\% permits at most one failed session. This is an initial acceptance target for the test sample, not a statistical guarantee of the crash rate in general use. \\
 
 \texttt{FLASH\_MAX\_PER\_S}
 \label{const:FLASH_MAX_PER_S}
-& 3 & flashes & WCAG 2.2 success criterion 2.3.1 \cite{WCAG22}. \\
+& 3 & flashes & WCAG 2.2 success criterion 2.3.1 limits flashing to reduce photosensitive seizure risk \cite{WCAG22}. \\
 
 \texttt{FRAME\_RATE\_COMPLIANCE\_MIN}
 \label{const:FRAME_RATE_COMPLIANCE_MIN}
-& 95 & \% of measured time & Allows brief drops, such as while a level loads. Initial estimate. \\
+& 95 & \% of measured time & The 95\% target requires the minimum frame rate during nearly all gameplay, while allowing brief drops during transitions or loading (at most 5\% of measured time). Initial allowance, to be checked in performance testing. \\
 
 \texttt{FRAME\_RATE\_MIN}
 \label{const:FRAME_RATE_MIN}
-& 30 & frames per second & A common minimum for smooth animation on mobile devices. Initial estimate, measured in the proof of concept. \\
+& 30 & frames per second & At 30 frames per second, a frame is displayed about every 33~ms, supporting continuous animation without requiring the higher processing load of a 60-fps target. Initial mobile performance target, to be checked in the proof of concept. \\
 
 \texttt{HEAT\_TEST\_SESSION\_MIN}
 \label{const:HEAT_TEST_SESSION_MIN}
-& 30 & min & Longer than a typical session in a waiting room. Initial estimate. \\
+& 30 & min & Thirty minutes covers several consecutive short activities, allowing sustained CPU load and heating to be observed rather than only startup peaks. Initial test duration, to be checked against expected home and clinic use. \\
 
 \texttt{INSTALL\_SIZE\_MAX\_MB}
 \label{const:INSTALL_SIZE_MAX_MB}
-& 300 & MB & Small enough for older devices with little free storage (\nfrref{NFR_InstallSize}). Initial estimate, measured in the proof of concept. \\
+& 300 & MB & The application must fit on family devices with limited storage and be practical to download over mobile data (\nfrref{NFR_InstallSize}). The 300-MB cap is an initial download and storage budget, to be checked against the proof-of-concept build. \\
 
 \texttt{LOW\_SPEC\_AGE\_YEARS}
 \label{const:LOW_SPEC_AGE_YEARS}
-& 5 & years & Families may keep a phone or tablet for several years. Initial estimate. \\
+& 5 & years & A five-year-old reference device helps test the application on hardware older than those used for development, reflecting families who do not replace phones or tablets frequently. Initial proxy for low performance, to be checked against available devices. \\
 
 \texttt{MAINT\_FRACTION}
 \label{const:MAINT_FRACTION}
-& 0.10 & fraction of original development time & The example value of the course template \cite{SmithCapTemplate}. A new level should cost far less than the first. \\
+& 0.10 & fraction of original development time & Uses the 10\% example in the course template \cite{SmithCapTemplate}. Keeping a likely change below one tenth of the original development effort tests whether procedure content and game logic have been separated effectively. \\
 
 \texttt{MIN\_ANDROID}
 \label{const:MIN_ANDROID}
-& 10 & version & Initial estimate of a version that covers most devices still in use while keeping the test set small. To be checked against platform usage data. \\
+& 10 & version & Android 10 is an initial compatibility floor intended to include older family devices while keeping the range of supported APIs and test configurations manageable. Confirm against platform usage data and engine compatibility. \\
 
 \texttt{MIN\_IOS}
 \label{const:MIN_IOS}
-& 16 & version & Initial estimate of a version that covers most devices still in use while keeping the test set small. To be checked against platform usage data. \\
+& 16 & version & iOS 16 is an initial compatibility floor intended to include older family devices while keeping the range of supported APIs and test configurations manageable. Confirm against platform usage data and engine compatibility. \\
 
 \texttt{RESPONSE\_MAX\_MS}
 \label{const:RESPONSE_MAX_MS}
-& 100 & ms & The longest delay that feels instant to a user \cite{Nielsen1993}. \\
+& 100 & ms & Nielsen identifies 0.1 seconds as the approximate limit for a response to feel instantaneous \cite{Nielsen1993}. This is particularly relevant because children may tap again when no response is visible. \\
 
 \texttt{RESPONSE\_RATE\_MIN}
 \label{const:RESPONSE_RATE_MIN}
-& 95 & \% & Allows occasional delays, such as while a level loads. Initial estimate. \\
+& 95 & \% & At least 95\% of touches must meet \constref{RESPONSE_MAX_MS}; this allows at most one delayed response in twenty while requiring normal interaction to remain responsive. Initial allowance for occasional processing delays, to be checked on low-spec devices. \\
 
 \texttt{SCREEN\_MAX\_IN}
 \label{const:SCREEN_MAX_IN}
-& 13 & inches & The largest current tablet screens, such as the 13-inch iPad Pro. \\
+& 13 & inches & A 13-inch upper bound covers the large-tablet form factor represented by the 13-inch iPad Pro. The layout must remain usable at this size, rather than assuming a phone-sized display. \\
 
 \texttt{SCREEN\_MIN\_IN}
 \label{const:SCREEN_MIN_IN}
-& 4.7 & inches & The smallest current phone screens, such as the 4.7-inch iPhone SE. \\
+& 4.7 & inches & A 4.7-inch lower bound covers compact phones such as the 4.7-inch iPhone SE. Testing this size helps ensure that controls and text do not rely on larger screens. \\
 
 \texttt{SENTENCE\_MAX\_WORDS}
 \label{const:SENTENCE_MAX_WORDS}
-& 10 & words & Initial estimate, to be confirmed with the child-life specialists (\nfrref{NFR_Language}). \\
+& 10 & words & Children aged 3 to 7 may be unable to read and rely on narration (Section~\ref{SecUserCharacteristics}). A ten-word cap is an initial way to keep spoken instructions short enough to follow one step at a time; confirm with child-life specialists. \\
 
 \texttt{SKIP\_HOLD\_MIN\_S}
 \label{const:SKIP_HOLD_MIN_S}
-& 1 & s & Long enough that a repeated tap does not skip, and short enough for a child to skip on purpose. Initial estimate, to be confirmed in usability testing. \\
+& 1 & s & A one-second hold distinguishes a deliberate skip from the repeated or imprecise taps expected from young children (Section~\ref{SecUserCharacteristics}), without making skipping difficult. Initial estimate, to be checked in usability testing. \\
 
 \texttt{STARTUP\_MAX\_S}
 \label{const:STARTUP_MAX_S}
-& 5 & s & Initial estimate of how long a young child waits before losing interest. Revisited after the proof of concept. \\
+& 5 & s & Long waits can interrupt a short preparation activity and cause a young child to lose interest (Section~\ref{SecUserCharacteristics}). Five seconds is an initial upper limit for reaching the home screen, to be checked through proof-of-concept timings and usability testing. \\
 
 \texttt{STARTUP\_TRIALS\_MIN}
 \label{const:STARTUP_TRIALS_MIN}
-& 10 & cold-start trials & Enough trials for a stable median. \\
+& 10 & cold-start trials & Ten cold starts allow a conservative 95\% confidence interval for the median: the second-fastest to second-slowest times give about 97.9\% coverage, assuming independent trials. If this interval crosses \constref{STARTUP_MAX_S}, more trials are needed; ten is only the initial minimum. \\
 
 \texttt{TEST\_SESSIONS\_MIN}
 \label{const:TEST_SESSIONS_MIN}
-& 100 & sessions & Enough sessions to measure \constref{CRASH_FREE_RATE_MIN}. \\
+& 100 & sessions & With 100 sessions, each failed session changes the measured crash-free rate by one percentage point, allowing \constref{CRASH_FREE_RATE_MIN} to be assessed directly (at most one failure). This is a practical initial test sample, not proof of the true long-term failure rate. \\
 
 \texttt{TOUCH\_TARGET\_MIN}
 \label{const:TOUCH_TARGET_MIN}
-& 15 & mm & About twice the 9~mm minimum of Material Design \cite{MaterialDesign}, for less precise motor control (\nfrref{NFR_TouchTarget}). To be confirmed in usability testing. \\
+& 15 & mm & Material Design recommends a target size of about 9~mm \cite{MaterialDesign}. The larger 15-mm minimum provides additional room for children with developing motor control or reduced vision (Section~\ref{SecUserCharacteristics}). Confirm in usability testing. \\
 
 \texttt{UNAIDED\_RATE\_MIN}
 \label{const:UNAIDED_RATE_MIN}
-& 80 & \% & Initial estimate, to be confirmed in usability testing. \\
+& 80 & \% & The requirement aims for most children to complete tasks without verbal assistance, since caregiver guidance may not always be available (Section~\ref{SecUserCharacteristics}). An 80\% completion rate is an initial usability target, to be reviewed after testing with the target age group. \\
 
 \end{longtable}
 
